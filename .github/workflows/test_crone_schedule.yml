@@ -2,7 +2,7 @@ name: Automated Practice Accountability System
 
 on:
   schedule:
-    - cron: '0 22 * * *'  # Executes daily at 10:00 PM UTC
+    - cron: '0/5 * * * *'  # Executes daily at 10:00 PM UTC
   workflow_dispatch:  # Manual trigger for testing and demonstration purposes
 
 jobs:
