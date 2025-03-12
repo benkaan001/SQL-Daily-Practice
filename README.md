@@ -4,15 +4,17 @@
 
 ## Introduction
 
-Welcome to my SQL Daily Practice repository! This repository is dedicated to enhancing my SQL skills through consistent, daily practice. My goal is to solve 10-20 SQL queries each day using MySQL, focusing on various SQL concepts and techniques. This repository serves as a workspace for my practice.
+This repository provides a structured environment for daily SQL practice. It combines pre-built datasets with AI-generated practice questions to help users develop and reinforce their SQL skills through consistent practice.
 
-To facilitate practice, this repository includes:
+## Key Features
 
-*   **A comprehensive "Library Dataset"**:  A pre-built dataset with a set of SQL questions ranging from intermediate to advanced levels.
-*   **Daily Practice Datasets (Future):**  A structure for incorporating daily generated datasets and questions to provide continuous, varied practice (currently under development, but structure is in place).
-*   **A Ready-to-Use MySQL Sandbox**:  Utilizing Docker Compose for easy setup of a local MySQL workspace, allowing anyone to fork this repository and start practicing immediately.
-
-I leverage AI tools like Copilot for dataset and question generation and MySQL Workbench for query testing and database interaction.
+* **Daily Practice Structure**: Organized by date, each practice set includes:
+  - A complete dataset
+  - Practice questions
+  - Optional solution files
+* **Local MySQL Environment**: Ready-to-use Docker setup for immediate practice
+* **Content Verification**: Automated checks ensure practice content meets quality standards
+* **AI-Assisted Generation**: Leverages AI tools to create varied practice scenarios
 
 ## Repository Structure
 
@@ -20,53 +22,30 @@ Here's a tree view of the main directories and files in this repository:
 
 ```md
 SQL-Daily-Practice/
-├── datasets/
-│   ├── daily_practice/
-│   │   └── YYYY-MM-DD/  (Example: 2024-07-27/)
+├── LICENSE
+├── README.md
+├── github
+│   └── workflows/
+│        └── verify-content.yml
+├── datasets
+│   ├── daily_practice
+│   │   ├── YYYY-MM-DD                          
 │   │       ├── dataset.sql
 │   │       ├── questions.md
-│   │       └── solutions.sql (optional)
-│   │       └── ... (more daily folders)
-│   └── library_dataset/
+│   │       └── solutions.md
+│   └── library_dataset                         
 │       ├── library_dataset.sql
-│       └── library_questions.md
-├── github/
-│   └── ... (Future GitHub Actions workflows, etc.)
-├── mysql/
-│   ├── docker-compose.yml
-│   └── .env.example
-├── LICENSE
-└── README.md
+│       ├── library_questions.md
+│       └── library_solutions.md
+├── mysql                                       
+│   └── docker-compose.yml
+├── scripts                                    
+│   ├── _generate_daily_practice.py
+│   ├── prompt.txt
+│   └── verify_daily_practice_content.py
+└── website                                     
+    └── content-verification-results.md
 ```
-**Explanation of Folders:**
-
-*   **`datasets/`**: Contains all SQL datasets used for practice.
-    *   **`datasets/daily_practice/`**:  Will contain daily practice datasets, organized by date (YYYY-MM-DD folders). Each daily folder will include:
-        *   `dataset.sql`: SQL script to create tables and insert data for the daily practice set.
-        *   `questions.md`: Markdown file containing SQL practice questions for the daily dataset.
-        *   `solutions.sql` (optional):  For storing example solutions to the daily questions.
-    *   **`datasets/library_dataset/`**: Contains the comprehensive "Library Dataset" for more extensive practice.
-        *   `library_dataset.sql`: SQL script to create the `library_schema` and populate tables for the library dataset.
-        *   `library_questions.md`: Markdown file containing SQL questions for the library dataset.
-*   **`github/`**:  Intended for future GitHub-specific configurations, such as GitHub Actions workflows or issue templates (currently empty but reserved for future enhancements).
-*   **`mysql/`**: Contains files for setting up the local MySQL sandbox using Docker Compose.
-    *   `docker-compose.yml`: Docker Compose configuration file to define and run the MySQL database.
-    *   `.env.example`: Example `.env` file showing the environment variables required for MySQL setup (e.g., passwords).
-*   **`LICENSE`**: Contains the MIT License for this open-source repository.
-*   **`README.md`**:  This file - the main documentation for the repository, providing setup instructions, usage guidelines, and repository overview.
-
-
-## Repository Features Showcase (GitHub Skills)
-
-This repository is designed to demonstrate my understanding of good GitHub practices and project organization:
-
-*   **Clear and Logical Folder Structure:**  The repository is organized into folders (`datasets`, `mysql`, `github`) for easy navigation and clarity.
-*   **Comprehensive `README.md`:** This `README.md` file provides a detailed overview of the repository, setup instructions, daily practice workflow, and showcases my skills.
-*   **Issue Tracking (Planned):** I intend to utilize GitHub Issues to track feature requests, dataset/question improvements, and to encourage community contributions and discussions around challenging queries.
-*   **Pull Requests (Optional - for Future Contributions):** If I expand this repository further or accept external contributions, Pull Requests will be used for code review and managing changes effectively.
-*   **GitHub Actions (Optional - Future Automation):**  I plan to explore GitHub Actions to automate daily dataset generation and potentially other tasks in the future to further enhance the repository.
-*   **Forkable and Ready-to-Use:** The repository is designed to be easily forked and used by anyone wanting to practice SQL with a ready-made MySQL environment.
-*   **Open Source License (MIT License):**  The repository is licensed under the MIT License, demonstrating my understanding of open-source principles and allowing for free use and modification.
 
 ## Getting Started - Setting up Your MySQL Sandbox
 
@@ -143,29 +122,20 @@ Follow these steps to set up your local MySQL practice environment using Docker 
 
 ## Daily Practice Workflow
 
-My typical daily practice workflow involves:
+1. Load the day's dataset (`dataset.sql`)
+2. Review questions in `questions.md`
+3. Write and test queries
+4. Compare with example solutions (optional)
 
-1.  **Dataset Generation (Future Automation):**  (Currently manual, future automation with GitHub Actions planned) Generate a new SQL dataset and corresponding SQL practice questions.
-2.  **Dataset Loading:** Load the daily dataset into my local MySQL sandbox using MySQL Workbench by executing the `dataset.sql` script.
-3.  **Solving SQL Questions:** Work through the SQL questions provided in `questions.md`, writing and testing SQL queries in MySQL Workbench against the loaded dataset.
-4.  **Review and Refinement:** Review my solutions, optimize queries, and explore alternative approaches.
-5.  **Commit to GitHub:** Commit the daily dataset (`dataset.sql`), questions (`questions.md`), and optionally my solutions (`solutions.sql`) to this repository, along with any updates to documentation or repository structure.
+## SQL Concepts Covered
 
-## Showcase of Skills
+- Table Creation and Data Manipulation
+- Complex Joins and Relationships
+- Aggregate Functions
+- Subqueries and CTEs
+- Window Functions
+- Data Analysis Patterns
 
-This repository is a practical demonstration of my skills in:
-
-**SQL Skills:**
-
-*   **Database Design and Modeling:**  Understanding of relational database concepts and table design (demonstrated in dataset creation).
-*   **Data Definition Language (DDL):**  Proficiency in creating and managing database schemas and tables (`CREATE SCHEMA`, `CREATE TABLE`, `DROP TABLE`).
-*   **Data Manipulation Language (DML):**  Strong skills in querying and manipulating data using SQL `SELECT`, `INSERT`, `UPDATE`, `DELETE` statements.
-*   **Joins:**  Expertise in using various types of JOINs (INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN) to combine data from multiple tables.
-*   **Aggregate Functions:**  Using aggregate functions (`COUNT`, `SUM`, `AVG`, `MIN`, `MAX`) to summarize and analyze data.
-*   **Grouping and Filtering:**  Proficiency in using `GROUP BY` and `HAVING` clauses for grouping data and filtering grouped results.
-*   **Subqueries and CTEs (Common Table Expressions):**  Ability to write complex queries using subqueries and CTEs for data analysis and manipulation.
-*   **Window Functions (Planned):**  Intention to practice and incorporate window functions for advanced data analysis in future practice sets.
-*   **MySQL and SQL Standards:**  Hands-on experience with MySQL database system and adherence to SQL standards.
 
 **GitHub and Development Practices:**
 
@@ -176,7 +146,7 @@ This repository is a practical demonstration of my skills in:
 *   **Open Source Licensing:**  Understanding and applying open-source licenses (MIT License).
 *   **Docker and Docker Compose:**  Using Docker Compose to create and manage a containerized MySQL development environment.
 *   **Environment Variables and `.env` Files:**  Using `.env` files for secure configuration management and separation of credentials.
-*   **Automation (Future):**  Exploring and planning to implement GitHub Actions for automation of tasks.
+*   **Automation:**  GitHub Actions for automation of tasks.
 
 ## Schema Organization
 
@@ -233,7 +203,5 @@ For basic to intermediate SQL practice, you can **safely ignore this warning.** 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see the [LICENSE](LICENSE) file for details.
 
-
-**Start practicing SQL and enjoy your journey to mastery!**
