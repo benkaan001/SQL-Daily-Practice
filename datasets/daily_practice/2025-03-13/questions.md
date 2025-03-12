@@ -1,5 +1,4 @@
--- filepath: /Users/benkaan/Desktop/projects/SQL-Daily-Practice/questions.md
-## SQL Practice Questions - Project Management System
+# SQL Practice Questions - Project Management System
 
 **1.** **Task:** Retrieve the project name, start date, and end date for all projects that are currently active. Consider that 'Active' projects might have a NULL end_date.
 **Expected Output:**
