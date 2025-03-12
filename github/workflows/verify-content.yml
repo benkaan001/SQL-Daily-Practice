@@ -1,0 +1,28 @@
+name: Verify Daily Practice Content
+
+on:
+  workflow_dispatch: # Manual trigger - for testing. Later, add schedule: cron: ...
+  push:
+    branches: [ main ] 
+
+jobs:
+  verify-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Run Content Verification Script
+        run: python scripts/verify_daily_practice_content.py
+
+      - name: Upload Verification Results # Optional - Upload results as artifact
+        uses: actions/upload-artifact@v3
+        if: always() # Always upload results, even on failure
+        with:
+          name: content-verification-results
+          path: website/content-verification-results-*.md # Upload results Markdown file
