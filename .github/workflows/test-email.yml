@@ -1,40 +1,20 @@
-name: Practice Status Notification
+name: Direct Email Test
 
 on:
-  schedule:
-    - cron: '0 18 * * *'  # Daily at 6 PM UTC
   workflow_dispatch:
 
 jobs:
-  practice-status:
+  direct-email-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        
-      - name: Check for recent submissions
-        id: check-submissions
-        run: |
-          if git log --since="1 day ago" --author="$(git config --get user.email)" | grep -q ""; then
-            echo "status=completed" >> $GITHUB_ENV
-            echo "message=Great job! You've completed your practice today." >> $GITHUB_ENV
-          else
-            echo "status=pending" >> $GITHUB_ENV
-            echo "message=Reminder: You haven't completed your practice today." >> $GITHUB_ENV
-          fi
-          
-      - name: Generate Notification Report
-        run: |
-          mkdir -p notifications
-          echo "# Practice Status: ${{ env.status }}" > notifications/status.md
-          echo "" >> notifications/status.md
-          echo "${{ env.message }}" >> notifications/status.md
-          echo "" >> notifications/status.md
-          echo "Generated: $(date)" >> notifications/status.md
-          
-      - name: Upload Notification Report
-        uses: actions/upload-artifact@v4
+      - name: Send Test Email With Direct Address
+        uses: dawidd6/action-send-mail@v3
         with:
-          name: practice-status-notification
-          path: notifications/status.md
-          retention-days: 30
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: Direct Test Email
+          body: This is a direct test email
+          from: Direct Test <${{ secrets.SMTP_USERNAME }}>
+          to: benkaanata@gmail.com
