@@ -17,4 +17,4 @@ jobs:
           subject: Direct Test Email
           body: This is a direct test email
           from: Direct Test <${{ secrets.SMTP_USERNAME }}>
-          to: benkaanata@gmail.com
+          to: ${{ secrets.EMAIL_RECIPIENT }}
