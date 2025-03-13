@@ -1,34 +1,40 @@
-name: Debug Email Configuration
+name: Practice Status Notification
 
 on:
-  workflow_dispatch:  # Only manual trigger
+  schedule:
+    - cron: '0 18 * * *'  # Daily at 6 PM UTC
+  workflow_dispatch:
 
 jobs:
-  debug-email-job:  # Unique job name
+  practice-status:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if secrets exist
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Check for recent submissions
+        id: check-submissions
         run: |
-          if [ -n "${{ secrets.SMTP_USERNAME }}" ]; then
-            echo "SMTP_USERNAME exists and is not empty"
+          if git log --since="1 day ago" --author="$(git config --get user.email)" | grep -q ""; then
+            echo "status=completed" >> $GITHUB_ENV
+            echo "message=Great job! You've completed your practice today." >> $GITHUB_ENV
           else
-            echo "SMTP_USERNAME is missing or empty"
+            echo "status=pending" >> $GITHUB_ENV
+            echo "message=Reminder: You haven't completed your practice today." >> $GITHUB_ENV
           fi
           
-          if [ -n "${{ secrets.EMAIL_RECIPIENT }}" ]; then
-            echo "EMAIL_RECIPIENT exists and is not empty"
-          else
-            echo "EMAIL_RECIPIENT is missing or empty"
-          fi
-      
-      - name: Simple Email Test
-        uses: dawidd6/action-send-mail@v3
+      - name: Generate Notification Report
+        run: |
+          mkdir -p notifications
+          echo "# Practice Status: ${{ env.status }}" > notifications/status.md
+          echo "" >> notifications/status.md
+          echo "${{ env.message }}" >> notifications/status.md
+          echo "" >> notifications/status.md
+          echo "Generated: $(date)" >> notifications/status.md
+          
+      - name: Upload Notification Report
+        uses: actions/upload-artifact@v4
         with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: Debug Test Email
-          body: This is a debug test email
-          from: Debug Test <${{ secrets.SMTP_USERNAME }}>
-          to: ${{ secrets.EMAIL_RECIPIENT }}
+          name: practice-status-notification
+          path: notifications/status.md
+          retention-days: 30
