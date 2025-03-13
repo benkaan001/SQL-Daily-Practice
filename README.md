@@ -1,4 +1,8 @@
 # SQL-Daily-Practice
+<!-- PRACTICE-BADGES:START -->
+![Practice Status](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-status.svg)
+![Practice Streak](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-streak.svg)
+<!-- PRACTICE-BADGES:END -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -205,3 +209,14 @@ For basic to intermediate SQL practice, you can **safely ignore this warning.** 
 
 MIT License - see the [LICENSE](LICENSE) file for details.
 
+
+## Automation Features
+
+This repository demonstrates GitHub Actions automation for tracking practice activity:
+
+- **Automated Status Tracking**: Daily checks for SQL practice submissions
+- **Visual Status Badges**: Dynamic SVG badges showing current status and streak
+- **Activity Reports**: Automatically generated reports of practice patterns
+- **Continuous Integration**: GitHub Actions workflow demonstrating CI/CD skills
+
+Check out the [Activity Report](ACTIVITY_REPORT.md) for current statistics.
