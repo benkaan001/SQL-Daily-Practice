@@ -1,10 +1,10 @@
 name: Debug Email Configuration
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Only manual trigger
 
 jobs:
-  debug-secrets:
+  debug-email-job:  # Unique job name
     runs-on: ubuntu-latest
     steps:
       - name: Check if secrets exist
@@ -21,16 +21,7 @@ jobs:
             echo "EMAIL_RECIPIENT is missing or empty"
           fi
       
-      - name: Debug email recipient
-        run: |
-          # This will print the first character of your email recipient to verify it exists
-          # without exposing your full email address
-          if [ -n "${{ secrets.EMAIL_RECIPIENT }}" ]; then
-            echo "First character of EMAIL_RECIPIENT: ${${{ secrets.EMAIL_RECIPIENT }}:0:1}"
-            echo "Length of EMAIL_RECIPIENT: ${#${{ secrets.EMAIL_RECIPIENT }}}"
-          fi
-      
-      - name: Try sending email with hardcoded recipient
+      - name: Simple Email Test
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
@@ -40,4 +31,4 @@ jobs:
           subject: Debug Test Email
           body: This is a debug test email
           from: Debug Test <${{ secrets.SMTP_USERNAME }}>
-          to: ${{ secrets.SMTP_USERNAME }}  # Send to yourself as a test
+          to: ${{ secrets.EMAIL_RECIPIENT }}
