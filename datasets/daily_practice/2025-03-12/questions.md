@@ -6,25 +6,25 @@
 *Task:* Calculate total orders and total spend per customer segment.
 
 *Expected Output:*
-```
+
 | segment  | total_orders | total_spend |
 |----------|--------------|-------------|
 | Regular  | 4            | 1632.00     |
 | Premium  | 3            | 1180.00     |
 | VIP      | 1            |  200.00     |
-```
+
 
 ### Question 2: Product Performance
 *Task:* Show top 3 products by revenue (price * quantity - discount).
 
 *Expected Output:*
-```
+
 | product_name    | total_revenue |
 |-----------------|---------------|
 | Gaming Laptop   | 2040.00       |
 | Wireless Earbuds| 450.00        |
 | Running Shoes   | 220.00        |
-```
+
 
 ### Question 3: Campaign Effectiveness
 *Task:* Calculate conversion rate (conversions/clicks) per campaign.
