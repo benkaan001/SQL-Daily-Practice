@@ -1,20 +1,14 @@
-name: Test Email
-
-on:
-  workflow_dispatch:  # Manual trigger for testing
-
-jobs:
-  send-notification:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Test Email
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: Test Email - GitHub Actions
-          body: This is a test email from GitHub Actions
-          from: SQL Practice Monitoring <${{ secrets.SMTP_USERNAME }}>
-          to: ${{ secrets.EMAIL_RECIPIENT }}
+steps:
+  - name: Check if secrets exist
+    run: |
+      if [ -n "${{ secrets.SMTP_USERNAME }}" ]; then
+        echo "SMTP_USERNAME exists"
+      else
+        echo "SMTP_USERNAME is missing or empty"
+      fi
+      
+      if [ -n "${{ secrets.EMAIL_RECIPIENT }}" ]; then
+        echo "EMAIL_RECIPIENT exists"
+      else
+        echo "EMAIL_RECIPIENT is missing or empty"
+      fi
