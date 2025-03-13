@@ -10,11 +10,11 @@ jobs:
       - name: Send Test Email With Direct Address
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
+          server_address: smtp.gmail.com
+          server_port: 587
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: Direct Test Email
           body: This is a direct test email
           from: Direct Test <${{ secrets.SMTP_USERNAME }}>
-          to: ${{ secrets.EMAIL_RECIPIENT }}
+          to: benkaanata@gmail.com
