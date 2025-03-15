@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 30  # Get last 30 days of history
 
+      - name: Pull latest changes
+        run: git pull origin main
+
       - name: Analyze Practice Activity
         id: activity_analysis
         run: |
