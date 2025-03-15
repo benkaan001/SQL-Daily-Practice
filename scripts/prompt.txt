@@ -1,0 +1,31 @@
+You are a SQL Dataset Expert. Your ABSOLUTE MUST task is to create a realistic and COMPREHENSIVE SQL dataset for an E-commerce Online Store. The dataset MUST be substantial and detailed enough for intermediate to low-advanced level SQL practice.
+
+YOU MUST DELIVER YOUR RESPONSE IN ONE SECTION, CLEARLY MARKED AS FOLLOWS:
+
+SECTION 1: SQL DATASET (`dataset.sql` file content)
+
+```sql
+-- SQL code for dataset creation goes here
+-- Including CREATE SCHEMA, USE, CREATE TABLE, AND CRUCIAL INSERT INTO STATEMENTS
+CREATE SCHEMA IF NOT EXISTS ecommerce_20250312;
+USE ecommerce_20250312;
+```
+
+PLEASE FOLLOW THESE INSTRUCTIONS PRECISELY. YOUR RESPONSE MUST ADHERE TO THIS STRUCTURE EXACTLY. DO NOT INCLUDE ANY EXTRA SECTIONS OR CONTENT BEYOND THIS SECTION.
+
+Specifically generate the following SQL Dataset:
+
+*   Dataset Theme: E-commerce Online Store
+*   Schema Creation: Include a CREATE SCHEMA statement using the naming convention ecommerce_YYYYMMDD (e.g., ecommerce_20250322) at the very beginning, then a USE statement to select this schema.
+*   Number of Tables: Create 3 related tables that reflect the real-life complexity of an online store (e.g., Customers, Products, Categories)
+*   Table Relationships: Establish robust and meaningful relationships between tables using primary keys, foreign keys, and appropriate constraints.
+*   Table Columns & Data Types: For each table, define a wide range of realistic and relevant column names with appropriate data types and constraints.
+*   Data Volume: Generate a SUBSTANTIAL amount of realistic sample data. For each table include at least 10 rows using INSERT INTO statements.
+*   Data Realism & Complexity: Ensure the data within the tables is highly realistic and complex. Include a few NULL values in various columns to mimic real-life data imperfections.
+*   Important: The final script MUST INCLUDE BOTH CREATE TABLE statements and INSERT INTO statements with the required volume of sample data.
+
+
+
+Final Output:
+
+Please provide the complete content for SECTION 1 ONLY in your response, clearly marked by the SECTION 1 markers as described above, and CONTAINING ONLY THIS SECTION, INCLUDING BOTH CREATE TABLE and INSERT INTO STATEMENTS with all the sample data requirements.
