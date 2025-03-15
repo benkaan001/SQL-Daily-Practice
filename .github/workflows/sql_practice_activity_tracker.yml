@@ -163,4 +163,5 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add .github/badges/ README.md ACTIVITY_REPORT.md
           git commit -m "Update practice activity status: ${{ steps.activity_analysis.outputs.message }}" || echo "No changes to commit"
+          git pull --rebase origin main
           git push
