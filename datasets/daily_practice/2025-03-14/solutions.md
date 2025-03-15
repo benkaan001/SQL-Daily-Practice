@@ -1,72 +1,221 @@
 # SQL Practice Questions - E-commerce Database
 
 ## Question 1: Customer Purchase Analysis
-Write a query to find the top 3 customers who have spent the most money on orders. Include their full name (concatenated), email, and total amount spent.
+Write a query to find the top 3 customers who have spent the most money on orders. 
+Include their full name (concatenated), email, and total amount spent.
+Make sure to apply discounts when applicable and exclude 'Cancelled' orders.
 
 Expected output:
 | customer_name | email | total_spent |
 |---------------|-------|-------------|
-| Emily Brown | emily.b@email.com | 1429.98 |
-| John Smith | john.smith@email.com | 1079.96 |
-| Sarah Johnson | sarah.j@email.com | 419.97 |
+| Emily Brown | emily.b@email.com | 1413.97 |
+| John Smith | john.smith@email.com | 1004.96 |
+| Sarah Johnson | sarah.j@email.com | 389.97 |
 
 ```sql
--- Write your solution here
+WITH customer_purchases AS (
+  SELECT 
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    email,
+    ROUND(
+      SUM((oi.quantity * oi.unit_price) * (1 - oi.discount/100 ))
+    ,2) AS total_spent,
+    DENSE_RANK() OVER (ORDER BY SUM((oi.quantity * oi.unit_price) * (1 - oi.discount/100 )) DESC) AS rk
+  FROM 
+    customers c 
+  LEFT JOIN
+    orders o ON o.customer_id = c.customer_id 
+  LEFT JOIN
+    order_items oi ON oi.order_id = o.order_id
+  WHERE 
+    o.status != 'Cancelled'
+  GROUP BY 
+    1, 2
+  ORDER BY 
+    total_spent DESC
+) 
+SELECT
+  customer_name,
+  email,
+  total_spent
+FROM 
+  customer_purchases
+WHERE 
+  rk <= 3;
 ```
 
 ## Question 2: Monthly Sales Trend
-Write a query to show the total sales amount for each month of 2023, along with the month-over-month percentage change. Display 0% for the first month.
+Write a query to show the total sales amount for each month of 2023, 
+along with the month-over-month percentage change. Display 0.00% for the first month.
+Round the results to 2 decimal points. Exclcude discounts and 'Cancelled' orders. 
 
 Expected output:
 | year_month | total_sales | mom_change_percent |
 |------------|-------------|-------------------|
-| 2023-02 | 3239.96 | 0.00% |
-| 2023-03 | 2159.91 | -33.33% |
+| 2023-02 | 939.97 | 0.00% |
+| 2023-03 | 2599.85 | 0.64% |
+
 ```sql
 
--- Write your solution here
+WITH monthly_sales AS (
+    SELECT
+        DATE_FORMAT(o.order_date, '%Y-%m') AS 'year_month',
+        SUM(oi.quantity * oi.unit_price) AS total_sales
+    FROM
+        orders o
+    JOIN
+        order_items oi ON o.order_id = oi.order_id
+    WHERE
+        o.status != 'Cancelled'
+        AND YEAR(o.order_date) = 2023
+    GROUP BY
+        DATE_FORMAT(o.order_date, '%Y-%m') 
+),
+lagged_sales AS (
+    SELECT
+        'year_month',
+        total_sales,
+        LAG(total_sales, 1, 0) OVER (ORDER BY 'year_month') AS previous_month_sales
+    FROM
+        monthly_sales
+)
+SELECT
+    'year_month',
+    ROUND(total_sales, 2) AS total_sales,
+    CASE
+        WHEN previous_month_sales = 0 THEN '0.00%'
+        ELSE CONCAT(
+            CAST(
+                ROUND(((total_sales - previous_month_sales) / previous_month_sales) * 100, 2)
+            AS CHAR),
+            '%'
+        )
+    END AS mom_change_percent
+FROM
+    lagged_sales
+ORDER BY
+    'year_month';
 ```
 
+
 ## Question 3: Product Performance Analysis
-Write a query to find the best-selling products by quantity sold. Include the product name, category, total quantity sold, total revenue generated, and average sale price (after discounts).
+Write a query to find the best-selling products by quantity sold. 
+Include the product name, category, total quantity sold, 
+total revenue generated, and average sale price (after discounts).
 
 Expected output:
 | product_name | category | total_quantity | total_revenue | avg_sale_price |
 |--------------|----------|----------------|--------------|----------------|
-| Gaming Mouse | Electronics | 3 | 149.97 | 49.99 |
 | Fitness Tracker | Electronics | 4 | 319.96 | 79.99 |
-| Laptop Pro | Electronics | 2 | 2599.98 | 1299.99 |
+| Gaming Mouse | Electronics | 3 | 124.98 | 41.66 |
+| Toaster | Home Appliances | 3 | 111.97 | 37.62  |
 
 ```sql
--- Write your solution here
+SELECT
+    p.product_name,
+    p.category,
+    SUM(oi.quantity) AS total_quantity,
+    ROUND(SUM(oi.quantity * oi.unit_price * (1 - oi.discount / 100)), 2) AS total_revenue,
+    ROUND(SUM(oi.quantity * oi.unit_price * (1 - oi.discount / 100)) / SUM(oi.quantity), 2) AS avg_sale_price
+FROM
+    products p
+LEFT JOIN
+    order_items oi ON p.product_id = oi.product_id
+LEFT JOIN
+    orders o ON o.order_id = oi.order_id
+GROUP BY
+    p.product_name,
+    p.category
+ORDER BY
+    total_quantity DESC
+LIMIT 3;
 ```
 
 ## Question 4: Customer Segmentation by Purchase Frequency
-Create a query that segments customers by the number of orders they've placed. Categories are: "One-time" (1 order), "Repeat" (2 orders), and "Loyal" (3+ orders). Show how many customers are in each segment.
+Create a query that segments customers by the number of orders they've placed. 
+Categories are: "One-time" (1 order), "Repeat" (2 orders), and "Loyal" (3+ orders). 
+Show how many customers are in each segment.
 
 Expected output:
 | segment | customer_count |
 |---------|----------------|
-| One-time | 5 |
+| One-time | 4 |
 | Repeat | 2 |
 | Loyal | 0 |
 
 ```sql
--- Write your solution here
+WITH order_counts AS (
+    SELECT
+        c.customer_id,
+        COUNT(o.order_id) AS order_count
+    FROM
+        customers c
+    LEFT JOIN
+        orders o ON o.customer_id = c.customer_id
+    WHERE
+        o.status != 'Cancelled'
+    GROUP BY
+        c.customer_id
+),
+customer_segments AS (
+    SELECT
+        CASE
+            WHEN oc.order_count = 1 THEN 'One-time'
+            WHEN oc.order_count = 2 THEN 'Repeat'
+            WHEN oc.order_count >= 3 THEN 'Loyal'
+            ELSE 'No Orders'
+        END AS segment,
+        COUNT(oc.customer_id) AS customer_count
+    FROM
+        order_counts oc
+    GROUP BY
+        segment
+), all_segments AS (
+  SELECT 
+    'One-time' AS segment 
+    UNION ALL 
+    SELECT 'Repeat'
+    UNION ALL 
+    SELECT 'Loyal'
+
+)
+SELECT
+    aseg.segment,
+    COALESCE(cseg.customer_count, 0) AS customer_count
+FROM
+  all_segments aseg
+LEFT JOIN 
+  customer_segments cseg ON aseg.segment = cseg.segment;
 ```
 
 ## Question 5: Product Inventory Analysis with Rolling Stock
-Write a query to analyze the inventory of products with a "low stock" flag for any product with less than 40 items in stock. Include a rolling sum of stock within each category.
+Write a query to analyze the inventory of products with a "low stock" flag 
+for any product with less than 40 items in stock. 
+Include a rolling sum of stock within each category.
 
 Expected output:
 | product_id | product_name | category | stock_quantity | low_stock | rolling_stock_in_category |
 |------------|--------------|----------|----------------|-----------|---------------------------|
+| 102 | Laptop Pro | Electronics | 30 | YES | 30 |
 | 103 | Coffee Maker | Home Appliances | 25 | YES | 25 |
-| 106 | Blender | Home Appliances | 40 | NO | 65 |
-| 110 | Toaster | Home Appliances | 35 | YES | 100 |
+| 110 | Toaster | Home Appliances | 35 | YES | 65 |
+| 106 | Blender | Home Appliances | 40 | NO | 100 |
 
 ```sql
--- Write your solution here
+SELECT
+    product_id,
+    product_name,
+    category,
+    stock_quantity,
+    CASE WHEN stock_quantity < 40 THEN 'YES' ELSE 'NO' END AS low_stock,
+    SUM(stock_quantity) OVER (PARTITION BY category ORDER BY stock_quantity) AS rolling_stock_in_category
+FROM
+    products 
+WHERE
+    stock_quantity <= 40 
+ORDER BY
+    category, 
+    stock_quantity;
 ```
 
 ## Question 6: Order Fulfillment Time Analysis

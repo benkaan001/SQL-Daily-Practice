@@ -1,53 +1,61 @@
 # SQL Practice Questions - E-commerce Database
 
 ## Question 1: Customer Purchase Analysis
-Write a query to find the top 3 customers who have spent the most money on orders. Include their full name (concatenated), email, and total amount spent.
+Write a query to find the top 3 customers who have spent the most money on orders. 
+Include their full name (concatenated), email, and total amount spent.
+Make sure to apply discounts when applicable and exclude 'Cancelled' orders.
 
 Expected output:
 | customer_name | email | total_spent |
 |---------------|-------|-------------|
-| Emily Brown | emily.b@email.com | 1429.98 |
-| John Smith | john.smith@email.com | 1079.96 |
-| Sarah Johnson | sarah.j@email.com | 419.97 |
+| Emily Brown | emily.b@email.com | 1413.97 |
+| John Smith | john.smith@email.com | 1004.96 |
+| Sarah Johnson | sarah.j@email.com | 389.97 |
 
 ```sql
 -- Write your solution here
 ```
 
 ## Question 2: Monthly Sales Trend
-Write a query to show the total sales amount for each month of 2023, along with the month-over-month percentage change. Display 0% for the first month.
+Write a query to show the total sales amount for each month of 2023, 
+along with the month-over-month percentage change. Display 0.00% for the first month.
+Round the results to 2 decimal points. Exclcude discounts and 'Cancelled' orders. 
 
 Expected output:
 | year_month | total_sales | mom_change_percent |
 |------------|-------------|-------------------|
-| 2023-02 | 3239.96 | 0.00% |
-| 2023-03 | 2159.91 | -33.33% |
+| 2023-02 | 939.97 | 0.00% |
+| 2023-03 | 2599.85 | 0.64% ||
 ```sql
 
 -- Write your solution here
 ```
 
 ## Question 3: Product Performance Analysis
-Write a query to find the best-selling products by quantity sold. Include the product name, category, total quantity sold, total revenue generated, and average sale price (after discounts).
+Write a query to find the best-selling products by quantity sold. 
+Include the product name, category, total quantity sold, 
+total revenue generated, and average sale price (after discounts).
 
 Expected output:
 | product_name | category | total_quantity | total_revenue | avg_sale_price |
 |--------------|----------|----------------|--------------|----------------|
-| Gaming Mouse | Electronics | 3 | 149.97 | 49.99 |
 | Fitness Tracker | Electronics | 4 | 319.96 | 79.99 |
-| Laptop Pro | Electronics | 2 | 2599.98 | 1299.99 |
+| Gaming Mouse | Electronics | 3 | 124.98 | 41.66 |
+| Toaster | Home Appliances | 3 | 111.97 | 37.62  |
 
 ```sql
 -- Write your solution here
 ```
 
 ## Question 4: Customer Segmentation by Purchase Frequency
-Create a query that segments customers by the number of orders they've placed. Categories are: "One-time" (1 order), "Repeat" (2 orders), and "Loyal" (3+ orders). Show how many customers are in each segment.
+Create a query that segments customers by the number of orders they've placed. 
+Categories are: "One-time" (1 order), "Repeat" (2 orders), and "Loyal" (3+ orders). 
+Show how many customers are in each segment.
 
 Expected output:
 | segment | customer_count |
 |---------|----------------|
-| One-time | 5 |
+| One-time | 4 |
 | Repeat | 2 |
 | Loyal | 0 |
 
@@ -56,14 +64,17 @@ Expected output:
 ```
 
 ## Question 5: Product Inventory Analysis with Rolling Stock
-Write a query to analyze the inventory of products with a "low stock" flag for any product with less than 40 items in stock. Include a rolling sum of stock within each category.
+Write a query to analyze the inventory of products with a "low stock" flag 
+for any product with less than 40 items in stock. 
+Include a rolling sum of stock within each category.
 
 Expected output:
 | product_id | product_name | category | stock_quantity | low_stock | rolling_stock_in_category |
 |------------|--------------|----------|----------------|-----------|---------------------------|
+| 102 | Laptop Pro | Electronics | 30 | YES | 30 |
 | 103 | Coffee Maker | Home Appliances | 25 | YES | 25 |
-| 106 | Blender | Home Appliances | 40 | NO | 65 |
-| 110 | Toaster | Home Appliances | 35 | YES | 100 |
+| 110 | Toaster | Home Appliances | 35 | YES | 65 |
+| 106 | Blender | Home Appliances | 40 | NO | 100 |
 
 ```sql
 -- Write your solution here
