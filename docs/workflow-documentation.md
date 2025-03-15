@@ -4,7 +4,7 @@ This document provides a detailed explanation of the `sql_practice_activity_trac
 
 ## Overview
 
-The `SQL Practice Activity Tracker` workflow is designed to automate the tracking of daily SQL practice activity. It checks for daily commits, calculates practice streaks, generates badges, and updates the repository with the latest status and activity reports.
+The `SQL Practice Activity Tracker` workflow is designed to automate the tracking of daily SQL practice activity. It checks for daily commits, calculates practice streaks, generates badges, and updates the repository with the latest practice status.
 
 ## GitHub Actions Fundamentals
 
@@ -61,7 +61,14 @@ The workflow uses several Git commands to analyze activity:
 - `--date=short`: Formats dates consistently
 - `--pretty=format:"%ad"`: Customizes output format
 
-### 4. SVG Badge Generation
+### 4. Pull Latest Changes
+Adds a step to pull the latest changes from the remote repository before pushing any new changes:
+```yaml
+- name: Pull latest changes
+  run: git pull origin main
+```
+
+### 5. SVG Badge Generation
 The workflow creates dynamic SVG badges:
 1. Status Badge: Shows if today's practice is completed
    - Green (completed): #4c1
@@ -69,19 +76,19 @@ The workflow creates dynamic SVG badges:
 2. Streak Badge: Displays consecutive practice days
    - Uses consistent blue (#007ec6) theme
 
-### 5. GitHub Environment Variables
+### 6. GitHub Environment Variables
 The workflow uses GitHub's built-in variables:
 - `${{ github.repository }}`: Current repository name
 - `$GITHUB_OUTPUT`: File for sharing data between steps
 - `${{ steps.*.outputs.* }}`: Accessing step outputs
 
-### 6. File Operations
+### 7. File Operations
 The workflow manages several files:
 - `.github/badges/`: Directory for SVG badge files
 - `README.md`: Repository landing page
 - `ACTIVITY_REPORT.md`: Detailed activity summary
 
-### 7. Error Handling
+### 8. Error Handling
 ```yaml
 git commit -m "..." || echo "No changes to commit"
 ```
@@ -136,7 +143,16 @@ Checks out the repository and fetches the last 30 days of commit history.
     fetch-depth: 30  # Get last 30 days of history
 ```
 
-#### 2. Analyze Practice Activity
+#### 2. Pull Latest Changes
+
+Pulls the latest changes from the remote repository before making any new changes.
+
+```yaml
+- name: Pull latest changes
+  run: git pull origin main
+```
+
+#### 3. Analyze Practice Activity
 
 Analyzes the practice activity by checking for daily commits, calculating streaks, and generating a mini-report of recent activity.
 
@@ -169,7 +185,7 @@ Analyzes the practice activity by checking for daily commits, calculating streak
     echo "EOF" >> $GITHUB_OUTPUT
 ```
 
-#### 3. Generate Activity Badge
+#### 4. Generate Activity Badge
 
 Creates SVG badges for practice status and streak based on the analysis.
 
@@ -227,7 +243,7 @@ Creates SVG badges for practice status and streak based on the analysis.
     EOF
 ```
 
-#### 4. Generate Activity Report
+#### 5. Generate Activity Report
 
 Generates an `ACTIVITY_REPORT.md` file summarizing the practice activity.
 
@@ -259,7 +275,7 @@ Generates an `ACTIVITY_REPORT.md` file summarizing the practice activity.
     EOF
 ```
 
-#### 5. Update README with Badges
+#### 6. Update README with Badges
 
 Updates the `README.md` file to include the badges and an automation features section.
 
@@ -298,7 +314,7 @@ Updates the `README.md` file to include the badges and an automation features se
     fi
 ```
 
-#### 6. Commit and Push Changes
+#### 7. Commit and Push Changes
 
 Commits and pushes the changes to the repository.
 
@@ -324,4 +340,3 @@ The `SQL Practice Activity Tracker` workflow automates the process of tracking d
 This automation helps maintain consistent SQL practice and provides visual and report-based feedback on progress.
 
 For more details, you can view the workflow file [here](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/workflows/sql_practice_activity_tracker.yml).
-````
