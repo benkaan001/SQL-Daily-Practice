@@ -1,3 +1,4 @@
 .env
 mysql/.env
 .DS_Store
+docs/notes_to_self.md
