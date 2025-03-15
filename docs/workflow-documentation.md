@@ -36,7 +36,7 @@ list:             # List/array
 ```yaml
 on:
   schedule:
-    - cron: '0 22 * * *'  # Runs at 10 PM UTC daily
+    - cron: '0 4 * * *'  # Runs at 4 AM UTC daily, which is 10 PM CST
   workflow_dispatch:       # Manual trigger
 ```
 - The `cron` syntax follows: minute (0-59) | hour (0-23) | day of month (1-31) | month (1-12) | day of week (0-6)
@@ -103,13 +103,13 @@ The `||` operator ensures the workflow continues even if there are no changes to
 ## Triggering Events
 
 The workflow is triggered by the following events:
-- **Daily Schedule**: Runs daily at 10 PM UTC.
+- **Daily Schedule**: Runs daily at 4 AM UTC, which is 10 PM CST.
 - **Manual Trigger**: Can be manually triggered for testing purposes.
 
 ```yaml
 on:
   schedule:
-    - cron: '0 22 * * *'  # Daily at 10 PM UTC
+    - cron: '0 4 * * *'  # Daily at 4 AM UTC, which is 10 PM CST
   workflow_dispatch:  # Manual trigger for testing
 ```
 
