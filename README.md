@@ -220,3 +220,6 @@ This repository demonstrates GitHub Actions automation for tracking practice act
 - **Continuous Integration**: GitHub Actions workflow demonstrating CI/CD skills
 
 Check out the [Activity Report](ACTIVITY_REPORT.md) for current statistics.
+
+## Documentation
+For detailed information about the practice activity tracker workflow, see our [Workflow Documentation](docs/workflow-documentation.md).
