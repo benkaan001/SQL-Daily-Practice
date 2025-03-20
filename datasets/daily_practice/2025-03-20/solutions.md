@@ -14,7 +14,24 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT DISTINCT
+	c.name
+FROM 
+	customers c
+JOIN 
+	orders o ON o.customer_id = c.customer_id
+JOIN 
+	order_details od ON od.order_id = o.order_id
+JOIN 	
+	products p ON p.product_id = od.product_id
+WHERE EXISTS (
+  	SELECT 1 
+  	FROM products 
+  	WHERE category = 'Electronics' 
+  	AND product_id = od.product_id)
+-- WHERE p.category = 'Electronics'  -- simpler approach
+ORDER BY
+	c.name;
 ```
 
 **Question 2:**
@@ -36,7 +53,17 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	c.name,
+    COUNT(o.order_id) AS total_orders
+FROM
+	customers c
+LEFT JOIN 
+	orders o ON o.customer_id = c.customer_id
+GROUP BY
+	c.name
+ORDER BY
+	total_orders DESC;
 ```
 
 **Question 3:**
@@ -46,16 +73,29 @@
 **Expected Output:**
 
 | name     |
-|----------|
+| -------- |
+| Laptop   |
 | Mouse    |
+| Keyboard |
 | T-Shirt  |
-| Notebook |
+| Jeans    |
+| Book     |
 | Pen      |
+| Notebook |
 
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT DISTINCT
+	p.name
+FROM
+	products p 
+JOIN 
+	order_details od ON p.product_id = od.product_id
+GROUP BY
+	p.name
+HAVING
+	SUM(od.quantity) > 2;
 ```
 
 **Question 4:**
@@ -81,7 +121,15 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	o.order_id,
+    SUM(od.quantity * od.unit_price) AS total_amount_paid
+FROM
+	orders o 
+LEFT JOIN 
+	order_details od ON od.order_id = o.order_id
+GROUP BY
+	o.order_id;
 ```
 
 **Question 5:**
@@ -90,14 +138,27 @@
 
 **Expected Output:**
 
-| name          | total_spending |
-|---------------|----------------|
-| Alice Smith   | 260.25         |
+| name            | total_spending |
+|-----------------|----------------|
+| Charlie Brown   | 1440.00        |
 
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	c.name,
+    SUM(od.quantity * od.unit_price) AS total_spending
+FROM 	
+	customers c
+JOIN 
+	orders o ON o.customer_id = c.customer_id
+JOIN 
+	order_details od ON od.order_id = o.order_id
+GROUP BY
+	c.name
+ORDER BY
+	total_spending DESC
+LIMIT 1;
 ```
 
 **Question 6:**
@@ -106,21 +167,31 @@
 
 **Expected Output:**
 
-| name      | order_count |
-|-----------|-------------|
-| Pen       | 3           |
-| Mouse     | 2           |
-| T-Shirt   | 2           |
-| Jeans     | 2           |
-| Laptop    | 2           |
-| Keyboard  | 2           |
-| Notebook  | 2           |
-| Book      | 2           |
+| name     | order_count |
+| -------- | ----------- |
+| Jeans    | 4           |
+| Laptop   | 3           |
+| Mouse    | 3           |
+| Keyboard | 3           |
+| T-Shirt  | 3           |
+| Book     | 3           |
+| Pen      | 3           |
+| Notebook | 2           |
 
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	p.name,
+    COUNT(od.order_id) AS order_count
+FROM
+	products p
+LEFT JOIN 
+	order_details od ON od.product_id = p.product_id
+GROUP BY 
+	p.name
+ORDER BY 
+	order_count DESC;
 ```
 
 **Question 7:**
@@ -136,7 +207,26 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT DISTINCT
+    c.name
+FROM
+    customers c
+JOIN
+    orders o ON c.customer_id = o.customer_id
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM order_details od
+    JOIN products p ON od.product_id = p.product_id
+    WHERE od.order_id = o.order_id
+      AND p.category <> 'Apparel'
+)
+AND EXISTS (
+    SELECT 1
+    FROM order_details od
+    JOIN products p ON od.product_id = p.product_id
+    WHERE od.order_id = o.order_id
+      AND p.category = 'Apparel'
+);
 ```
 
 **Question 8:**
@@ -155,7 +245,13 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	category,
+    TRUNCATE(AVG(price), 2) AS average_price
+FROM
+	products
+GROUP BY
+	category;
 ```
 
 **Question 9:**
@@ -172,7 +268,15 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	c.name
+FROM
+	customers c
+JOIN
+	orders o ON o.customer_id = c.customer_id
+WHERE
+	YEAR(o.order_date) = 2024 
+    AND MONTH(o.order_date) = 3;
 ```
 
 **Question 10:**
@@ -182,12 +286,36 @@
 **Expected Output:**
 
 | order_id |
-|----------|
-| 104      |
+| -------- |
 | 108      |
+| 101      |
+| 104      |
+| 106      |
+| 102      |
+| 105      |
+| 107      |
+| 110      |
+| 103      |
+| 109      |
+| 111      |
 
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+3
+SELECT
+14
+    order_id
+15
+FROM
+16
+    order_details
+17
+GROUP BY
+18
+    order_id
+19
+ORDER BY
+20
+    COUNT(DISTINCT product_id)  DESC;
 ```

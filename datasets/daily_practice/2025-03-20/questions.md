@@ -46,11 +46,15 @@
 **Expected Output:**
 
 | name     |
-|----------|
+| -------- |
+| Laptop   |
 | Mouse    |
+| Keyboard |
 | T-Shirt  |
-| Notebook |
+| Jeans    |
+| Book     |
 | Pen      |
+| Notebook |
 
 **Solution Area:**
 
@@ -182,9 +186,19 @@
 **Expected Output:**
 
 | order_id |
-|----------|
-| 104      |
+| -------- |
 | 108      |
+| 101      |
+| 104      |
+| 106      |
+| 102      |
+| 105      |
+| 107      |
+| 110      |
+| 103      |
+| 109      |
+| 111      |
+
 
 **Solution Area:**
 

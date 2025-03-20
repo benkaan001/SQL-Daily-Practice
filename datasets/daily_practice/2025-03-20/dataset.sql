@@ -2,44 +2,44 @@
 CREATE SCHEMA IF NOT EXISTS daily_practice_20250320_schema;
 USE daily_practice_20250320_schema;
 
--- Customers table
-CREATE TABLE Customers (
+-- customers table
+CREATE TABLE customers (
     customer_id INT PRIMARY KEY,
     name VARCHAR(100),
     city VARCHAR(50),
     country VARCHAR(50)
 );
 
--- Orders table
-CREATE TABLE Orders (
+-- orders table
+CREATE TABLE orders (
     order_id INT PRIMARY KEY,
     customer_id INT,
     order_date DATE,
     total_amount DECIMAL(10, 2),
-    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
--- Products table
-CREATE TABLE Products (
+-- products table
+CREATE TABLE products (
     product_id INT PRIMARY KEY,
     name VARCHAR(100),
     category VARCHAR(50),
     price DECIMAL(8, 2)
 );
 
--- OrderDetails table (to handle many-to-many relationship between Orders and Products)
-CREATE TABLE OrderDetails (
+-- order_details table (to handle many-to-many relationship between orders and products)
+CREATE TABLE order_details (
     order_detail_id INT PRIMARY KEY,
     order_id INT,
     product_id INT,
     quantity INT,
     unit_price DECIMAL(8, 2),
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
--- Inserting data into Customers table
-INSERT INTO Customers (customer_id, name, city, country) VALUES
+-- Inserting data into customers table
+INSERT INTO customers (customer_id, name, city, country) VALUES
 (1, 'Alice Smith', 'New York', 'USA'),
 (2, 'Bob Johnson', 'London', 'UK'),
 (3, 'Charlie Brown', 'Paris', 'France'),
@@ -48,8 +48,8 @@ INSERT INTO Customers (customer_id, name, city, country) VALUES
 (6, 'Frank Miller', 'New York', 'USA'),
 (7, 'Grace Davis', 'London', 'UK');
 
--- Inserting data into Orders table
-INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES
+-- Inserting data into orders table
+INSERT INTO orders (order_id, customer_id, order_date, total_amount) VALUES
 (101, 1, '2024-01-15', 150.00),
 (102, 2, '2024-02-20', 220.50),
 (103, 1, '2024-03-10', 75.25),
@@ -62,8 +62,8 @@ INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES
 (110, 7, '2024-06-25', 195.00),
 (111, 1, '2024-07-01', 35.00);
 
--- Inserting data into Products table
-INSERT INTO Products (product_id, name, category, price) VALUES
+-- Inserting data into products table
+INSERT INTO products (product_id, name, category, price) VALUES
 (1, 'Laptop', 'Electronics', 1200.00),
 (2, 'Mouse', 'Electronics', 25.00),
 (3, 'Keyboard', 'Electronics', 75.00),
@@ -73,8 +73,8 @@ INSERT INTO Products (product_id, name, category, price) VALUES
 (7, 'Pen', 'Stationery', 2.50),
 (8, 'Notebook', 'Stationery', 5.00);
 
--- Inserting data into OrderDetails table
-INSERT INTO OrderDetails (order_detail_id, order_id, product_id, quantity, unit_price) VALUES
+-- Inserting data into order_details table
+INSERT INTO order_details (order_detail_id, order_id, product_id, quantity, unit_price) VALUES
 (1, 101, 1, 1, 1200.00),
 (2, 101, 2, 2, 25.00),
 (3, 101, 3, 1, 75.00),
