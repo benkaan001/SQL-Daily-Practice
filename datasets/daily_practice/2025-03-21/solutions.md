@@ -11,7 +11,24 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	e.first_name,
+    e.last_name
+FROM
+	employees e 
+JOIN
+	employee_projects ep ON ep.employee_id = e.employee_id
+JOIN	
+	projects p ON p.project_id = ep.project_id
+WHERE
+	p.project_name = 'Project Alpha'
+	AND EXISTS (
+      	SELECT 1
+        FROM employees e2 
+      	JOIN employee_projects ep ON ep.employee_id = e2.employee_id
+      	JOIN projects p ON p.project_id = ep.project_id
+        WHERE p.project_name = 'Project Gamma'
+        AND  e2.employee_id = e.employee_id);
 ```
 
 **Question 2:**
@@ -21,17 +38,38 @@
 **Expected Output:**
 
 | department_name | first_name | last_name | salary   |
-|-----------------|------------|-----------|----------|
+| --------------- | ---------- | --------- | -------- |
 | Sales           | Mary       | Brown     | 90000.00 |
-| Marketing       | Linda      | Garcia    | 65000.00 |
-| Engineering     | Charles    | Moore     | 92000.00 |
+| Marketing       | David      | Wilson    | 70000.00 |
 | Finance         | Michael    | Davis     | 95000.00 |
 | Human Resources | Jennifer   | Williams  | 62000.00 |
+| Engineering     | Charles    | Moore     | 92000.00 |
 
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+WITH department_salaries AS (
+    SELECT
+      d.department_name,
+  	  d.department_id,
+      MAX(e.salary) AS salary
+  FROM
+      departments d
+  JOIN 
+      employees e ON e.department_id = d.department_id
+  GROUP BY 
+      d.department_name,
+  	  d.department_id
+)
+SELECT
+	ds.department_name,
+    e.first_name,
+    e.last_name,
+    ds.salary
+FROM
+	department_salaries ds
+JOIN	
+	employees e ON e.department_id = ds.department_id AND e.salary = ds.salary;
 ```
 
 **Question 3:**
@@ -43,12 +81,18 @@
 | project_name  | start_date | end_date   |
 |---------------|------------|------------|
 | Project Alpha | 2023-01-01 | 2023-12-31 |
-| Project Beta  | 2023-06-15 | 2024-08-30 |
 
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	project_name,
+    start_date,
+    end_date
+FROM
+	projects
+WHERE
+	YEAR(start_date) = 2023 AND YEAR(end_date) = 2023;
 ```
 
 **Question 4:**
@@ -75,7 +119,27 @@
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
+SELECT
+	e.first_name AS employee_first_name,
+    e.last_name AS employee_last_name,
+    m.first_name AS manager_first_name,
+    m.last_name AS manager_last_name
+FROM
+	employees e
+JOIN 	
+	employees m 
+WHERE
+	m.employee_id = e.manager_id
+UNION ALL
+SELECT
+	first_name AS employee_first_name,
+    last_name AS employee_last_name,
+    'NULL' AS manager_first_name,
+    'NULL' AS manager_last_name
+FROM
+	employees
+WHERE
+	manager_id IS NULL;
 ```
 
 **Question 5:**
@@ -87,107 +151,20 @@
 | department_name | employee_count |
 |-----------------|----------------|
 | Sales           | 3              |
-| Engineering     | 4              |
+| Engineering     | 5              |
 
 **Solution Area:**
 
 ```sql
--- Paste your SQL solution here
-```
-
-**Question 6:**
-
-**Explanation:** For each project, find the employee who joined the project earliest. Return the project name, the first name, and the last name of the employee, along with their role in the project.
-
-**Expected Output:**
-
-| project_name  | first_name | last_name | role              |
-|---------------|------------|-----------|-------------------|
-| Project Alpha | John       | Doe       | Lead Engineer     |
-| Project Beta  | Peter      | Jones     | Sales Representative|
-| Project Gamma | David      | Wilson    | Marketing Specialist|
-| Project Delta | Michael    | Davis     | Finance Analyst   |
-
-**Solution Area:**
-
-```sql
--- Paste your SQL solution here
-```
-
-**Question 7:**
-
-**Explanation:** Calculate the total salary paid to employees in each department. Return the department name and the total salary, ordered by total salary in descending order.
-
-**Expected Output:**
-
-| department_name | total_salary |
-|-----------------|--------------|
-| Engineering     | 332000.00    |
-| Sales           | 218000.00    |
-| Finance         | 95000.00     |
-| Marketing       | 135000.00    |
-| Human Resources | 62000.00     |
-
-**Solution Area:**
-
-```sql
--- Paste your SQL solution here
-```
-
-**Question 8:**
-
-**Explanation:** Find the names of employees who are not currently assigned to any project. Return their first and last names.
-
-**Expected Output:**
-
-| first_name | last_name |
-|------------|-----------|
-
-**Solution Area:**
-
-```sql
--- Paste your SQL solution here
-```
-
-**Question 9:**
-
-**Explanation:** For each employee, find the number of projects they are currently working on (assuming "currently" means projects whose end date is in the future or today). Return the employee's first and last name and the number of current projects.
-
-**Expected Output:**
-
-| first_name | last_name | current_projects |
-|------------|-----------|------------------|
-| John       | Doe       | 2                |
-| Jane       | Smith     | 2                |
-| Peter      | Jones     | 1                |
-| Mary       | Brown     | 1                |
-| David      | Wilson    | 1                |
-| Sarah      | Miller    | 1                |
-| Michael    | Davis     | 1                |
-| Linda      | Garcia    | 1                |
-| Robert     | Rodriguez | 0                |
-| Jennifer   | Williams  | 0                |
-| Charles    | Moore     | 1                |
-| Jessica    | Taylor    | 1                |
-
-**Solution Area:**
-
-```sql
--- Paste your SQL solution here
-```
-
-**Question 10:**
-
-**Explanation:** Find the department with the highest average salary among employees hired after January 1, 2022. Return the department name and the average salary.
-
-**Expected Output:**
-
-| department_name | average_salary |
-|-----------------|----------------|
-| Engineering     | 88333.33       |
-
-**Solution Area:**
-
-```sql
--- Paste your SQL solution here
+SELECT
+	d.department_name,
+    COUNT(e.employee_id) AS employee_count
+FROM
+	departments d
+LEFT JOIN
+	employees e ON d.department_id = e.department_id
+GROUP BY
+	d.department_name
+HAVING
+	employee_count > 2;
 ```

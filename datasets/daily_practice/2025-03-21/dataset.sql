@@ -3,8 +3,8 @@ CREATE SCHEMA IF NOT EXISTS daily_practice_20250321_schema;
 USE daily_practice_20250321_schema;
 
 
--- Employees table
-CREATE TABLE Employees (
+-- employees table
+CREATE TABLE employees (
     employee_id INT PRIMARY KEY,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
@@ -14,40 +14,40 @@ CREATE TABLE Employees (
     salary DECIMAL(10, 2)
 );
 
--- Departments table
-CREATE TABLE Departments (
+-- departments table
+CREATE TABLE departments (
     department_id INT PRIMARY KEY,
     department_name VARCHAR(100) UNIQUE
 );
 
--- Projects table
-CREATE TABLE Projects (
+-- projects table
+CREATE TABLE projects (
     project_id INT PRIMARY KEY,
     project_name VARCHAR(100) UNIQUE,
     start_date DATE,
     end_date DATE
 );
 
--- EmployeeProjects table (to handle many-to-many relationship between Employees and Projects)
-CREATE TABLE EmployeeProjects (
+-- employee_projects table (to handle many-to-many relationship between employees and projects)
+CREATE TABLE employee_projects (
     employee_id INT,
     project_id INT,
     role VARCHAR(50),
     PRIMARY KEY (employee_id, project_id),
-    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id),
+    FOREIGN KEY (project_id) REFERENCES projects(project_id)
 );
 
--- Inserting data into Departments table
-INSERT INTO Departments (department_id, department_name) VALUES
+-- Inserting data into departments table
+INSERT INTO departments (department_id, department_name) VALUES
 (1, 'Sales'),
 (2, 'Marketing'),
 (3, 'Engineering'),
 (4, 'Finance'),
 (5, 'Human Resources');
 
--- Inserting data into Employees table
-INSERT INTO Employees (employee_id, first_name, last_name, department_id, manager_id, hire_date, salary) VALUES
+-- Inserting data into employees table
+INSERT INTO employees (employee_id, first_name, last_name, department_id, manager_id, hire_date, salary) VALUES
 (1, 'John', 'Doe', 3, NULL, '2020-01-15', 80000.00),
 (2, 'Jane', 'Smith', 3, 1, '2021-05-20', 75000.00),
 (3, 'Peter', 'Jones', 1, 4, '2022-03-10', 60000.00),
@@ -61,16 +61,16 @@ INSERT INTO Employees (employee_id, first_name, last_name, department_id, manage
 (11, 'Charles', 'Moore', 3, 6, '2024-06-10', 92000.00),
 (12, 'Jessica', 'Taylor', 1, 4, '2023-09-22', 68000.00);
 
--- Inserting data into Projects table
-INSERT INTO Projects (project_id, project_name, start_date, end_date) VALUES
+-- Inserting data into projects table
+INSERT INTO projects (project_id, project_name, start_date, end_date) VALUES
 (101, 'Project Alpha', '2023-01-01', '2023-12-31'),
 (102, 'Project Beta', '2023-06-15', '2024-08-30'),
 (103, 'Project Gamma', '2024-03-01', '2025-05-31'),
 (104, 'Project Delta', '2024-09-01', '2026-03-31'),
 (105, 'Project Epsilon', '2025-01-01', '2025-12-31');
 
--- Inserting data into EmployeeProjects table
-INSERT INTO EmployeeProjects (employee_id, project_id, role) VALUES
+-- Inserting data into employee_projects table
+INSERT INTO employee_projects (employee_id, project_id, role) VALUES
 (1, 101, 'Lead Engineer'),
 (2, 101, 'Software Engineer'),
 (6, 101, 'Software Engineer'),
