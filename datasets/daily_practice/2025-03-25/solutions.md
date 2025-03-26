@@ -7,13 +7,38 @@ Output the video_id and the count of how many times it has been watched among th
 
 | video_id | first_watch_count |
 | -------- | ----------------- |
-| 101      | 6                 |
-| 104      | 4                 |
-| 102      | 3                 |
+| 101      | 7                 |
+| 103      | 5                 |
+| 102      | 4                 |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_watch_history AS (
+  SELECT
+  	user_id,
+  	video_id,
+  	watch_date,
+  	ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY watch_date) AS rn
+  FROM
+  	watch_history
+), first_three_watches AS(
+  SELECT
+  	video_id
+  FROM
+	ranked_watch_history
+  WHERE 
+  	rn <= 3
+)
+SELECT
+	video_id,
+    COUNT(*) AS first_watch_count
+FROM
+	ranked_watch_history
+GROUP BY
+	video_id
+ORDER BY
+	first_watch_count DESC
+LIMIT 3;
 ```
 
 
@@ -23,16 +48,38 @@ Output user_id, video_id, and watch_date of the very first video watched by each
 
 **Expected Output Format:**
 
-| user_id | video_id | first_watch_date |
-| ------- | -------- | ---------------- |
-| 1       | 101      | 2025-03-11       |
-| 2       | 101      | 2025-03-11       |
-| 3       | 105      | 2025-03-10       |
-| ...     | ...      | ...              |
+| user_id | video_id | watch_date |
+| ------- | -------- | ---------- |
+| 1       | 101      | 2025-03-11 |
+| 2       | 101      | 2025-03-11 |
+| 3       | 105      | 2025-03-10 |
+| 4       | 104      | 2025-03-11 |
+| 5       | 101      | 2025-03-12 |
+| 6       | 102      | 2025-03-10 |
+| 7       | 103      | 2025-03-10 |
+| 8       | 105      | 2025-03-11 |
+| 9       | 101      | 2025-03-10 |
+| 10      | 105      | 2025-03-10 |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_watch_history AS (
+  SELECT
+  	user_id,
+  	video_id,
+  	watch_date,
+    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY watch_date) AS rn
+  FROM
+  	watch_history
+)
+SELECT
+	user_id,
+    video_id,
+    watch_date
+FROM
+	ranked_watch_history
+WHERE
+	rn = 1;
 ```
 
 
@@ -46,11 +93,20 @@ Output the user_id and the total number of videos they have watched.
 | ------- | ------------- |
 | 9       | 4             |
 | 3       | 4             |
-| 6       | 3             |
+| 1       | 3             |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	user_id,
+    COUNT(video_id) AS total_watches
+FROM
+	watch_history
+GROUP BY
+	user_id
+ORDER BY 	
+	total_watches DESC
+LIMIT 3;
 ```
 
 
@@ -68,7 +124,17 @@ Order the results by the distinct user count in descending order.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	video_id,
+    COUNT(DISTINCT user_id) AS unique_viewers,
+    COUNT(video_id) AS total_watches
+FROM
+	watch_history
+GROUP BY
+	video_id
+ORDER BY
+	unique_viewers DESC
+LIMIT 3;
 ```
 
 
@@ -79,9 +145,22 @@ Calculate the average number of videos watched per user and list the total numbe
 
 | average_watches_per_user | total_users |
 | ------------------------ | ----------- |
-| 2.8                      | 10          |
+| 2.60                      | 10          |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH user_watch_counts AS (
+SELECT
+	user_id,
+  	COUNT(video_id) AS total_watch_count
+FROM
+	watch_history
+GROUP BY
+  	user_id
+)
+SELECT
+	ROUND(AVG(total_watch_count), 2) AS average_watches_per_user,
+    COUNT(DISTINCT user_id) AS total_users
+FROM
+	user_watch_count;
 ```

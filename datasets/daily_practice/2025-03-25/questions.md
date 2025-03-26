@@ -7,9 +7,9 @@ Output the video_id and the count of how many times it has been watched among th
 
 | video_id | first_watch_count |
 | -------- | ----------------- |
-| 101      | 6                 |
-| 104      | 4                 |
-| 102      | 3                 |
+| 101      | 7                 |
+| 103      | 5                 |
+| 102      | 4                 |
 
 **Your Solution:**
 ```sql
@@ -23,12 +23,18 @@ Output user_id, video_id, and watch_date of the very first video watched by each
 
 **Expected Output Format:**
 
-| user_id | video_id | first_watch_date |
-| ------- | -------- | ---------------- |
-| 1       | 101      | 2025-03-11       |
-| 2       | 101      | 2025-03-11       |
-| 3       | 105      | 2025-03-10       |
-| ...     | ...      | ...              |
+| user_id | video_id | watch_date |
+| ------- | -------- | ---------- |
+| 1       | 101      | 2025-03-11 |
+| 2       | 101      | 2025-03-11 |
+| 3       | 105      | 2025-03-10 |
+| 4       | 104      | 2025-03-11 |
+| 5       | 101      | 2025-03-12 |
+| 6       | 102      | 2025-03-10 |
+| 7       | 103      | 2025-03-10 |
+| 8       | 105      | 2025-03-11 |
+| 9       | 101      | 2025-03-10 |
+| 10      | 105      | 2025-03-10 |
 
 **Your Solution:**
 ```sql
@@ -46,7 +52,7 @@ Output the user_id and the total number of videos they have watched.
 | ------- | ------------- |
 | 9       | 4             |
 | 3       | 4             |
-| 6       | 3             |
+| 1       | 3             |
 
 **Your Solution:**
 ```sql
@@ -79,7 +85,7 @@ Calculate the average number of videos watched per user and list the total numbe
 
 | average_watches_per_user | total_users |
 | ------------------------ | ----------- |
-| 2.8                      | 10          |
+| 2.60                      | 10          |
 
 **Your Solution:**
 ```sql
