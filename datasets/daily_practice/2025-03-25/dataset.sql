@@ -1,6 +1,6 @@
 -- Create the database schema for a simple video watching platform
-CREATE DATABASE IF NOT EXISTS daily_practice_20250325_schema;;
-USE daily_practice_20250325_schema;;
+CREATE DATABASE IF NOT EXISTS daily_practice_20250325_schema;
+USE daily_practice_20250325_schema;
 
 -- Users table
 CREATE TABLE users (
