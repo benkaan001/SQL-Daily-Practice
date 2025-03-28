@@ -1,16 +1,34 @@
-## Question 1: Word Frequency in Drafts
-Find the number of times each word appears in the `contents` column across all rows in the `drafts` table.  
-The words should be normalized (for example, lowercased and punctuation removed) as much as possible using SQL built-in functions.  
-Output two columns: `word` and `occurrences`.
+## Question 1: Find Drafts Containing Specific Words
+
+Find all draft_id and contents from the drafts table where the contents field contains 
+either the word "Hello" or the word "SQL".
 
 **Expected Output Format:**
 
-| word         | occurrences |
-| ------------ | ----------- |
-| hello        | 2           |
-| draft        | 4           |
-| this         | 2           |
-| ...          | ...         |
+| draft_id | contents                                                                                |
+| -------- | --------------------------------------------------------------------------------------- |
+| 1        | Hello world, this is a draft. #announcement                                             |
+| 2        | This draft contains an email: alice@example.com and some text. Hello again!             |
+| 4        | Another draft: use SQL functions to manipulate text. #SQL                               |
+| 5        | Final draft; testing text manipulation, word count, and pattern matching. #testing #SQL |
+
+
+**Your Solution:**
+```sql
+-- Write your solution here
+```
+
+## Question 2: Find Authors Whose Names Start with A or B
+
+Find all unique author names from the drafts table where the author's name 
+starts with either the letter "A" or the letter "B".
+
+**Expected Output Format:**
+
+| author |
+| ------ |
+| Alice  |
+| Bob    |
 
 **Your Solution:**
 ```sql
@@ -18,19 +36,16 @@ Output two columns: `word` and `occurrences`.
 ```
 
 
-## Question 2: Average Word Count per Author
-For each author, calculate the average number of words in the `contents` field.  
-Assume words are separated by spaces (after removing punctuation).  
-Output two columns: `author` and `average_word_count`.
+## Question 3: Find Drafts Containing Email
+
+Find all draft_id and contents from the drafts table where the contents field 
+contains at least one email pattern `name@domain.com`
 
 **Expected Output Format:**
 
-| author   | average_word_count |
-| -------- | ------------------ |
-| Alice    | 8                  |
-| Bob      | 12                 |
-| Charlie  | 10                 |
-| Diana    | 14                 |
+| contents                                                                    |
+| --------------------------------------------------------------------------- |
+| This draft contains an email: alice@example.com and some text. Hello again! |
 
 **Your Solution:**
 ```sql
@@ -38,34 +53,14 @@ Output two columns: `author` and `average_word_count`.
 ```
 
 
-## Question 3: Hashtag Extraction and Frequency
-Extract all hashtags (words that begin with the '#' symbol) from the `contents` column, and list each unique hashtag along with the number of times it appears across all drafts.  
-Output two columns: `hashtag` and `occurrences`.
+## Question 4: Email Domain Extraction
+Extract the domain name. 
 
 **Expected Output Format:**
 
-| hashtag      | occurrences |
-| ------------ | ----------- |
-| #announcement| 1           |
-| #inspiration | 1           |
-| #SQL         | 2           |
-| #testing     | 1           |
-
-**Your Solution:**
-```sql
--- Write your solution here
-```
-
-
-## Question 4: Email Domain Frequency
-Some drafts contain email addresses within the `contents` column. Extract the domain (the part after the '@') from any email address in the contents and count how many times each domain appears.  
-Output two columns: `domain` and `email_count`.
-
-**Expected Output Format:**
-
-| domain         | email_count |
-| -------------- | ----------- |
-| example.com    | 1           |
+| domain         | 
+| -------------- |
+| example.com    |
 
 **Your Solution:**
 ```sql
@@ -79,11 +74,13 @@ Output two columns: `draft_id` and `reversed_contents`.
 
 **Expected Output Format:**
 
-| draft_id | reversed_contents                                      |
-| -------- | ------------------------------------------------------ |
-| 1        | "!tnuocnomm a# .tfard a si siht ,dlrow olleH"           |
-| 2        | "!niaga olleH .txet emos dna :moc.elpmaxe@ecila :liame"  |
-| ...      | ...                                                  |
+| draft_id | reversed_contents                                                                       |
+| -------- | --------------------------------------------------------------------------------------- |
+| 1        | tnemecnuonna# .tfard a si siht ,dlrow olleH                                             |
+| 2        | !niaga olleH .txet emos dna moc.elpmaxe@ecila :liame na sniatnoc tfard sihT             |
+| 3        | noitaripsni# .saedi ruoy erahs dna ,sthguoht ruoy tfarD .nuf si gnitfarD                |
+| 4        | LQS# .txet etalupinam ot snoitcnuf LQS esu :tfard rehtonA                               |
+| 5        | LQS# gnitset# .gnihctam nrettap dna ,tnuoc drow ,noitalupinam txet gnitset ;tfard laniF |
 
 **Your Solution:**
 ```sql
