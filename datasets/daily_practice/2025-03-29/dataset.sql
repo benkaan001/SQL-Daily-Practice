@@ -1,5 +1,5 @@
 -- Create the database and table for a YouTube user flags dataset
-CREATE DATABASE IF NOT EXISTS daily_practice_20250329_schema;;
+CREATE DATABASE IF NOT EXISTS daily_practice_20250329_schema;
 USE daily_practice_20250329_schema;
 
 CREATE TABLE user_flags (
