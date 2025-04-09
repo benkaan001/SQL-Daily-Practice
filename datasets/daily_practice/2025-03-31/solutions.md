@@ -12,7 +12,31 @@ Output the manager's first name, last name, and department_name.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH department_counts AS (
+  SELECT
+    department_id,
+    department_name,
+    COUNT(DISTINCT id) AS emp_count
+  FROM
+    employees
+  GROUP BY
+    department_id,
+    department_name
+  ORDER BY
+    emp_count DESC, 
+    department_name
+  LIMIT 1
+)
+SELECT
+	e.first_name,
+    e.last_name,
+    e.department_name
+FROM
+	employees e
+JOIN
+	department_counts dc ON dc.department_name = e.department_name
+WHERE 
+	e.position = 'Manager';
 ```
 
 ## Question 2: Non-Manager Employee Counts by Department
@@ -31,7 +55,17 @@ Output the department_name and the count of non-manager employees.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	department_name,
+    COUNT(id) AS non_manager_count
+FROM
+	employees
+WHERE
+	LOWER(position) NOT LIKE '%manager%'
+GROUP BY
+	department_name
+HAVING
+	non_manager_count >= 2;
 ```
 
 ## Question 3: Distinct Positions by Department
@@ -49,5 +83,25 @@ Identify departments that have more than one distinct position title. For each s
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH position_counts AS (
+  SELECT
+  	department_name,
+  	COUNT(DISTINCT position) AS position_count
+  FROM
+  	employees
+  GROUP BY
+  	department_name
+  HAVING position_count > 1
+)
+SELECT
+	e.department_name,
+    GROUP_CONCAT(DISTINCT e.position
+                ORDER BY e.position
+                SEPARATOR ', ') AS positions
+FROM
+	employees e
+JOIN
+	position_counts pc ON e.department_name = pc.department_name
+GROUP BY
+	e.department_name;
 ```
