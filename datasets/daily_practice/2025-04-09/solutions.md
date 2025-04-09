@@ -11,7 +11,20 @@ Output a single row with the column **average_initial_duration** (rounded to two
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH initial_calls AS(
+  SELECT
+    id,
+    call_duration,
+    ROW_NUMBER() OVER (PARTITION BY request_id ORDER BY created_on) AS call_rank
+  FROM
+  	calls
+)
+SELECT
+	ROUND(AVG(call_duration), 2) AS average_initial_duration
+FROM
+	initial_calls
+WHERE
+	call_rank = 1;
 ```
 
 ## Question 2: Total Call Duration and Count per Request
@@ -28,7 +41,14 @@ Output the following columns: request_id, total_call_duration, and call_count.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	request_id,
+    SUM(call_duration) AS total_call_duration,
+    COUNT(DISTINCT id) AS call_count
+FROM
+	calls
+GROUP BY
+	request_id;
 ```
 
 ## Question 3: Request with the Highest Average Call Duration
@@ -44,5 +64,21 @@ If multiple request_ids have the same highest average, return all.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_call_averages AS (
+  SELECT
+  	request_id,
+  	ROUND(AVG(call_duration), 2) AS average_call_duration,
+  	RANK() OVER (ORDER BY AVG(call_duration) DESC) AS call_rank
+  FROM
+  	calls
+  GROUP BY
+  	request_id
+)
+SELECT
+	request_id,
+    average_call_duration
+FROM
+	ranked_call_averages
+WHERE
+	call_rank = 1;
 ```
