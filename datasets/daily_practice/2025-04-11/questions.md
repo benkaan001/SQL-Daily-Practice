@@ -7,7 +7,7 @@ Output a single row with the column **customer_count**.
 
 | customer_count |
 |----------------|
-| 2              |
+| 1              |
 
 **Your Solution:**
 ```sql

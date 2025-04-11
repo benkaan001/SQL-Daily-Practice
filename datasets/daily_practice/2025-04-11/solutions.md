@@ -7,11 +7,20 @@ Output a single row with the column **customer_count**.
 
 | customer_count |
 |----------------|
-| 2              |
+| 1              |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	COUNT(DISTINCT request_id) AS customer_count
+FROM
+	calls
+WHERE
+	TIME(created_on) BETWEEN '15:00:00' AND '18:00:00'
+GROUP BY
+	request_id
+HAVING 
+	COUNT(id) >= 3;
 ```
 
 ## Question 2: Update Call Duration Ratio per Request
@@ -28,7 +37,52 @@ Output the following columns: request_id, initial_duration, update_duration, and
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_calls AS (
+  SELECT
+  	*,
+  	ROW_NUMBER() OVER (PARTITION BY request_id ORDER BY created_on) AS rn
+  FROM
+  	calls
+), initial_calls AS (
+  SELECT
+  	request_id,
+  	SUM(call_duration) AS initial_duration
+  FROM
+  	ranked_calls
+  WHERE
+  	rn = 1
+  GROUP BY
+  	request_id
+), update_calls AS (
+  SELECT
+  	request_id,
+  	SUM(call_duration) AS update_duration
+  FROM
+  	ranked_calls
+  WHERE
+  	rn <> 1
+  GROUP BY
+  	request_id
+), all_calls AS (
+  SELECT
+  	request_id,
+  	SUM(call_duration) AS all_calls_duration
+  FROM
+  	calls
+  GROUP BY
+  	request_id
+)
+SELECT
+	ac.request_id,
+    ic.initial_duration,
+    uc.update_duration,
+    ROUND((uc.update_duration/ac.all_calls_duration) * 100, 2) AS update_percentage
+FROM
+	initial_calls ic
+JOIN
+	update_calls uc ON ic.request_id = uc.request_id
+JOIN
+	all_calls ac ON ac.request_id = uc.request_id;
 ```
 
 ## Question 3: Average Duration of Early Morning Initial Calls
@@ -44,5 +98,18 @@ Output a single row with the column **average_initial_duration** (rounded to two
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_calls AS (
+  SELECT
+  	*,
+  	ROW_NUMBER() OVER (PARTITION BY request_id ORDER BY created_on) AS rn
+  FROM
+  	calls
+)
+SELECT
+	ROUND(AVG(call_duration), 2) AS average_initial_duration
+FROM
+	ranked_calls
+WHERE
+	rn = 1 
+	AND TIME(created_on) BETWEEN '05:00:00' AND '07:00:00';
 ```
