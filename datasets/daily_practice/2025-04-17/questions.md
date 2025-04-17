@@ -8,7 +8,6 @@ Write a query to get the list of managers whose salary is less than twice the av
 | manager_id | manager_salary | avg_report_salary |
 |------------|---------------|------------------|
 | E850       | 30000         | 20000            |
-| E851       | 40000         | 18666.67         |
 | E854       | 18000         | 16000            |
 
 **Your Solution:**
@@ -41,9 +40,15 @@ Find employees who do **not** manage anyone and whose salary is **above the comp
 
 **Expected Output:**
 
+## Question 3: Employees with No Reports and Salary Above Company Average
+
+Find employees who do **not** manage anyone and whose salary is **above the company average**. Output their ID, name, and salary.
+
+**Expected Output:**
+
 | empl_id | empl_name         | salary |
 |---------|-------------------|--------|
-| E849    | Steven M. Jones   | 80000  |
+|         |                   |        |
 
 **Your Solution:**
 ```sql
