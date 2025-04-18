@@ -6,11 +6,11 @@ Output promotion_id, pct_first_day, pct_last_day (rounded to 2 decimals).
 **Expected Output:**
 
 | promotion_id | pct_first_day | pct_last_day |
-|--------------|---------------|--------------|
-| 1            | 18.18         | 23.64        |
-| 2            | 60.00         | 40.00        |
-| 3            | 20.00         | 16.67        |
-| 4            | 100.00        | 0.00         |
+| ------------ | ------------- | ------------ |
+| 1            | 11.69         | 22.08        |
+| 2            | 56.14         | 40.35        |
+| 3            | 19.35         | 0.00         |
+| 4            | 0.00          | 0.00         |
 | 5            | 0.00          | 0.00         |
 
 **Your Solution:**
@@ -29,12 +29,14 @@ Output promotion_id, product_id, total_units_sold.
 **Expected Output:**
 
 | promotion_id | product_id | total_units_sold |
-|--------------|------------|------------------|
-| 1            | 3          | 10               |
+| ------------ | ---------- | ---------------- |
+| 1            | 1          | 16               |
+| 2            | 1          | 12               |
 | 2            | 6          | 12               |
-| 3            | 3          | 19               |
+| 3            | 3          | 23               |
 | 4            | 5          | 8                |
 | 5            | 9          | 20               |
+
 
 **Your Solution:**
 ```sql
@@ -52,9 +54,9 @@ Output media_type, avg_units_sold_per_promo (rounded to 2 decimals).
 
 | media_type | avg_units_sold_per_promo |
 |------------|-------------------------|
-| Internet   | 22.00                   |
-| Broadcast  | 23.00                   |
-| Print      | 28.00                   |
+| Internet   | 77.00                   |
+| Broadcast  | 32.50                   |
+| Print      | 31.00                   |
 | Outdoor    | 20.00                   |
 
 **Your Solution:**
