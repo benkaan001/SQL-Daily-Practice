@@ -11,6 +11,26 @@ Only consider users whose state is 'active'.
 | 101        |
 | 102        |
 
+```sql
+WITH language_speakers AS (
+  SELECT
+  	company_id,
+  	COUNT(DISTINCT user_id) AS user_count
+  FROM
+  	company_users
+  WHERE
+  	language IN ('english', 'german', 'french', 'spanish')
+  	AND state = 'active'
+  GROUP BY
+  	company_id
+)
+SELECT
+	company_id
+FROM
+	language_speakers
+WHERE
+	user_count > 2;
+```
 ---
 
 ## Question 2: Most Popular Language Per Company
@@ -25,10 +45,32 @@ Output company_id and language.
 |------------|----------|
 | 100        | english  |
 | 101        | german   |
-| 101        | english  |
 | 102        | english  |
 | 102        | spanish  |
 
+```sql
+WITH ranked_languages AS (
+  SELECT
+      company_id,
+      language,
+      COUNT(*) AS language_count,
+      DENSE_RANK() OVER (PARTITION BY company_id ORDER BY COUNT(language) DESC) AS rnk
+  FROM
+      company_users
+  WHERE
+  	state = 'active'
+  GROUP BY
+      company_id,
+      language
+)
+SELECT 
+	company_id,
+    language
+FROM 	
+	ranked_languages
+WHERE
+	rnk = 1;
+```
 ---
 
 ## Question 3: First Activation Per Company
@@ -44,3 +86,25 @@ Output company_id, user_id, and activated_at.
 | 100        | 1       | 2023-01-01   |
 | 101        | 3       | 2023-01-03   |
 | 102        | 4       | 2023-01-04   |
+
+```sql
+WITH ranked_activities AS (
+  SELECT
+      company_id,
+      user_id,
+      activated_at,
+      DENSE_RANK() OVER (PARTITION BY company_id ORDER BY activated_at) AS rnk
+  FROM
+      company_users
+  WHERE
+      state = 'active'
+)
+SELECT
+	company_id,
+    user_id,
+    activated_at
+FROM
+	ranked_activities
+WHERE
+	rnk = 1;
+```

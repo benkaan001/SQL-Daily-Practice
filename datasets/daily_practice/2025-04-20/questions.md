@@ -25,7 +25,6 @@ Output company_id and language.
 |------------|----------|
 | 100        | english  |
 | 101        | german   |
-| 101        | english  |
 | 102        | english  |
 | 102        | spanish  |
 
