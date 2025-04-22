@@ -7,7 +7,7 @@ Round the result to two decimals.
 
 | pct_unsold_categories |
 |----------------------|
-| 16.67                |
+| 00.00                |
 
 **Your Solution:**
 ```sql
@@ -25,7 +25,7 @@ Output product_family and total_units_sold.
 
 | product_family | total_units_sold |
 |---------------|------------------|
-| CONSUMABLE    | 99               |
+| CONSUMABLE    | 105              |
 
 **Your Solution:**
 ```sql
