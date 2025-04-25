@@ -1,15 +1,16 @@
 ## Question 1: Favorite Customers
 
-Find "favorite" customers based on the order count and the total cost of orders.  
-A customer is considered as a favorite if they have placed more than 3 orders and with the total cost of orders more than $100.  
+Find "favorite" customers based on the order count and the total cost of orders.
+A customer is considered as a favorite if they have placed more than 3 orders and with the total cost of orders more than $100.
 Output the customer's first name, city, number of orders, and total cost of orders.
 
 **Expected Output:**
 
-| first_name | city   | num_orders | total_cost |
-|------------|--------|------------|------------|
-| Jill       | Austin | 9          | 565        |
-| Mia        | Miami  | 7          | 540        |
+| first_name | city          | num_orders | total_cost |
+| ---------- | ------------- | ---------- | ---------- |
+| Jill       | Austin        | 8          | 535        |
+| Mia        | Miami         | 7          | 540        |
+| Farida     | San Francisco | 4          | 260        |
 
 **Your Solution:**
 ```sql
@@ -20,7 +21,7 @@ Output the customer's first name, city, number of orders, and total cost of orde
 
 ## Question 2: Customers with the Most Expensive Single Order
 
-Find the customer(s) who placed the single most expensive order.  
+Find the customer(s) who placed the single most expensive order.
 Output first_name, city, order_date, order_details, and total_order_cost.
 
 **Expected Output:**
@@ -38,14 +39,13 @@ Output first_name, city, order_date, order_details, and total_order_cost.
 
 ## Question 3: Customers Who Ordered in Every Month
 
-Find customers who have placed at least one order in **every month** represented in the dataset (Jan, Feb, Mar, Apr 2019).  
+Find customers who have placed at least one order in **every month** represented in the dataset (Jan, Feb, Mar, Apr 2019).
 Output first_name and city.
 
 **Expected Output:**
 
 | first_name | city   |
 |------------|--------|
-| Jill       | Austin |
 | Mia        | Miami  |
 
 **Your Solution:**
