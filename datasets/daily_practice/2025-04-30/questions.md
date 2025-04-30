@@ -26,7 +26,7 @@ Output state and median_price.
 
 | state | median_price |
 | ----- | ------------ |
-| CA    | 713841       |
+| CA    | 679297       |
 
 **Your Solution:**
 ```sql
@@ -43,7 +43,7 @@ Output city and price_range.
 
 | city          | price_range |
 | ------------- | ----------- |
-| San Francisco | 1764418     |
+| San Francisco | 1765997     |
 
 **Your Solution:**
 ```sql

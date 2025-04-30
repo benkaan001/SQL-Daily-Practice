@@ -13,7 +13,26 @@ Output the city names.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH national_avg AS (
+  SELECT
+  	AVG(mkt_price) AS national_avg_price
+  FROM
+  	home_prices
+), city_avg AS(
+  SELECT
+      city,
+  	  AVG(mkt_price) AS city_avg_price
+  FROM
+      home_prices
+  GROUP BY
+  	  city
+)
+SELECT
+	city
+FROM
+	city_avg
+WHERE
+	city_avg_price > (SELECT national_avg_price FROM national_avg);
 ```
 ---
 
@@ -26,11 +45,50 @@ Output state and median_price.
 
 | state | median_price |
 | ----- | ------------ |
-| CA    | 713841       |
+| CA    | 679297       |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH state_ranks AS (
+  SELECT
+  	state,
+  	mkt_price,
+  	ROW_NUMBER() OVER (PARTITION BY state ORDER BY mkt_price) AS state_rnk,
+  	COUNT(*) OVER (PARTITION BY state) AS state_count
+  FROM
+  	home_prices
+), state_median_candidates AS (
+  SELECT
+  	state,
+  	mkt_price
+  FROM
+  	state_ranks
+  WHERE
+  	state_rnk <= CEILING((state_count+1) / 2.0)
+  	AND state_rnk >= FLOOR((state_count+1) / 2.0)
+), state_medians AS (
+  SELECT
+  	state,
+  	ROUND(AVG(mkt_price)) AS actual_median_price
+  FROM
+  	state_median_candidates
+  GROUP BY
+  	state
+), ranked_state_medians AS (
+  SELECT
+  	state,
+  	actual_median_price AS median_price,
+  	DENSE_RANK() OVER (ORDER BY actual_median_price DESC) AS rnk
+  FROM
+  	state_medians
+)
+SELECT
+	state,
+    median_price
+FROM
+	ranked_state_medians
+WHERE
+	rnk = 1;
 ```
 ---
 
@@ -43,11 +101,33 @@ Output city and price_range.
 
 | city          | price_range |
 | ------------- | ----------- |
-| San Francisco | 1764418     |
+| San Francisco | 1765997     |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH price_ranges AS(
+  SELECT
+  	city,
+  	MAX(mkt_price) - MIN(mkt_price) AS price_range
+  FROM
+  	home_prices
+  GROUP BY
+  	city
+), ranked_price_ranges AS (
+  SELECT
+  	city,
+  	price_range,
+  	DENSE_RANK() OVER (ORDER BY price_range DESC) AS rnk
+  FROM
+  	price_ranges
+)
+SELECT
+	city,
+    price_range
+FROM
+	ranked_price_ranges
+WHERE
+	rnk = 1;
 ```
 ---
 
