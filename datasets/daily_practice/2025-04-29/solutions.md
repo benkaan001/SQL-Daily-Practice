@@ -9,12 +9,38 @@ Output city, country, and density.
 | ----------- | ----------- | ------- |
 | Metropolis  | Countryland | 2000    |
 | Gotham      | Islander    | 5000    |
-| Hilltown    | Hillside    | 444     |
-| Forestville | Forestland  | 714     |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH overall_density AS (
+  SELECT
+  	ROUND(AVG(population/area)) AS overall_avg_density
+  FROM
+  	cities
+  WHERE
+  	area IS NOT NULL
+  	AND area <> 0
+), city_averages AS (
+  SELECT
+  	city,
+  	country,
+    ROUND(AVG(population/area)) AS density
+  FROM
+  	cities
+  WHERE
+  	area IS NOT NULL AND area <> 0
+  GROUP BY
+  	city,
+  	country
+)
+SELECT
+	ca.city,
+    ca.country,
+    ca.density
+FROM
+	city_averages ca
+WHERE
+	ca.density > (SELECT overall_avg_density FROM overall_density);
 ```
 
 ---
@@ -28,11 +54,27 @@ Output country and total_population.
 
 | country     | total_population |
 | ----------- | ---------------- |
-| Countryland | 1050000          |
+| Islander    | 15000000         |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_population AS (
+  SELECT
+      country,
+      SUM(population) AS total_population,
+  	  DENSE_RANK() OVER (ORDER BY SUM(population) DESC) AS rnk
+  FROM
+      cities
+  GROUP BY
+      country
+)
+SELECT
+	country,
+    total_population
+FROM
+	ranked_population
+WHERE
+	rnk = 1;
 ```
 
 ---
@@ -51,7 +93,13 @@ Output city and country.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	city,
+    country
+FROM
+	cities
+WHERE
+	area = 0;
 ```
 
 ---

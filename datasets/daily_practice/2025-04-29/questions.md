@@ -9,8 +9,6 @@ Output city, country, and density.
 | ----------- | ----------- | ------- |
 | Metropolis  | Countryland | 2000    |
 | Gotham      | Islander    | 5000    |
-| Hilltown    | Hillside    | 444     |
-| Forestville | Forestland  | 714     |
 
 **Your Solution:**
 ```sql
@@ -28,7 +26,7 @@ Output country and total_population.
 
 | country     | total_population |
 | ----------- | ---------------- |
-| Countryland | 1050000          |
+| Islander    | 15000000         |
 
 **Your Solution:**
 ```sql
