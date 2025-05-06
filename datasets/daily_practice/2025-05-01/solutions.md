@@ -7,12 +7,39 @@ Output customer_id and interaction_type.
 
 | customer_id | interaction_type |
 | ----------- | ---------------- |
+| 3           | view             |
 | 6           | click            |
 | 10          | view             |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+  SELECT
+  	customer_id
+  FROM
+  	interactions
+  GROUP BY
+  	customer_id
+  HAVING
+  	COUNT(DISTINCT interaction_type ) = 1
+)
+SELECT DISTINCT
+	customer_id,
+    interaction_type
+FROM
+	interactions
+WHERE
+	customer_id IN (SELECT customer_id FROM single_interaction_customers);
+
+-- Alternative solution
+SELECT
+    customer_id,
+    MIN(interaction_type) AS interaction_type
+FROM
+    interactions
+GROUP BY
+    customer_id
+HAVING
+    COUNT(DISTINCT interaction_type) = 1;
 ```
 ---
 
@@ -30,7 +57,23 @@ Output customer_id and content_count.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_customers AS (
+  SELECT
+      customer_id,
+      COUNT(*) AS content_count,
+      DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS rnk
+  FROM
+      contents
+  GROUP BY
+      customer_id
+)
+SELECT
+	customer_id,
+    content_count
+FROM
+	ranked_customers
+WHERE
+	rnk = 1;
 ```
 ---
 
@@ -49,6 +92,27 @@ Output customer_id.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT DISTINCT
+	i.customer_id
+FROM
+	interactions i
+WHERE NOT EXISTS (
+  SELECT
+  	1
+  FROM
+  	contents
+  WHERE
+  	customer_id = i.customer_id
+);
+
+-- Alternative solution
+SELECT DISTINCT
+	i.customer_id
+FROM
+	contents c
+RIGHT JOIN
+	interactions i ON i.customer_id = c.customer_id
+WHERE
+	c.content_type IS NULL;
 ```
 ---

@@ -7,6 +7,7 @@ Output customer_id and interaction_type.
 
 | customer_id | interaction_type |
 | ----------- | ---------------- |
+| 3           | view             |
 | 6           | click            |
 | 10          | view             |
 
