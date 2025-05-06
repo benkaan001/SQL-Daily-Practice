@@ -7,14 +7,31 @@ Output student and total_score.
 
 | student       | total_score |
 | ------------- | ----------- |
-| Karen Austin  | 268         |
-| John Miranda  | 252         |
-| Tom Saunders  | 258         |
 | Donna Jimenez | 279         |
+| Karen Austin  | 268         |
+| Tom Saunders  | 258         |
+| John Miranda  | 252         |
+| Matthew Ward  | 245         |
+| Tracie Lopez  | 244         |
+
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH class_average AS (
+   SELECT
+      	SUM(assignment1 + assignment2 + assignment3) / COUNT(*) average
+      FROM
+      	assignments
+)
+SELECT
+	student,
+    (assignment1 + assignment2 + assignment3) AS total_score
+FROM
+	assignments
+WHERE
+	(assignment1 + assignment2 + assignment3) > ( SELECT average FROM class_average)
+ORDER BY
+	total_score DESC;
 ```
 ---
 
@@ -27,11 +44,37 @@ Output assignment_name and avg_score (rounded to 2 decimals).
 
 | assignment_name | avg_score |
 | --------------- | --------- |
-| assignment1     | 78.5      |
+| assignment3     | 78.5      |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH assignment_averages AS (
+  SELECT
+  	'assignment1' AS assignment_name,
+  	AVG(assignment1) AS avg_score
+  FROM
+  	assignments
+  UNION ALL
+  SELECT
+  	'assignment2' AS assignment_name,
+  	AVG(assignment2) AS avg_score
+  FROM
+  	assignments
+  UNION ALL
+  SELECT
+  	'assignment3' AS assignment_name,
+  	AVG(assignment3) AS avg_score
+  FROM
+  	assignments
+)
+SELECT
+	assignment_name,
+    ROUND(avg_score, 2) AS avg_score
+FROM
+	assignment_averages
+ORDER BY
+	avg_score DESC
+LIMIT 1;
 ```
 ---
 
@@ -60,7 +103,21 @@ Output student and improvement.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+WITH ranked_students AS (
+  SELECT
+      student,
+      (assignment3 - assignment1) AS improvement,
+  	  DENSE_RANK() OVER (ORDER BY (assignment3 - assignment1) DESC) AS rnk
+  FROM
+      assignments
+)
+SELECT
+	student,
+    improvement
+FROM
+	ranked_students
+WHERE
+	rnk = 1;
 ```
 ---
 

@@ -7,10 +7,13 @@ Output student and total_score.
 
 | student       | total_score |
 | ------------- | ----------- |
-| Karen Austin  | 268         |
-| John Miranda  | 252         |
-| Tom Saunders  | 258         |
 | Donna Jimenez | 279         |
+| Karen Austin  | 268         |
+| Tom Saunders  | 258         |
+| John Miranda  | 252         |
+| Matthew Ward  | 245         |
+| Tracie Lopez  | 244         |
+
 
 **Your Solution:**
 ```sql
