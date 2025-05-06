@@ -1,6 +1,6 @@
 ## Question 1: Users with the Most Friends
 
-Find the user(s) who have the highest number of friends.
+Find the user(s) who have 2 or more friends.
 Output user_id, user_name, and friend_count.
 
 **Expected Output:**
@@ -8,6 +8,8 @@ Output user_id, user_name, and friend_count.
 | user_id | user_name | friend_count |
 | ------- | --------- | ------------ |
 | 3       | Emma      | 3            |
+| 1       | Karl      | 2            |
+| 2       | Hans      | 2            |
 | 10      | John      | 2            |
 
 **Your Solution:**
@@ -25,8 +27,7 @@ Output user_id and user_name.
 
 | user_id | user_name |
 | ------- | --------- |
-| 1       | Karl      |
-| 2       | Hans      |
+|         |           |
 
 **Your Solution:**
 ```sql
