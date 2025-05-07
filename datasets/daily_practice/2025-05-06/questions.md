@@ -6,9 +6,9 @@ Output the purpose and total miles, ordered by total miles descending.
 **Expected Output:**
 
 | purpose         | total_miles |
-|-----------------|-------------|
+| --------------  | ----------- |
 | Customer Visit  | 47.2        |
-| Meal/Entertain  | 35.1        |
+| Airport/Travel  | 42.5        |
 
 **Your Solution:**
 ```sql
@@ -25,12 +25,12 @@ Output the purpose and average_miles, rounded to two decimal places.
 **Expected Output:**
 
 | purpose         | average_miles |
-|-----------------|---------------|
+| --------------- | ------------- |
 | Airport/Travel  | 14.17         |
-| Customer Visit  | 11.80         |
-| Errand/Supplies | 4.15          |
-| Meal/Entertain  | 8.78          |
 | Meeting         | 7.53          |
+| Meal/Entertain  | 8.02          |
+| Customer Visit  | 15.73         |
+| Errand/Supplies | 4.15          |
 
 **Your Solution:**
 ```sql

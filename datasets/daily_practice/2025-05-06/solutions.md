@@ -6,13 +6,22 @@ Output the purpose and total miles, ordered by total miles descending.
 **Expected Output:**
 
 | purpose         | total_miles |
-|-----------------|-------------|
+| --------------  | ----------- |
 | Customer Visit  | 47.2        |
-| Meal/Entertain  | 35.1        |
+| Airport/Travel  | 42.5        |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	purpose,
+    ROUND(SUM(miles), 2) AS total_miles
+FROM
+	rides
+GROUP BY
+	purpose
+ORDER BY
+	total_miles DESC
+LIMIT 2;
 ```
 
 ---
@@ -25,16 +34,22 @@ Output the purpose and average_miles, rounded to two decimal places.
 **Expected Output:**
 
 | purpose         | average_miles |
-|-----------------|---------------|
+| --------------- | ------------- |
 | Airport/Travel  | 14.17         |
-| Customer Visit  | 11.80         |
-| Errand/Supplies | 4.15          |
-| Meal/Entertain  | 8.78          |
 | Meeting         | 7.53          |
+| Meal/Entertain  | 8.02          |
+| Customer Visit  | 15.73         |
+| Errand/Supplies | 4.15          |
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	purpose,
+    ROUND(AVG(miles), 2) AS average_miles
+FROM
+	rides
+GROUP BY
+	purpose;
 ```
 
 ---
@@ -58,5 +73,13 @@ Output the date and the count of distinct purposes.
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	DATE(start_date) AS start_date,
+    COUNT(DISTINCT purpose) AS purpose_count
+FROM
+	rides
+GROUP BY
+	DATE(start_date)
+HAVING
+	COUNT(DISTINCT purpose) >= 2;
 ```
