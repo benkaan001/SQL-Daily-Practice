@@ -12,7 +12,7 @@ Round the average mileage to one decimal place.
 
 **Your Solution:**
 
-```
+```sql
 -- Write your solution here
 
 ```
@@ -31,7 +31,7 @@ Output the day_name and the count_of_meetings. If there's a tie for the highest 
 
 **Your Solution:**
 
-```
+```sql
 -- Write your solution here
 
 ```
@@ -46,22 +46,23 @@ Order the results by duration_minutes in descending order, then by start_date in
 
 **Expected Output:**
 
-| **start_location** | **stop_location** | **miles** | **duration_minutes** |
-| ------------------------ | ----------------------- | --------------- | -------------------------- |
-| Unknown Location         | Unknown Location        | 4.8             | 34                         |
-| Unknown Location         | Unknown Location        | 7.6             | 29                         |
-| Cary                     | Cary                    | 7.7             | 19                         |
-| Kar?chi                  | Kar?chi                 | 4.1             | 15                         |
-| Fort Pierce              | Fort Pierce             | 4.7             | 14                         |
-| Cary                     | Cary                    | 4.6             | 14                         |
-| Fort Pierce              | Fort Pierce             | 4.8             | 13                         |
-| Fort Pierce              | Fort Pierce             | 5.0             | 12                         |
-| Cary                     | Cary                    | 4.8             | 11                         |
-| Cary                     | Cary                    | 5.2             | 11                         |
+| start_location   | stop_location    | miles | duration_minutes |
+| ---------------- | ---------------- | ----- | ---------------- |
+| Houston          | Houston          | 21.9  | 36               |
+| Unknown Location | Unknown Location | 4.8   | 34               |
+| Unknown Location | Unknown Location | 7.6   | 29               |
+| Cary             | Cary             | 7.7   | 19               |
+| Kar?chi          | Kar?chi          | 4.1   | 15               |
+| Fort Pierce      | Fort Pierce      | 4.7   | 14               |
+| Cary             | Cary             | 4.6   | 14               |
+| Fort Pierce      | Fort Pierce      | 4.8   | 13               |
+| Fort Pierce      | Fort Pierce      | 5.0   | 12               |
+| Cary             | Cary             | 4.8   | 11               |
+| Cary             | Cary             | 5.2   | 11               |
 
 **Your Solution:**
 
-```
+```sql
 -- Write your solution here
 
 ```
