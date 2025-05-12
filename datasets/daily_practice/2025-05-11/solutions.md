@@ -11,18 +11,47 @@ Include only 'Business' rides. Filter out patterns that appear fewer than 2 time
 
 **Expected Output:**
 
-| location_pattern | frequency | avg_miles | min_date            | max_date            | duration_days |
-|------------------|-----------|-----------|---------------------|---------------------|---------------|
-| Cary->Cary       | 8         | 3.4       | 2016-01-18 14:55:00 | 2016-01-29 10:56:00 | 11            |
-| Fort->Fort       | 4         | 4.9       | 2016-01-01 21:11:00 | 2016-01-05 17:31:00 | 4             |
-| Cary->Raleigh    | 3         | 18.3      | 2016-01-20 10:36:00 | 2016-01-28 12:28:00 | 8             |
-| Whitebridge->Hazelwood | 2    | 2.2      | 2016-01-26 10:41:00 | 2016-01-26 12:33:00 | 0             |
-| Raleigh->Cary    | 2         | 16.9      | 2016-01-20 13:25:00 | 2016-03-07 15:19:00 | 47            |
+
+| location_pattern  | frequency | avg_miles | min_date            | max_date            | duration_dates |
+| ----------------- | --------- | --------- | ------------------- | ------------------- | -------------- |
+| Cary->Cary        | 14        | 2.58      | 2016-01-07 13:27:00 | 2016-02-04 20:55:00 | 28             |
+| Morrisville->Cary | 6         | 6.35      | 2016-01-15 00:41:00 | 2016-06-03 23:06:00 | 140            |
+| Raleigh->Cary     | 5         | 19.74     | 2016-01-20 13:25:00 | 2016-03-07 15:45:00 | 47             |
+| Cary->Raleigh     | 4         | 16.55     | 2016-01-20 10:36:00 | 2016-02-06 16:53:00 | 17             |
+| Cary->Morrisville | 4         | 7.93      | 2016-01-10 08:05:00 | 2016-02-13 14:41:00 | 34             |
+| Fort->Fort        | 4         | 4.90      | 2016-01-01 21:11:00 | 2016-01-05 17:45:00 | 3              |
+| Cary->Durham      | 3         | 10.40     | 2016-01-15 11:43:00 | 2016-02-05 12:07:00 | 21             |
+| Durham->Cary      | 3         | 10.30     | 2016-01-15 13:26:00 | 2016-02-05 13:41:00 | 21             |
+| Apex->Cary        | 3         | 5.63      | 2016-01-29 21:21:00 | 2016-02-07 18:17:00 | 8              |
+| Midtown->Midtown  | 3         | 1.87      | 2016-01-11 13:32:00 | 2016-02-14 15:03:00 | 34             |
+| New->Queens       | 2         | 12.95     | 2016-01-10 15:08:00 | 2016-01-12 17:00:00 | 2              |
+| Unknown->Unknown  | 2         | 6.20      | 2016-08-21 10:00:00 | 2016-12-17 16:12:00 | 118            |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	CONCAT(
+      SUBSTRING_INDEX(start_location, ' ', 1),
+      '->',
+      SUBSTRING_INDEX(stop_location, ' ', 1)
+          )
+    AS location_pattern,
+    COUNT(*) AS frequency,
+    ROUND(AVG(miles), 2) AS avg_miles,
+	MIN(start_date) AS min_date,
+    MAX(end_date) AS max_date,
+    TIMESTAMPDIFF(DAY, MIN(start_date), MAX(end_date)) AS duration_dates
+FROM
+	uber_rides
+WHERE
+	category = 'Business'
+GROUP BY
+	location_pattern
+HAVING
+	frequency >= 2
+ORDER BY
+	frequency DESC, avg_miles DESC;
 
 ```
 
@@ -45,60 +74,96 @@ Order results chronologically by month.
 
 **Expected Output:**
 
-| month_name     | total_rides | total_minutes | avg_duration | previous_avg | pct_change | trend_category      |
-|----------------|-------------|---------------|--------------|--------------|------------|---------------------|
-| January 2016   | 63          | 1042          | 00:17        | NULL         | NULL       | Initial Month       |
-| February 2016  | 27          | 450           | 00:17        | 00:17        | 0%         | Stable              |
-| March 2016     | 2           | 43            | 00:22        | 00:17        | 29.4%      | Significant Increase |
-| April 2016     | 3           | 32            | 00:11        | 00:22        | -50.0%     | Significant Decrease |
-| May 2016       | 2           | 39            | 00:20        | 00:11        | 81.8%      | Significant Increase |
-| June 2016      | 1           | 19            | 00:19        | 00:20        | -5.0%      | Stable              |
-| July 2016      | 2           | 244           | 02:02        | 00:19        | 542.1%     | Significant Increase |
-| August 2016    | 1           | 29            | 00:29        | 02:02        | -76.2%     | Significant Decrease |
-| December 2016  | 2           | 37            | 00:19        | 00:29        | -34.5%     | Significant Decrease |
+| month_name     | total_rides | total_minutes | avg_duration | previous_avg | | month_name    | total_rides | total_minutes | avg_duration | previous_avg | pct_change | trend_category       |
+| ------------- | ----------- | ------------- | ------------ | ------------ | ---------- | -------------------- |
+| January 2016  | 59          | 1083          | 00:18        |              |            | Initial Month        |
+| February 2016 | 27          | 534           | 00:19        | 18.36        | 7.75%      | Stable               |
+| March 2016    | 2           | 43            | 00:21        | 19.78        | 8.71%      | Stable               |
+| April 2016    | 3           | 31            | 00:10        | 21.50        | -51.94%    | Significant Decrease |
+| May 2016      | 2           | 39            | 00:19        | 10.33        | 88.71%     | Significant Increase |
+| June 2016     | 1           | 19            | 00:19        | 19.50        | -2.56%     | Stable               |
+| July 2016     | 2           | 212           | 01:46        | 19.00        | 457.89%    | Significant Increase |
+| August 2016   | 1           | 29            | 00:29        | 106.00       | -72.64%    | Significant Decrease |
+| December 2016 | 2           | 49            | 00:24        | 29.00        | -15.52%    | Significant Decrease |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
-```
-
-## Question 3: Ride Purpose Word Analysis with Date Patterns
-
-Analyze the relationship between ride purposes, day of week patterns, and word counts in locations. For this task:
-
-1. Extract the day of week name (e.g., "Monday") from start_date
-2. Count the number of words in each start_location and stop_location
-3. Create categories based on purpose and word counts:
-   - "Simple Business" - Business rides where both locations have 1 word
-   - "Complex Business" - Business rides where either location has more than 1 word
-   - "Personal" - All personal rides
-
-For each combination of day name and purpose category:
-1. Count the number of rides
-2. Calculate average miles
-3. Find the most common hour of day for rides (in 24-hour format)
-4. Format a sample ride description as: "[Start] to [Stop] on [Formatted Date]"
-   where [Formatted Date] is in the format "Weekday, Month DD, YYYY at HH:MM AM/PM"
-
-Include only combinations with at least 2 rides, ordered by ride count (descending).
-
-**Expected Output:**
-
-| day_name | purpose_category | ride_count | avg_miles | peak_hour | sample_ride |
-|----------|------------------|------------|-----------|-----------|-------------|
-| Friday   | Complex Business | 8          | 9.4       | 11        | Durham to Cary on Friday, January 29, 2016 at 01:24 PM |
-| Sunday   | Complex Business | 7          | 12.5      | 18        | Elmhurst to New York on Sunday, January 10, 2016 at 06:18 PM |
-| Thursday | Complex Business | 6          | 10.2      | 15        | Raleigh to Cary on Thursday, January 28, 2016 at 03:51 PM |
-| Tuesday  | Simple Business  | 5          | 2.2       | 16        | Cary to Cary on Tuesday, January 26, 2016 at 04:24 PM |
-| Wednesday| Complex Business | 4          | 11.8      | 10        | Cary to Chapel Hill on Wednesday, February 03, 2016 at 10:35 AM |
-| Monday   | Complex Business | 3          | 4.0       | 11        | East Harlem to NoMad on Monday, January 11, 2016 at 08:55 AM |
-
-**Your Solution:**
-
-```sql
--- Write your solution here
+WITH monthly_rides AS (
+    SELECT
+        DATE_FORMAT(start_date, '%M %Y') AS month_name,
+        YEAR(start_date) AS ride_year,
+        MONTH(start_date) AS ride_month,
+        COUNT(*) AS total_rides,
+        SUM(TIMESTAMPDIFF(MINUTE, start_date, end_date)) AS total_minutes,
+        AVG(TIMESTAMPDIFF(MINUTE, start_date, end_date)) AS average_duration_minutes
+    FROM
+        uber_rides
+    GROUP BY
+        month_name,
+        ride_year,
+        ride_month
+    ORDER BY
+        ride_year,
+        ride_month
+),
+lagged_rides AS (
+    SELECT
+        month_name,
+        ride_year,
+        ride_month,
+        total_rides,
+        total_minutes,
+        average_duration_minutes,
+        LAG(average_duration_minutes) OVER (ORDER BY ride_year, ride_month) AS previous_average_duration_minutes
+    FROM
+        monthly_rides
+),
+computed_rides AS (
+    SELECT
+        month_name,
+        ride_year,
+        ride_month,
+        total_rides,
+        total_minutes,
+        average_duration_minutes,
+        previous_average_duration_minutes,
+        ROUND(
+            (average_duration_minutes - previous_average_duration_minutes) / NULLIF(previous_average_duration_minutes, 0) * 100
+        , 2) AS pct_change_numeric,
+        CASE
+            WHEN average_duration_minutes IS NULL THEN '00:00'
+            ELSE
+                CONCAT(
+                    LPAD(FLOOR(average_duration_minutes / 60), 2, '0'),
+                    ':',
+                    LPAD(MOD(average_duration_minutes, 60), 2, '0')
+                )
+        END AS avg_duration_formatted
+    FROM
+        lagged_rides
+)
+SELECT
+    month_name,
+    total_rides,
+    total_minutes,
+    avg_duration_formatted AS avg_duration,
+    ROUND(previous_average_duration_minutes, 2) AS previous_avg,
+    CASE
+        WHEN pct_change_numeric IS NULL THEN NULL
+        ELSE CONCAT(CAST(pct_change_numeric AS DECIMAL(10,2)), '%')
+    END AS pct_change,
+    CASE
+        WHEN previous_average_duration_minutes IS NULL THEN 'Initial Month'
+        WHEN pct_change_numeric > 10 THEN 'Significant Increase'
+        WHEN pct_change_numeric < -10 THEN 'Significant Decrease'
+        ELSE 'Stable'
+    END AS trend_category
+FROM
+    computed_rides
+ORDER BY
+    ride_year,
+    ride_month;
 
 ```
 

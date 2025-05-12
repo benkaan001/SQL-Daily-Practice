@@ -45,17 +45,17 @@ Order results chronologically by month.
 
 **Expected Output:**
 
-| month_name     | total_rides | total_minutes | avg_duration | previous_avg | pct_change | trend_category      |
-|----------------|-------------|---------------|--------------|--------------|------------|---------------------|
-| January 2016   | 63          | 1042          | 00:17        | NULL         | NULL       | Initial Month       |
-| February 2016  | 27          | 450           | 00:17        | 00:17        | 0%         | Stable              |
-| March 2016     | 2           | 43            | 00:22        | 00:17        | 29.4%      | Significant Increase |
-| April 2016     | 3           | 32            | 00:11        | 00:22        | -50.0%     | Significant Decrease |
-| May 2016       | 2           | 39            | 00:20        | 00:11        | 81.8%      | Significant Increase |
-| June 2016      | 1           | 19            | 00:19        | 00:20        | -5.0%      | Stable              |
-| July 2016      | 2           | 244           | 02:02        | 00:19        | 542.1%     | Significant Increase |
-| August 2016    | 1           | 29            | 00:29        | 02:02        | -76.2%     | Significant Decrease |
-| December 2016  | 2           | 37            | 00:19        | 00:29        | -34.5%     | Significant Decrease |
+| month_name    | total_rides | total_minutes | avg_duration | previous_avg | pct_change | trend_category       |
+| ------------- | ----------- | ------------- | ------------ | ------------ | ---------- | -------------------- |
+| January 2016  | 59          | 1083          | 00:18        |              |            | Initial Month        |
+| February 2016 | 27          | 534           | 00:19        | 18.36        | 7.75%      | Stable               |
+| March 2016    | 2           | 43            | 00:21        | 19.78        | 8.71%      | Stable               |
+| April 2016    | 3           | 31            | 00:10        | 21.50        | -51.94%    | Significant Decrease |
+| May 2016      | 2           | 39            | 00:19        | 10.33        | 88.71%     | Significant Increase |
+| June 2016     | 1           | 19            | 00:19        | 19.50        | -2.56%     | Stable               |
+| July 2016     | 2           | 212           | 01:46        | 19.00        | 457.89%    | Significant Increase |
+| August 2016   | 1           | 29            | 00:29        | 106.00       | -72.64%    | Significant Decrease |
+| December 2016 | 2           | 49            | 00:24        | 29.00        | -15.52%    | Significant Decrease |
 
 **Your Solution:**
 
@@ -63,42 +63,3 @@ Order results chronologically by month.
 -- Write your solution here
 
 ```
-
-## Question 3: Ride Purpose Word Analysis with Date Patterns
-
-Analyze the relationship between ride purposes, day of week patterns, and word counts in locations. For this task:
-
-1. Extract the day of week name (e.g., "Monday") from start_date
-2. Count the number of words in each start_location and stop_location
-3. Create categories based on purpose and word counts:
-   - "Simple Business" - Business rides where both locations have 1 word
-   - "Complex Business" - Business rides where either location has more than 1 word
-   - "Personal" - All personal rides
-
-For each combination of day name and purpose category:
-1. Count the number of rides
-2. Calculate average miles
-3. Find the most common hour of day for rides (in 24-hour format)
-4. Format a sample ride description as: "[Start] to [Stop] on [Formatted Date]"
-   where [Formatted Date] is in the format "Weekday, Month DD, YYYY at HH:MM AM/PM"
-
-Include only combinations with at least 2 rides, ordered by ride count (descending).
-
-**Expected Output:**
-
-| day_name | purpose_category | ride_count | avg_miles | peak_hour | sample_ride |
-|----------|------------------|------------|-----------|-----------|-------------|
-| Friday   | Complex Business | 8          | 9.4       | 11        | Durham to Cary on Friday, January 29, 2016 at 01:24 PM |
-| Sunday   | Complex Business | 7          | 12.5      | 18        | Elmhurst to New York on Sunday, January 10, 2016 at 06:18 PM |
-| Thursday | Complex Business | 6          | 10.2      | 15        | Raleigh to Cary on Thursday, January 28, 2016 at 03:51 PM |
-| Tuesday  | Simple Business  | 5          | 2.2       | 16        | Cary to Cary on Tuesday, January 26, 2016 at 04:24 PM |
-| Wednesday| Complex Business | 4          | 11.8      | 10        | Cary to Chapel Hill on Wednesday, February 03, 2016 at 10:35 AM |
-| Monday   | Complex Business | 3          | 4.0       | 11        | East Harlem to NoMad on Monday, January 11, 2016 at 08:55 AM |
-
-**Your Solution:**
-
-```sql
--- Write your solution here
-
-```
-
