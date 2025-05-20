@@ -9,7 +9,7 @@ Output the sender, their distinct recipients count, and their rank.
 **Expected Results**
 
 ```
-from_user | distinct_recipients | rank
+from_user | distinct_recipients | ranking
 userB     | 3                   | 1
 userA     | 2                   | 2
 userD     | 2                   | 3
@@ -38,7 +38,7 @@ Output the user, the total emails received, and their rank.
 **Expected Results**
 
 ```
-to_user | total_emails_received | rank
+to_user | total_emails_received | ranking
 userC   | 4                     | 1
 userA   | 2                     | 2
 userB   | 2                     | 3
@@ -67,7 +67,7 @@ Output the sender, their average day (formatted to two decimal places), and thei
 **Expected Results**
 
 ```
-from_user | average_day | rank
+from_user | average_day | ranking
 userD     | 9.00        | 1
 userB     | 5.67        | 2
 userA     | 3.50        | 3

@@ -9,7 +9,7 @@ Output the sender, their distinct recipients count, and their rank.
 **Expected Results**
 
 ```
-from_user | distinct_recipients | rank
+from_user | distinct_recipients | ranking
 userB     | 3                   | 1
 userA     | 2                   | 2
 userD     | 2                   | 3
@@ -20,7 +20,22 @@ userC     | 1                   | 5
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ranked_users AS (
+  SELECT
+      from_user,
+      COUNT(DISTINCT to_user) AS distinct_recipients,
+  	  RANK() OVER (ORDER BY COUNT(DISTINCT to_user) DESC, from_user) AS ranking
+  FROM
+      email_logs
+  GROUP BY
+      from_user
+)
+SELECT
+	from_user,
+    distinct_recipients,
+    ranking
+FROM
+	ranked_users;
 
 ```
 
@@ -38,7 +53,7 @@ Output the user, the total emails received, and their rank.
 **Expected Results**
 
 ```
-to_user | total_emails_received | rank
+to_user | total_emails_received | ranking
 userC   | 4                     | 1
 userA   | 2                     | 2
 userB   | 2                     | 3
@@ -49,7 +64,22 @@ userE   | 1                     | 5
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ranked_users AS (
+  SELECT
+  	to_user,
+  	COUNT(DISTINCT from_user) AS total_emails_received,
+    RANK() OVER (ORDER BY COUNT(DISTINCT from_user) DESC, to_user ASC) AS ranking
+  FROM
+  	email_logs
+  GROUP BY
+  	to_user
+)
+SELECT
+	to_user,
+    total_emails_received,
+    ranking
+FROM
+	ranked_users;
 
 ```
 
@@ -67,7 +97,7 @@ Output the sender, their average day (formatted to two decimal places), and thei
 **Expected Results**
 
 ```
-from_user | average_day | rank
+from_user | average_day | ranking
 userD     | 9.00        | 1
 userB     | 5.67        | 2
 userA     | 3.50        | 3
@@ -77,6 +107,12 @@ userE     | 3.00        | 5
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+	from_user,
+    ROUND(AVG(day), 2) AS average_day,
+    RANK() OVER (ORDER BY AVG(day) DESC, from_user) AS ranking
+FROM
+	email_logs
+GROUP BY
+	from_user;
 ```
