@@ -17,7 +17,19 @@ For each company:
 
 **Your Solution:**
 ````sql
--- Write your solution here
+SELECT
+	company_name,
+    COUNT(DISTINCT product_name) AS total_unique_products,
+    MIN(launch_year) AS earliest_yer,
+    MAX(launch_year) AS latest_year
+FROM
+	product_launches
+GROUP BY
+    company_name
+HAVING
+	total_unique_products > 2
+ORDER BY
+	total_unique_products DESC;
 ````
 
 ---
@@ -43,7 +55,20 @@ Order by average length (descending).
 
 **Your Solution:**
 ````sql
--- Write your solution here
+SELECT
+	company_name,
+    ROUND(AVG(LENGTH(product_name)), 2) AS avg_length,
+    MIN(LENGTH(product_name)) AS min_length,
+    MAX(LENGTH(product_name)) AS max_length,
+    COUNT(DISTINCT product_name) AS total_products
+FROM
+	product_launches
+GROUP BY
+	company_name
+HAVING
+	AVG(LENGTH(product_name)) >= 6
+ORDER BY
+	AVG(LENGTH(product_name)) DESC;
 ````
 
 ---
@@ -67,5 +92,52 @@ Calculate how many products each company launched in 2019 and 2020. Then:
 
 **Your Solution:**
 ```sql
--- Write your solution here
+SELECT
+	company_name,
+    SUM(CASE WHEN launch_year = 2020 THEN 1 ELSE 0 END)
+    - SUM(CASE WHEN launch_year = 2019 THEN 1 ELSE 0 END)
+    AS net_difference
+FROM
+	product_launches
+WHERE
+	launch_year IN (2019, 2020)
+GROUP BY
+	company_name
+ORDER BY
+	net_difference DESC,
+    company_name ASC;
+
+--- CTE approach
+WITH products_2020 AS (
+  SELECT
+  	company_name,
+  	COUNT(*) AS 2020_product_count
+  FROM
+  	product_launches
+  WHERE
+  	launch_year = 2020
+  GROUP BY
+  	company_name
+)
+, products_2019 AS (
+  SELECT
+  	company_name,
+  	COUNT(*) AS 2019_product_count
+  FROM
+  	product_launches
+  WHERE
+  	launch_year = 2019
+  GROUP BY
+  	company_name
+)
+SELECT
+	p2.company_name,
+    2020_product_count - 2019_product_count AS net_difference
+FROM
+	products_2020 p2
+JOIN
+	products_2019 p1 ON p2.company_name = p1.company_name
+ORDER BY
+	net_difference DESC,
+    company_name ASC;
 ```
