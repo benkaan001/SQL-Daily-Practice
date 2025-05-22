@@ -23,7 +23,45 @@ Output the `search_term`, `total_appearances`, `total_clicks`, `ctr` (formatted 
 **Your Solution:**
 
 ````sql
--- Write your solution here
+WITH grouped_ctr AS (
+  SELECT
+      search_term,
+      COUNT(*) AS total_appearances,
+      SUM(CASE WHEN clicked = 1 THEN 1 ELSE 0 END) AS total_clicks
+  FROM
+      search_logs
+  GROUP BY
+      search_term
+  HAVING
+      COUNT(*) >= 3
+)
+, processed_ctr AS (
+  SELECT
+  	search_term,
+  	total_appearances,
+  	total_clicks,
+    total_clicks / total_appearances * 100 AS ctr
+  FROM
+  	grouped_ctr
+), ranked_ctr AS (
+  SELECT
+	search_term,
+    total_appearances,
+    total_clicks,
+    ctr,
+  	DENSE_RANK() OVER (ORDER BY ctr DESC, search_term ASC) AS ranking
+FROM
+	processed_ctr
+)
+SELECT
+	search_term,
+    total_appearances,
+    total_clicks,
+    ROUND(ctr, 2) AS ctr,
+    ranking
+FROM
+	ranked_ctr;
+
 ````
 
 ---
@@ -54,7 +92,27 @@ Order the results by `search_results_position` in ascending order.
 **Your Solution:**
 
 ````sql
--- Write your solution here
+WITH search_results AS (
+  SELECT
+      search_results_position,
+      COUNT(*) AS total_appearances_at_that_position,
+      SUM(CASE WHEN clicked=1 THEN 1 ELSE 0 END) AS total_clicks_at_that_position
+  FROM
+      search_logs
+  WHERE
+      search_results_position BETWEEN 1 AND 3
+  GROUP BY
+      search_results_position
+)
+SELECT
+	search_results_position,
+    total_appearances_at_that_position,
+    total_clicks_at_that_position,
+    ROUND((total_clicks_at_that_position / total_appearances_at_that_position) * 100, 2) AS click_rate_at_position
+FROM
+	search_results
+ORDER BY
+	search_results_position;
 ````
 
 ---
@@ -101,5 +159,25 @@ Order the results by `session_click_rate` in descending order, then by `search_i
 **Your Solution:**
 
 ````sql
--- Write your solution here
+WITH results AS (
+  SELECT
+      search_id,
+      COUNT(*) AS total_results_shown,
+      SUM(CASE WHEN clicked=1 THEN 1 ELSE 0 END) AS total_results_clicked
+  FROM
+      search_logs
+  GROUP BY
+      search_id
+  HAVING total_results_clicked >= 1
+)
+SELECT
+	search_id,
+    total_results_shown,
+    total_results_clicked,
+    ROUND(total_results_clicked/ total_results_shown * 100, 2) AS session_click_rate
+FROM
+	results
+ORDER BY
+	session_click_rate DESC,
+    search_id ASC;
 ````
