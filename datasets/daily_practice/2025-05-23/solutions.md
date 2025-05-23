@@ -15,7 +15,16 @@ For each user:
 
 **Your Solution:**
 ````sql
--- Write your solution here
+SELECT
+	user_id,
+    COUNT(*) AS total_events,
+    COUNT(DISTINCT DATE(activity_timestamp)) AS distinct_days
+FROM
+	user_activities
+GROUP BY
+	user_id
+ORDER BY
+	total_events DESC;
 ````
 
 ---
@@ -37,7 +46,24 @@ For each user:
 
 **Your Solution:**
 ````sql
--- Write your solution here
+WITH scroll_events AS (
+  SELECT
+      user_id,
+      SUM(CASE WHEN action LIKE 'scroll%' THEN 1 ELSE 0 END) AS total_scroll_events,
+  	  COUNT(*) AS overall_events
+  FROM
+      user_activities
+  GROUP BY
+      user_id
+)
+SELECT
+	user_id,
+    total_scroll_events,
+    ROUND(total_scroll_events / overall_events, 2) AS scroll_ratio
+FROM
+	scroll_events
+ORDER BY
+	scroll_ratio DESC;
 ````
 
 ---
@@ -59,4 +85,36 @@ A session is defined as the time from the latest `page_load` to the earliest val
 
 **Your Solution:**
 ````sql
--- Write your solution here
+WITH page_events AS (
+  SELECT
+  	user_id,
+  	DATE(activity_timestamp) AS activity_date,
+  	MAX(CASE
+  		WHEN action = 'page_load' THEN activity_timestamp
+  		ELSE NULL
+  	END) AS page_load_time,
+  	MIN(CASE
+  		WHEN action = 'page_exit' THEN activity_timestamp
+  		ELSE NULL
+  	END) AS page_exit_time
+  FROM
+  	user_activities
+  GROUP BY
+  	user_id,
+  	DATE(activity_timestamp)
+)
+SELECT
+	user_id,
+    ROUND(
+      AVG(
+        CASE
+            WHEN page_load_time IS NOT NULL AND page_exit_time IS NOT NULL AND page_load_time < page_exit_time THEN TIMESTAMPDIFF(SECOND, page_load_time, page_exit_time) / 60
+            ELSE NULL
+        END
+      )
+    , 2) AS average_session_time
+FROM
+    page_events
+GROUP BY
+	user_id;
+```
