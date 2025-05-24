@@ -14,7 +14,58 @@
 
 **Your Solution:**
 ````sql
--- Write your solution here
+
+SELECT
+    u.status,
+    COUNT(c.call_id) AS total_calls,
+    COUNT(DISTINCT u.user_id) AS distinct_users
+FROM
+    rc_users u
+JOIN
+    rc_calls c ON u.user_id = c.user_id
+GROUP BY
+    u.status
+ORDER BY
+    total_calls DESC,
+    u.status ASC;
+
+-- Using CTE
+
+WITH calls AS (
+  SELECT
+      u.status,
+      COUNT(c.call_id) AS total_calls
+  FROM
+      rc_users u
+  JOIN
+      rc_calls c ON u.user_id = c.user_id
+  GROUP BY
+      u.status
+)
+, users AS (
+  SELECT
+  	u.status,
+  	COUNT(DISTINCT u.user_id) AS distinct_users
+  FROM
+  	rc_users u
+  LEFT JOIN
+  	rc_calls c ON u.user_id = c.user_id
+  WHERE
+  	c.call_id IS NOT NULL
+  GROUP BY
+  	u.status
+)
+SELECT
+	c.status,
+    c.total_calls,
+    u.distinct_users
+FROM
+	users u
+JOIN
+	calls c ON u.status = c.status
+ORDER BY
+	c.total_calls DESC,
+    u.status ASC;
 ````
 
 ---
@@ -37,7 +88,33 @@
 
 **Your Solution:**
 ````sql
--- Write your solution here
+WITH grouped_calls AS (
+  SELECT
+      DATE_FORMAT(c.call_date, '%M') AS month,
+      MONTH(c.call_date) AS numeric_month,
+      COUNT(c.call_id) AS total_calls,
+      COUNT(DISTINCT u.user_id) AS distinct_users
+  FROM
+      rc_users u
+  JOIN
+      rc_calls c ON u.user_id = c.user_id
+  WHERE
+      DATE_FORMAT(c.call_date, '%M') IN ('March', 'April')
+      AND YEAR(c.call_date) = 2020
+  GROUP BY
+      DATE_FORMAT(c.call_date, '%M'),
+      MONTH(c.call_date)
+)
+SELECT
+	month,
+   total_calls,
+   distinct_users,
+   ROUND(total_calls / distinct_users, 2) AS avg_calls_per_user
+FROM
+	grouped_calls
+ORDER BY
+	numeric_month;
+
 ````
 
 ---
@@ -51,18 +128,51 @@
 **Expected Output:**
 
 | company_id | user_id | user_rank |
-|------------|---------|-----------|
+| ---------- | ------- | --------- |
 | 1          | 1859    | 1         |
 | 1          | 1525    | 2         |
 | 1          | 1854    | 2         |
+| 2          | 1162    | 1         |
 | 2          | 1181    | 1         |
 | 2          | 1891    | 1         |
-| 2          | 1162    | 1         |
-| 2          | 1857    | 4         |
-| 2          | 1910    | 4         |
+| 2          | 1857    | 2         |
+| 2          | 1910    | 2         |
 | 3          | 1093    | 1         |
 | 3          | 1503    | 1         |
 
 **Your Solution:**
 ````sql
--- Write your solution here
+WITH call_counts AS (
+    SELECT
+        u.company_id,
+        u.user_id,
+        COUNT(c.call_id) AS total_calls
+    FROM
+        rc_users u
+    JOIN
+        rc_calls c ON u.user_id = c.user_id
+    GROUP BY
+        u.company_id,
+        u.user_id
+)
+,ranking AS (
+    SELECT
+        company_id,
+        user_id,
+        DENSE_RANK() OVER (PARTITION BY company_id ORDER BY total_calls DESC) AS user_rank
+    FROM
+        call_counts
+)
+SELECT
+    company_id,
+    user_id,
+    user_rank
+FROM
+    ranking
+WHERE
+    user_rank <= 2
+ORDER BY
+    company_id ASC,
+    user_rank ASC,
+    user_id ASC;
+```
