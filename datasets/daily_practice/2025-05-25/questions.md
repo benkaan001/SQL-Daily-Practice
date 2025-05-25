@@ -36,16 +36,12 @@ Order by company name, then year.
 **Expected Output:**
 
 | company_name | launch_year | product_count |
-|--------------|-------------|---------------|
+| ------------ | ----------- | ------------- |
 | Chevrolet    | 2020        | 3             |
 | Ford         | 2019        | 2             |
-| Ford         | 2020        | 1             |
 | Honda        | 2019        | 4             |
-| Honda        | 2020        | 1             |
 | Jeep         | 2020        | 3             |
-| Jeep         | 2019        | 2             |
 | Toyota       | 2019        | 2             |
-| Toyota       | 2020        | 1             |
 
 **Your Solution:**
 ````sql

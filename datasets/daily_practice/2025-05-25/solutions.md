@@ -19,7 +19,31 @@ Order by company name.
 
 **Your Solution:**
 ````sql
--- Write your solution here
+SELECT
+  company_name,
+  '2019, 2020' AS consecutive_years,
+  COUNT(*) AS total_products
+FROM
+  product_launches
+WHERE
+  company_name IN (
+  SELECT
+    company_name
+  FROM
+    product_launches
+  WHERE
+    launch_year = 2019)
+  AND company_name IN (
+  SELECT
+    company_name
+  FROM
+    product_launches
+  WHERE
+    launch_year = 2020)
+GROUP BY
+  company_name
+ORDER BY
+  company_name;
 ````
 
 ---
@@ -36,20 +60,47 @@ Order by company name, then year.
 **Expected Output:**
 
 | company_name | launch_year | product_count |
-|--------------|-------------|---------------|
+| ------------ | ----------- | ------------- |
 | Chevrolet    | 2020        | 3             |
 | Ford         | 2019        | 2             |
-| Ford         | 2020        | 1             |
 | Honda        | 2019        | 4             |
-| Honda        | 2020        | 1             |
 | Jeep         | 2020        | 3             |
-| Jeep         | 2019        | 2             |
 | Toyota       | 2019        | 2             |
-| Toyota       | 2020        | 1             |
 
 **Your Solution:**
 ````sql
--- Write your solution here
+WITH product_counts AS (
+  SELECT
+    company_name,
+    launch_year,
+    COUNT(product_name) AS product_count
+  FROM
+    product_launches
+  GROUP BY
+    company_name,
+    launch_year
+)
+, product_ranking AS (
+
+  SELECT
+    company_name,
+    launch_year,
+    product_count,
+    DENSE_RANK() OVER (PARTITION BY company_name ORDER BY product_count DESC) AS product_rank
+  FROM
+    product_counts
+)
+SELECT
+  company_name,
+  launch_year,
+  product_count
+FROM
+  product_ranking
+WHERE
+  product_rank = 1
+ORDER BY
+  company_name,
+  launch_year;
 ````
 
 ---
@@ -88,5 +139,26 @@ Order by company name, then product name.
 
 **Your Solution:**
 ````sql
--- Write your solution here
+WITH distinct_products AS (
+  SELECT
+    product_name,
+    COUNT(DISTINCT company_name) AS company_count
+  FROM
+    product_launches
+  GROUP BY
+    product_name
+)
+SELECT
+  pl.product_name,
+  pl.company_name,
+  pl.launch_year
+FROM
+  product_launches pl
+JOIN
+  distinct_products dp ON dp.product_name = pl.product_name
+WHERE
+  dp.company_count = 1
+ORDER BY
+  pl.company_name,
+  pl.product_name;
 ````
