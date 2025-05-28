@@ -6,8 +6,8 @@
 *Expected Output:*
 | project_name     | total_tasks | project_days | avg_days_per_task |
 |------------------|-------------|--------------|-------------------|
-| Project Apollo   | 3           | 242          | 80.67             |
-| Project Phoenix  | 4           | 350          | 87.50             |
+| Project Apollo   | 3           | 241          | 80.33             |
+| Project Phoenix  | 3           | 350          | 116.67            |
 
 ```sql
 -- Write your SQL query here
@@ -18,10 +18,12 @@
 
 *Expected Output:*
 | first_name | last_name | total_tasks | high_priority_tasks | high_priority_pct |
-|------------|-----------|-------------|--------------------|-------------------|
-| Alice      | Johnson   | 3           | 3                  | 100.00            |
-| John       | Smith     | 3           | 3                  | 100.00            |
-| Diana      | Miller    | 2           | 0                  | 0.00              |
+| ---------- | --------- | ----------- | ------------------- | ----------------- |
+| John       | Smith     | 4           | 4                   | 100.00            |
+| Alice      | Johnson   | 3           | 3                   | 100.00            |
+| Bob        | Williams  | 2           | 1                   | 50.00             |
+| Diana      | Miller    | 3           | 1                   | 33.33             |
+| Charlie    | Brown     | 2           | 0                   | 0.00              |
 
 ```sql
 -- Write your SQL query here
@@ -31,36 +33,11 @@
 *Task:* Find all tasks that are part of a dependency chain of length 2 or more (i.e., a task that depends on another task, which itself depends on another). Show the task name, project name, and the chain length (2 or 3 only for this dataset).
 
 *Expected Output:*
-| task_name           | project_name     | chain_length |
-|---------------------|------------------|--------------|
-| Final Testing       | Project Phoenix  | 2            |
-| Integration Testing | Project Apollo   | 2            |
-| Documentation       | Project Nova     | 2            |
-
-```sql
--- Write your SQL query here
-```
-
-## Question 4: Project Update Frequency
-*Task:* For each project, calculate the number of updates and the average number of days between updates (use project start date for the first update). Show only projects with more than 1 update.
-
-*Expected Output:*
-| project_name     | num_updates | avg_days_between_updates |
-|------------------|-------------|-------------------------|
-| (No projects with >1 update in this dataset) |
-
-```sql
--- Write your SQL query here
-```
-
-## Question 5: Unassigned High Priority Tasks
-*Task:* List all 'High' priority tasks that are not assigned to any employee, including the project name and task name.
-
-*Expected Output:*
-| project_name     | task_name           |
-|------------------|--------------------|
-| Project Nova     | Resource Allocation|
-
+| task_name           | project_name    | chain_length |
+| ------------------- | --------------- | ------------ |
+| Integration Testing | Project Apollo  | 2            |
+| Testing and QA      | Project Gemini  | 2            |
+| Final Testing       | Project Phoenix | 2            |
 ```sql
 -- Write your SQL query here
 ```
