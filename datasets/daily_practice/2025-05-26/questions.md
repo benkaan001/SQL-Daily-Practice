@@ -19,9 +19,10 @@
 
 *Expected Output:*
 
-| segment  | num_customers | avg_order_value |
-|----------|---------------|-----------------|
-| Regular  | 2             | 408.00          |
+| segment | num_customers | avg_order_value |
+| ------- | ------------- | --------------- |
+| Premium | 2             | 480.00          |
+| Regular | 2             | 442.50          |
 
 ```sql
 -- Write your SQL query here
@@ -32,12 +33,13 @@
 
 *Expected Output:*
 
-| product_name    | total_units | units_with_discount | discount_percentage |
-|-----------------|-------------|--------------------|---------------------|
-| Gaming Laptop   | 2           | 2                  | 100.00              |
-| Wireless Earbuds| 3           | 0                  | 0.00                |
-| Running Shoes   | 3           | 2                  | 66.67               |
-| Coffee Maker    | 1           | 0                  | 0.00                |
+| product_name     | total_units | units_with_discount | discount_percentage |
+| ---------------- | ----------- | ------------------- | ------------------- |
+| Gaming Laptop    | 2           | 2                   | 100.00              |
+| Wireless Earbuds | 3           | 0                   | 0.00                |
+| Running Shoes    | 3           | 3                   | 100.00              |
+| Coffee Maker     | 1           | 0                   | 0.00                |
+| Protein Powder   | 3           | 3                   | 100.00              |
 
 ```sql
 -- Write your SQL query here
@@ -57,17 +59,5 @@
 -- Write your SQL query here
 ```
 
-## Question 5: Support Ticket Escalation Rate
-*Task:* Calculate the escalation rate for support tickets (percentage of tickets with 'High' priority out of all tickets). Show the escalation_rate rounded to 2 decimals.
-
-*Expected Output:*
-
-| escalation_rate |
-|-----------------|
-| 25.00           |
-
-```sql
--- Write your SQL query here
-```
 
 ---
