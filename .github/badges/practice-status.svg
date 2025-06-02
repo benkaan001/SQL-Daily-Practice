@@ -8,13 +8,13 @@
   </mask>
   <g mask="url(#a)">
     <path fill="#555" d="M0 0h103v20H0z"/>
-    <path fill="dfb317" d="M103 0h77v20H103z"/>
+    <path fill="4c1" d="M103 0h77v20H103z"/>
     <path fill="url(#b)" d="M0 0h180v20H0z"/>
   </g>
   <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
     <text x="51.5" y="15" fill="#010101" fill-opacity=".3">Practice Status</text>
     <text x="51.5" y="14">Practice Status</text>
-    <text x="140.5" y="15" fill="#010101" fill-opacity=".3">⚠️ Practice pending</text>
-    <text x="140.5" y="14">⚠️ Practice pending</text>
+    <text x="140.5" y="15" fill="#010101" fill-opacity=".3">✅ Practice completed</text>
+    <text x="140.5" y="14">✅ Practice completed</text>
   </g>
 </svg>
