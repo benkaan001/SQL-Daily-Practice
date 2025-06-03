@@ -1,75 +1,120 @@
 # Advanced SQL Practice Questions - Gym Management Database
 
-## Question 1: Membership Retention and Churn
-*Task:* For each membership_type, calculate the number of members who joined in 2023, the number who have attended at least one class in the last 90 days (from the latest attendance date), and the churn rate (members with no attendance in the last 90 days / total joined in 2023, as a percent rounded to 2 decimals). Show only membership_types with at least 2 members joined in 2023.
+## Question 1: Trainer Effectiveness by Feedback
+*Task:* For each trainer with at least 1 rating, show their name, specialty, average rating, and the percentage of ratings that are 5.0. Order by average rating descending, then percent_5star descending.
 
 *Expected Output:*
-| membership_type | joined_2023 | active_last_90d | churn_rate |
-|-----------------|-------------|-----------------|------------|
-| Gold            | 4           | 2               | 50.00      |
-| Silver          | 3           | 1               | 66.67      |
+| trainer_name  | specialty         | avg_rating | percent_5star |
+| ------------- | ----------------- | ---------- | ------------- |
+| Linda Brown   | Yoga              | 5.00       | 100.00        |
+| Sarah White   | Pilates           | 5.00       | 100.00        |
+| Quincy Adams  | Strength Training | 5.00       | 100.00        |
+| Michael Green | CrossFit          | 4.00       | 0.00          |
+| Peter Parker  | Zumba             | 4.00       | 0.00          |
 
 ```sql
--- Write your SQL query here
+SELECT
+  t.trainer_name,
+  t.specialty,
+  ROUND(AVG(tr.rating), 2) AS avg_rating,
+  ROUND((SUM(CASE WHEN tr.rating = 5 THEN 1 ELSE 0 END) / COUNT(tr.rating) * 100), 2) AS percent_5star
+FROM
+  trainers t
+JOIN
+  trainer_ratings tr ON t.trainer_id = tr.trainer_id
+GROUP BY
+  t.trainer_name,
+  t.specialty
+HAVING
+  COUNT(tr.rating) >= 1
+ORDER BY
+  avg_rating DESC,
+  percent_5star DESC;
 ```
 
-## Question 2: Trainer Effectiveness by Feedback
-*Task:* For each trainer with at least 3 ratings, show their name, specialty, average rating, and the percentage of ratings that are 5.0. Order by average rating descending, then percent_5star descending.
-
-*Expected Output:*
-| trainer_name   | specialty         | avg_rating | percent_5star |
-|---------------|-------------------|------------|---------------|
-| Linda Brown   | Yoga              | 4.80       | 80.00         |
-| Michael Green | CrossFit          | 4.60       | 60.00         |
-| Sarah White   | Pilates           | 4.50       | 50.00         |
-
-```sql
--- Write your SQL query here
-```
-
-## Question 3: Class Overbooking Detection
+## Question 2: Class Overbooking Detection
 *Task:* List all classes where the number of active enrollments exceeds the class capacity. Show class name, trainer name, capacity, active_enrollments, and the overbooked amount (active_enrollments - capacity).
 
 *Expected Output:*
 | class_name         | trainer_name   | capacity | active_enrollments | overbooked |
 |--------------------|---------------|----------|--------------------|------------|
-| Boxing Advanced    | Alex Thompson | 10       | 12                 | 2          |
-| Functional Training| Sven Erikson  | 12       | 14                 | 2          |
+
 
 ```sql
--- Write your SQL query here
+SELECT
+  c.class_name,
+  t.trainer_name,
+  c.capacity,
+  SUM(CASE WHEN ce.status = "active" THEN 1 ELSE 0 END) AS active_enrollments,
+  ABS(SUM(CASE WHEN ce.status = "active" THEN 1 ELSE 0 END) - c.capacity)  AS overbooked
+FROM
+  classes c
+JOIN
+  trainers t ON c.trainer_id = t.trainer_id
+JOIN
+  class_enrollments ce ON ce.class_id = c.class_id
+GROUP BY
+  c.class_name,
+  t.trainer_name,
+  c.capacity
+HAVING
+  SUM(CASE WHEN ce.status = "active" THEN 1 ELSE 0 END) - c.capacity > 0;
 ```
 
-## Question 4: Most Popular Class Times
+## Question 3: Most Popular Class Times
 *Task:* For each day of the week, find the class with the highest attendance (present or late) on that day. Show weekday, class name, trainer name, and attendance_count. Order by weekday (Monday to Sunday).
 
 *Expected Output:*
-| weekday   | class_name        | trainer_name   | attendance_count |
-|-----------|-------------------|---------------|------------------|
-| Monday    | Morning Yoga      | Linda Brown   | 8                |
-| Tuesday   | Pilates Basics    | Sarah White   | 6                |
-| Wednesday | Zumba Dance       | Peter Parker  | 7                |
-| Thursday  | Boxing Advanced   | Alex Thompson | 10               |
-| Friday    | Functional Training| Sven Erikson | 9                |
-| Saturday  | HIIT Challenge    | Kim Jong      | 12               |
-| Sunday    | Senior Stretch    | David Cohen   | 5                |
+| weekday   | class_name         | trainer_name  | attendance_count |
+| --------- | ------------------ | ------------- | ---------------- |
+| Wednesday | Nutrition Workshop | Fatima Hassan | 2                |
+| Thursday  | Beginner Yoga      | Linda Brown   | 2                |
+| Friday    | Boxing Advanced    | Alex Thompson | 1                |
+| Saturday  | Morning HIIT       | Kim Jong      | 1                |
 
 ```sql
--- Write your SQL query here
+WITH weekday_based_attendance AS (
+  SELECT
+    DAYNAME(ca.attendance_date) AS weekday_nonnumeric,
+    WEEKDAY(ca.attendance_date) AS weekday_numeric,
+    c.class_name,
+    t.trainer_name,
+    COUNT(*) AS attendance_count
+  FROM
+    class_attendance ca
+  JOIN
+    classes c ON ca.class_id = c.class_id
+  JOIN
+    trainers t ON c.trainer_id = t.trainer_id
+  WHERE
+    ca.status IN ('present', 'late')
+  GROUP BY
+    weekday_nonnumeric,
+    weekday_numeric,
+    c.class_name,
+    t.trainer_name
+),
+ranked_attendance AS (
+  SELECT
+    weekday_nonnumeric,
+    weekday_numeric,
+    class_name,
+    trainer_name,
+    attendance_count,
+    ROW_NUMBER() OVER (PARTITION BY weekday_nonnumeric ORDER BY attendance_count DESC) AS row_num
+  FROM
+    weekday_based_attendance
+)
+SELECT
+  weekday_nonnumeric AS 'weekday',
+  class_name,
+  trainer_name,
+  attendance_count
+FROM
+  ranked_attendance
+WHERE
+  row_num = 1
+ORDER BY
+  weekday_numeric;
 ```
 
-## Question 5: Trainer Specialization Impact on Retention
-*Task:* For each trainer specialty, calculate the average number of repeat attendees per class (members who attended more than one class with the same specialty). Show specialty, avg_repeat_attendees, and total_classes. Order by avg_repeat_attendees descending.
-
-*Expected Output:*
-| specialty         | avg_repeat_attendees | total_classes |
-|------------------|---------------------|---------------|
-| Yoga             | 3.00                | 5             |
-| CrossFit         | 2.50                | 5             |
-| Pilates          | 2.00                | 2             |
-| Boxing           | 1.50                | 3             |
-| HIIT Training    | 1.00                | 3             |
-
-```sql
--- Write your SQL query here
-```
