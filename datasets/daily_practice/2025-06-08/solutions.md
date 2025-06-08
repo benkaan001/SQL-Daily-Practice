@@ -1,130 +1,127 @@
-# Advanced SQL Practice Questions - Gym Management Database
+## Question 1: Top Movie Genres by Total Watch Time
 
-## Question 1: Member Loyalty and Class Streak
-*Task:* Identify members who have attended at least one class for 3 or more consecutive months. Show member_name, the start date of their streak, the end date of their streak, and the total number of consecutive months. Consider a month "active" if they attended at least one class.
+Find the top 3 movie genres by total watch time (sum of `watch_time_min`) across all users. For each genre, show:
+- The total watch time
+- The number of unique users who watched movies in that genre
+- The average watch time per user (rounded to 1 decimal)
 
-*Expected Output:*
-| member_name   | streak_start_month | streak_end_month | consecutive_months |
-|---------------|--------------------|------------------|--------------------|
-| Alice Johnson | 2022-03-01         | 2022-05-01       | 3                  |
-| Alice Johnson | 2023-01-01         | 2023-03-01       | 3                  |
-| Bob Smith     | 2022-03-01         | 2022-05-01       | 3                  |
-| Charlie Davis | 2022-03-01         | 2022-05-01       | 3                  |
-| David Wilson  | 2022-03-01         | 2022-05-01       | 3                  |
-| Eva Green     | 2022-03-01         | 2022-05-01       | 3                  |
-| Frank Moore   | 2022-03-01         | 2022-05-01       | 3                  |
-| Grace Lee     | 2022-03-01         | 2022-05-01       | 3                  |
-| Henry King    | 2022-03-01         | 2022-05-01       | 3                  |
-| Irene Martinez| 2022-03-01         | 2022-05-01       | 3                  |
-| Jack Brown    | 2022-03-01         | 2022-05-01       | 3                  |
-| Karen White   | 2022-03-01         | 2022-05-01       | 3                  |
-| Leo Harris    | 2022-03-01         | 2022-05-01       | 3                  |
-| Mia Clark     | 2022-03-01         | 2022-05-01       | 3                  |
-| Noah Lewis    | 2022-03-01         | 2022-05-01       | 3                  |
-| Olivia Robinson| 2022-03-01        | 2022-05-01       | 3                  |
-| Paul Walker   | 2022-03-01         | 2022-05-01       | 3                  |
-| Quinn Hall    | 2022-03-01         | 2022-05-01       | 3                  |
-| Ryan Allen    | 2022-03-01         | 2022-05-01       | 3                  |
-| Sophia Young  | 2022-03-01         | 2022-05-01       | 3                  |
-| Tyler Hernandez| 2022-03-01        | 2022-05-01       | 3                  |
-| Uma King      | 2022-03-01         | 2022-05-01       | 3                  |
-| Victor Scott  | 2022-03-01         | 2022-05-01       | 3                  |
-| Wendy Green   | 2022-03-01         | 2022-05-01       | 3                  |
-| Xavier Adams  | 2022-03-01         | 2022-05-01       | 3                  |
-| Yara Nelson   | 2022-03-01         | 2022-05-01       | 3                  |
-| Zachary Carter| 2022-03-01         | 2022-05-01       | 3                  |
+Order by total watch time descending, then genre alphabetically.
+
+**Expected Output:**
+
+| genre       | total_watch_time | unique_users | avg_watch_time_per_user |
+| ----------- | ---------------- | ------------ | ----------------------- |
+| Sci-Fi      | 420              | 3            | 140.00                  |
+| Action      | 240              | 2            | 120.00                  |
+| Documentary | 240              | 3            | 80.00                   |
+```sql
+
+SELECT
+  m.genre,
+  SUM(vh.watch_time_min) AS total_watch_time,
+  COUNT(DISTINCT u.user_id) AS unique_users,
+  ROUND(SUM(vh.watch_time_min) / COUNT(DISTINCT u.user_id), 2) AS avg_watch_time_per_user
+FROM
+  subscriptions s
+JOIN
+  users u ON u.user_id = s.user_id
+JOIN
+  viewing_history vh ON vh.user_id = u.user_id
+JOIN
+  movies m ON m.movie_id = vh.movie_id
+GROUP BY
+  m.genre
+ORDER BY
+  total_watch_time DESC
+LIMIT 3;
+```
+---
+
+## Question 2: User Retention and Viewing Activity
+
+For each user, show:
+- Name
+- Country
+- Subscription plan
+- Number of movies watched in June 2025
+- The date of their most recent view
+
+Only include users who watched at least 2 movies in June 2025. Order by number of movies watched descending, then name ascending.
+
+**Expected Output:**
+
+| name    | country | plan     | movies_watched_june | last_view_date |
+| ------- | ------- | -------- | ------------------- | -------------- |
+| Alice   | USA     | Premium  | 3                   | 2025-06-08     |
+| Charlie | USA     | Premium  | 3                   | 2025-06-08     |
+| Eve     | USA     | Standard | 3                   | 2025-06-08     |
+| Diana   | UK      | Basic    | 2                   | 2025-06-06     |
 
 ```sql
--- Write your SQL query here
+SELECT
+	u.name,
+    u.country,
+   	s.plan,
+    COUNT(vh.movie_id) AS movies_watched_june,
+    MAX(vh.view_date) AS last_view_date
+FROM
+	users u
+JOIN
+	viewing_history vh ON vh.user_id = u.user_id
+JOIN
+	subscriptions s ON u.user_id = s.user_id
+WHERE
+	MONTH(vh.view_date) = 6
+GROUP BY
+	u.name,
+    u.country,
+    s.plan
+HAVING
+	COUNT(vh.movie_id) >= 2
+ORDER BY
+	movies_watched_june DESC,
+    u.name ASC;
 ```
+---
 
-## Question 2: Trainer Performance Fluctuation
-*Task:* For each trainer, calculate their average rating per month. Then, identify any month where their average rating dropped by more than 0.5 points compared to the previous month. Show trainer_name, month_year, current_month_avg_rating, and previous_month_avg_rating.
+## Question 3: Viewing Streaks for a Movie
 
-*Expected Output:*
-| trainer_name   | month_year | current_month_avg_rating | previous_month_avg_rating |
-|----------------|------------|--------------------------|---------------------------|
-| Michael Green  | 2022-11-01 | 4.00                     | 5.00                      |
-| Sarah Connor   | 2022-11-01 | 3.50                     | 4.25                      |
-| John Doe       | 2022-11-01 | 2.75                     | 3.50                      |
-| Jane Smith     | 2022-11-01 | 4.50                     | 5.25                      |
-| Emily Davis    | 2022-11-01 | 3.00                     | 3.75                      |
-| Chris Brown    | 2022-11-01 | 4.25                     | 5.00                      |
-| Anna Johnson   | 2022-11-01 | 3.75                     | 4.50                      |
-| Robert Wilson  | 2022-11-01 | 2.50                     | 3.25                      |
-| Jessica Lee    | 2022-11-01 | 4.75                     | 5.50                      |
-| Michael Green  | 2022-12-01 | 3.50                     | 4.00                      |
-| Sarah Connor   | 2022-12-01 | 3.00                     | 3.50                      |
-| John Doe       | 2022-12-01 | 3.25                     | 2.75                      |
-| Jane Smith     | 2022-12-01 | 4.00                     | 4.50                      |
-| Emily Davis    | 2022-12-01 | 3.50                     | 3.00                      |
-| Chris Brown    | 2022-12-01 | 4.00                     | 4.25                      |
-| Anna Johnson   | 2022-12-01 | 3.25                     | 3.75                      |
-| Robert Wilson  | 2022-12-01 | 2.75                     | 2.50                      |
-| Jessica Lee    | 2022-12-01 | 4.50                     | 4.75                      |
-| Michael Green  | 2023-01-01 | 4.00                     | 3.50                      |
-| Sarah Connor   | 2023-01-01 | 3.50                     | 3.00                      |
-| John Doe       | 2023-01-01 | 3.75                     | 3.25                      |
-| Jane Smith     | 2023-01-01 | 4.25                     | 4.00                      |
-| Emily Davis    | 2023-01-01 | 3.00                     | 3.50                      |
-| Chris Brown    | 2023-01-01 | 4.50                     | 4.00                      |
-| Anna Johnson   | 2023-01-01 | 3.75                     | 3.25                      |
-| Robert Wilson  | 2023-01-01 | 2.50                     | 2.75                      |
-| Jessica Lee    | 2023-01-01 | 4.75                     | 4.50                      |
+For the movie 'Space Odyssey', find all users who watched it more than once (on different days). For each such user, show:
+- Name
+- Number of times watched
+- The earliest and latest view dates
+- The number of days between first and last view
+
+Order by number of times watched descending, then name ascending.
 
 ```sql
--- Write your SQL query here
+SELECT
+	u.name,
+    COUNT(DISTINCT vh.view_date) AS times_watched,
+    MIN(vh.view_date) AS first_view,
+    MAX(vh.view_date) AS last_view,
+    COALESCE(
+      DATEDIFF(MAX(vh.view_date), MIN(vh.view_date))
+    , 0) AS days_between
+FROM
+	movies m
+JOIN
+	viewing_history vh ON vh.movie_id = m.movie_id
+JOIN
+	users u ON u.user_id = vh.user_id
+WHERE
+	m.title = 'Space Odyssey'
+GROUP BY
+	u.name
+HAVING
+	days_between >= 1
+ORDER BY
+	times_watched DESC,
+    u.name ASC;
 ```
 
-## Question 3: Class Popularity Trends and Peak Times
-*Task:* Determine the most popular class (by total attendance) for each day of the week (e.g., Monday, Tuesday). Also, find the overall peak attendance hour for all classes combined. Show day_of_week, most_popular_class, total_attendance_for_class, and overall_peak_hour, peak_hour_attendance. (Assume schedule_date in `classes` table implies the time the class starts, and use `class_attendance` for attendance data).
+**Expected Output:**
 
-*Expected Output:*
-| day_of_week | most_popular_class | total_attendance_for_class | overall_peak_hour | peak_hour_attendance |
-|-------------|--------------------|----------------------------|-------------------|----------------------|
-| Monday      | Morning Yoga       | 8                          | 07:00             | 15                   |
-| Tuesday     | Pilates Basics     | 7                          | 07:00             | 15                   |
-| Wednesday   | HIIT Workout       | 10                         | 18:00             | 20                   |
-| Thursday    | Evening Yoga       | 6                          | 19:00             | 18                   |
-| Friday      | CrossFit Basics    | 9                          | 17:00             | 22                   |
-| Saturday    | Zumba Class        | 12                         | 10:00             | 25                   |
-| Sunday      | Rest Day           | 0                          | null              | 0                    |
+| name    | times_watched | first_view  | last_view   | days_between |
+|---------|---------------|-------------|-------------|--------------|
 
-```sql
--- Write your SQL query here
-```
-
-## Question 4: Member Cohort Analysis - First Class to Rating
-*Task:* For cohorts of members based on their join_year and join_month, calculate the average time (in days) it takes for a member to give their first trainer rating after attending their first class. Show join_cohort (YYYY-MM), avg_days_to_first_rating.
-
-*Expected Output:*
-| join_cohort | avg_days_to_first_rating |
-|-------------|--------------------------|
-| 2022-01     | 5.5                      |
-| 2022-02     | 3.0                      |
-| 2022-03     | 4.0                      |
-| 2022-04     | 6.5                      |
-| 2022-05     | 7.0                      |
-| 2022-06     | 8.0                      |
-| 2022-07     | 4.5                      |
-| 2022-08     | 3.5                      |
-| 2022-09     | 6.0                      |
-| 2022-10     | 5.0                      |
-| 2022-11     | 7.5                      |
-| 2022-12     | 4.0                      |
-| 2023-01     | 3.0                      |
-| 2023-02     | 6.0                      |
-| 2023-03     | 5.5                      |
-| 2023-04     | 4.5                      |
-| 2023-05     | 3.5                      |
-| 2023-06     | 6.5                      |
-| 2023-07     | 7.0                      |
-| 2023-08     | 4.0                      |
-| 2023-09     | 5.0                      |
-| 2023-10     | 7.5                      |
-| 2023-11     | 3.0                      |
-| 2023-12     | 6.0                      |
-
-```sql
--- Write your SQL query here
-```
