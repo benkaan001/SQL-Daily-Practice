@@ -1,63 +1,61 @@
-## Question 1: User Order Statistics
+### Question 1: Identifying Feedback Trends by Source Channel
 
-For each user, calculate the total number of orders placed in June 2025, the total amount spent, and the average order value (rounded to 2 decimals).
+Analyze the feedback trends by `source_channel`. For this task:
 
-- Show user name, total orders, total amount spent, and average order value.
-- Only include users who placed at least 2 orders in June 2025.
-- Order by total amount spent descending, then user name ascending.
+1. Count the total number of feedback entries for each `source_channel`.
+2. Calculate the percentage of feedback entries for each `source_channel` relative to the total feedback.
+3. Include only `source_channel` values with more than 5 feedback entries.
 
 **Expected Output:**
 
-| name    | total_orders | total_amount | avg_order_value |
-|---------|--------------|--------------|-----------------|
-| Alice   | 4            | 425.50       | 106.38          |
-| Eve     | 2            | 230.00       | 115.00          |
+| source_channel | total_feedback | percentage_feedback |
+|----------------|----------------|---------------------|
+| email          | 12             | 40.00%             |
+| survey         | 10             | 33.33%             |
+| social_media   | 8              | 26.67%             |
 
 ```sql
 -- Write your solution here
 ```
-
 ---
 
-## Question 2: User Login Patterns
+### Question 2: Analyzing Long Comments by Source Channel
 
-For each user, find their longest streak of consecutive login days in June 2025, and the longest gap (in days) between any two login days in June 2025.
+Identify the distribution of `long_comments` across `source_channel`. For this task:
 
-- Show user name, longest_streak (days), longest_gap (days).
-- If a user only logged in once, longest_streak should be 1 and longest_gap should be NULL.
-- Order by longest_streak descending, then name ascending.
+1. Count the total number of `long_comments` for each `source_channel`.
+2. Calculate the average length of `feedback_text` (in characters) for `long_comments` in each `source_channel`.
+3. Include only `source_channel` values with at least 2 `long_comments`.
 
 **Expected Output:**
 
-| name    | longest_streak | longest_gap |
-|---------|----------------|-------------|
-| Alice   | 3              | 1           |
-| Diana   | 2              | 2           |
+| source_channel | total_long_comments | avg_text_length |
+|----------------|----------------------|-----------------|
+| email          | 2                   | 210             |
+| survey         | 3                   | 215             |
 
 ```sql
 -- Write your solution here
 ```
-
 ---
 
-## Question 3: Order Status Analysis
+### Question 3: Filtering and Categorizing Feedback
 
-For each order status in June 2025, calculate:
-- The total number of orders with that status
-- The total amount of those orders
-- The average order value (rounded to 2 decimals)
+Find feedback entries that are **not short** and come from `social_media`. For this task:
 
-Show order status, total orders, total amount, and average order value. Order by total amount descending.
+1. Include `feedback_id`, `feedback_text`, `source_channel`, and `comment_category`.
+2. Order the results by `feedback_id` in ascending order.
 
 **Expected Output:**
 
-| status     | total_orders | total_amount | avg_order_value |
-|------------|--------------|--------------|-----------------|
-| Completed  | 8            | 835.50       | 104.44          |
-| Pending    | 3            | 265.00       | 88.33           |
-| Cancelled  | 2            | 220.00       | 110.00          |
+| feedback_id | feedback_text                                      | source_channel | comment_category     |
+|-------------|----------------------------------------------------|----------------|----------------------|
+| 9           | Had some issues with billing, but they were resolved quickly. | social_media   | mid_length_comments |
+| 15          | Terrible experience, the app crashes all the time. | social_media   | mid_length_comments |
+| 16          | Staff is not very helpful, and the service is slow. | social_media   | mid_length_comments |
+| 20          | Navigating the website was challenging, and the customer support response time was slower than expected. Improvements in these areas would greatly enhance the user experience. | social_media   | long_comments       |
 
 ```sql
 -- Write your solution here
 ```
-
+---
