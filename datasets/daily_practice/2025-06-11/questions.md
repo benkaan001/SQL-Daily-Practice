@@ -1,68 +1,73 @@
-### Question 1: Identifying High-Value Customers with Purchase Patterns
+## Question 1: Channel Performance and Comment Distribution
 
-Identify high-value customers and analyze their purchase patterns. For this task:
+The marketing team wants to understand the performance and nature of feedback from different channels.
 
-1. Calculate the total amount spent by each customer.
-2. Count the number of distinct products purchased by each customer.
-3. Calculate the average order value for each customer.
-4. Rank customers based on their total spending in descending order.
-5. Include only customers who have spent more than $2000 and purchased at least 3 distinct products.
-6. Use a window function to assign ranks.
+Write a query to analyze the distribution of comment categories (`short_comments`, `mid_length_comments`, `long_comments`) for each `source_channel`. Your output should include the channel, the total number of feedback entries for that channel, the count for each specific comment category, and the ratio of long comments to the total number of comments for that channel.
+
+Order the results by the long comment ratio in descending order.
 
 **Expected Output:**
 
-| customer_id | total_spent | distinct_products | avg_order_value | rank |
-|-------------|-------------|-------------------|-----------------|------|
-| 109         | 2325.00     | 3                 | 775.00          | 1    |
+| source_channel | total_feedback | short_comments | mid_length_comments | long_comments | long_comment_ratio |
+|----------------|----------------|----------------|---------------------|---------------|--------------------|
+| survey         | 16             | 6              | 4                   | 6             | 0.3750             |
+| email          | 16             | 6              | 8                   | 2             | 0.1250             |
+| social_media   | 20             | 8              | 10                  | 2             | 0.1000             |
 
+
+**Your Solution:**
 ```sql
 -- Write your solution here
+
 ```
+
 ---
 
-### Question 2: Discount Impact Analysis with Recovery Scenarios
+## Question 2: Negative Keyword Hotspots
 
-Analyze the impact of discounts on revenue and explore recovery scenarios. For this task:
+To prioritize improvements, the product team needs to identify the most frequently mentioned problems in detailed feedback.
 
-1. Calculate the total discount given for each product.
-2. Calculate the percentage of total revenue lost due to discounts for each product.
-3. Simulate two recovery scenarios:
-   - Scenario A: Discounts are reduced by 50%.
-   - Scenario B: Discounts are eliminated entirely.
-4. Calculate the potential revenue recovery for each scenario.
-5. Include only products with a total discount greater than $100.
+Write a query that scans through feedback text categorized as `mid_length_comments` or `long_comments` for specific negative keywords: 'crash', 'slow', 'difficult', 'missing', and 'issue'. Count the number of feedback entries that mention each of these keywords. A single feedback entry should only be counted once per keyword, even if the keyword appears multiple times within that text.
+
+The final output should list each keyword and its corresponding mention count, ordered from the most frequent to the least frequent.
 
 **Expected Output:**
 
-| product_name | total_discount | pct_revenue_lost | recovery_scenario_a | recovery_scenario_b |
-|--------------|----------------|------------------|---------------------|---------------------|
-| Laptop       | 200.00         | 8.33%            | 100.00              | 200.00              |
-| Smartphone   | 125.00         | 5.00%            | 62.50               | 125.00              |
+| keyword   | mention_count |
+|-----------|---------------|
+| crash     | 5             |
+| slow      | 5             |
+| issue     | 3             |
+| difficult | 1             |
+| missing   | 1             |
 
+
+**Your Solution:**
 ```sql
 -- Write your solution here
+
 ```
+
 ---
 
-### Question 3: Orders Without Customer Information with Advanced Ranking
+## Question 3: Data Quality Check for Duplicate Feedback
 
-Identify and rank orders without customer information using advanced criteria. For this task:
+The data integrity team suspects that there might be duplicate feedback entries in the dataset. They need a report that identifies these duplicates and summarizes their properties.
 
-1. Include `order_id`, `product_name`, `order_date`, and `total_amount`.
-2. Calculate the rank of each order based on `total_amount` in descending order.
-3. For orders with the same `total_amount`, rank them by `order_date` in ascending order.
-4. Additionally, calculate the cumulative total amount for all ranked orders.
-5. Use window functions to assign ranks and calculate the cumulative total.
+Write a query to find all feedback texts that appear more than once in the table. For each of these duplicate texts, calculate the total number of times it appears, the number of distinct source channels it came from, and the number of distinct comment categories it was assigned to.
+
+This will help the team assess if the same feedback is being logged multiple times, potentially from different sources or with different classifications. Order the results by the occurrence count in descending order.
 
 **Expected Output:**
 
-| order_id | product_name | order_date  | total_amount | rank | cumulative_total |
-|----------|--------------|-------------|--------------|------|------------------|
-| 14       | Headphones   | 2025-06-14  | 450.00       | 1    | 450.00           |
-| 19       | Router       | 2025-06-19  | 290.00       | 2    | 740.00           |
-| 16       | Keyboard     | 2025-06-16  | 200.00       | 3    | 940.00           |
+| feedback_text                                  | occurrence_count | distinct_channels | distinct_categories |
+|------------------------------------------------|------------------|-------------------|---------------------|
+| Service could be better, not fully satisfied.  | 2                | 1                 | 1                   |
+| Service needs enhancement for better satisfaction. | 2                | 1                 | 1                   |
+| App crashes frequently, frustrating experience. | 2                | 1                 | 1                   |
 
+
+**Your Solution:**
 ```sql
 -- Write your solution here
 ```
----
