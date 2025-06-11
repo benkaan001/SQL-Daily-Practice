@@ -9,13 +9,32 @@ Analyze the feedback trends by `source_channel`. For this task:
 **Expected Output:**
 
 | source_channel | total_feedback | percentage_feedback |
-|----------------|----------------|---------------------|
-| email          | 12             | 40.00%             |
-| survey         | 10             | 33.33%             |
-| social_media   | 8              | 26.67%             |
+| -------------- | -------------- | ------------------- |
+| email          | 12             | 40.00%              |
+| survey         | 9              | 30.00%              |
+| social_media   | 9              | 30.00%              |
 
 ```sql
--- Write your solution here
+WITH total_feedback_count AS (
+  SELECT
+  	COUNT(*)  AS feedback_count
+  FROM
+  	feedback
+)
+SELECT
+	source_channel,
+    COUNT(feedback_id) AS total_feedback,
+    CONCAT(
+        ROUND(
+            COUNT(feedback_id) / (SELECT feedback_count FROM total_feedback_count) * 100
+        ,2)
+    , '%') AS percentage_feedback
+FROM
+	feedback
+GROUP BY
+	source_channel
+HAVING
+	COUNT(feedback_id) > 5;
 ```
 ---
 
@@ -30,9 +49,9 @@ Identify the distribution of `long_comments` across `source_channel`. For this t
 **Expected Output:**
 
 | source_channel | total_long_comments | avg_text_length |
-|----------------|----------------------|-----------------|
-| email          | 2                   | 210             |
-| survey         | 3                   | 215             |
+| -------------- | ------------------- | --------------- |
+| email          | 2                   | 167             |
+| survey         | 3                   | 185             |
 
 ```sql
 -- Write your solution here
@@ -48,14 +67,26 @@ Find feedback entries that are **not short** and come from `social_media`. For t
 
 **Expected Output:**
 
-| feedback_id | feedback_text                                      | source_channel | comment_category     |
-|-------------|----------------------------------------------------|----------------|----------------------|
-| 9           | Had some issues with billing, but they were resolved quickly. | social_media   | mid_length_comments |
-| 15          | Terrible experience, the app crashes all the time. | social_media   | mid_length_comments |
-| 16          | Staff is not very helpful, and the service is slow. | social_media   | mid_length_comments |
+| feedback_id | feedback_text                                                                                                                                                                   | source_channel | comment_category    |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------- |
+| 9           | Had some issues with billing, but they were resolved quickly.                                                                                                                   | social_media   | mid_length_comments |
+| 15          | Terrible experience, the app crashes all the time.                                                                                                                              | social_media   | mid_length_comments |
+| 16          | Staff is not very helpful, and the service is slow.                                                                                                                             | social_media   | mid_length_comments |
 | 20          | Navigating the website was challenging, and the customer support response time was slower than expected. Improvements in these areas would greatly enhance the user experience. | social_media   | long_comments       |
+| 29          | Service could be better, not fully satisfied.                                                                                                                                   | social_media   | mid_length_comments |
 
 ```sql
--- Write your solution here
+SELECT
+    feedback_id,
+    feedback_text,
+    source_channel,
+    comment_category
+FROM
+    feedback
+WHERE
+    comment_category NOT LIKE '%short%'
+    AND source_channel = 'social_media'
+ORDER BY
+    feedback_id;
 ```
 ---
