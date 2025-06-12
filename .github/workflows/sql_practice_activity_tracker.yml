@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Get the full commit history for accurate long-term stats
+          fetch-depth: 0  # Get the full commit history
 
       - name: Pull latest changes
         run: git pull origin main
@@ -37,15 +37,10 @@ jobs:
             echo "message=⚠️ Practice pending" >> $GITHUB_OUTPUT
           fi
 
-          # Calculate 30-day streak
+          # Calculate streak by counting days with commits in the last 30 days
           STREAK_DATA=$(git log --since="30 days ago" --author="$PRACTICE_AUTHOR_EMAIL" --date=short --pretty=format:"%ad" | sort | uniq)
           STREAK_COUNT=$(echo "$STREAK_DATA" | wc -l)
           echo "streak=$STREAK_COUNT" >> $GITHUB_OUTPUT
-
-          # Calculate Yearly Activity
-          YEARLY_DATA=$(git log --since="360 days ago" --author="$PRACTICE_AUTHOR_EMAIL" --date=short --pretty=format:"%ad" | sort | uniq)
-          YEARLY_COUNT=$(echo "$YEARLY_DATA" | wc -l)
-          echo "yearly_activity=$YEARLY_COUNT" >> $GITHUB_OUTPUT
 
           # Get last 7 days activity for a mini report
           LAST_WEEK=$(git log --since="7 days ago" --author="$PRACTICE_AUTHOR_EMAIL" --date=short --pretty=format:"%ad" | sort | uniq)
@@ -74,11 +69,9 @@ jobs:
 
           ${{ steps.activity_analysis.outputs.message }}
 
-          ## Practice Metrics
+          ## Practice Streak
 
-          **Current Streak (Last 30 Days):** ${{ steps.activity_analysis.outputs.streak }} days
-
-          **Yearly Activity (Last 360 Days):** ${{ steps.activity_analysis.outputs.yearly_activity }} days
+          **Current streak:** ${{ steps.activity_analysis.outputs.streak }} days
 
           ## Recent Activity
 
