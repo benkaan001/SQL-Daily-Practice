@@ -19,11 +19,49 @@ jobs:
       - name: Pull latest changes
         run: git pull origin main
 
+      # - name: Analyze Practice Activity
+      #   id: activity_analysis
+      #   env:
+      #     PRACTICE_AUTHOR_EMAIL: ${{ secrets.USER_EMAIL }}
+      #   run: |
+      #     # Get today's date
+      #     TODAY=$(date +"%Y-%m-%d")
+      #     echo "today=$TODAY" >> $GITHUB_OUTPUT
+
+      #     # Check if there are any commits for today
+      #     if git log --since="1 day ago" --author="$PRACTICE_AUTHOR_EMAIL" | grep -q "."; then
+      #       echo "status=completed" >> $GITHUB_OUTPUT
+      #       echo "message=✅ Practice completed" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "status=pending" >> $GITHUB_OUTPUT
+      #       echo "message=⚠️ Practice pending" >> $GITHUB_OUTPUT
+      #     fi
+
+      #     # Calculate streak by counting days with commits in the last 30 days
+      #     STREAK_DATA=$(git log --since="30 days ago" --author="$PRACTICE_AUTHOR_EMAIL" --date=short --pretty=format:"%ad" | sort | uniq)
+      #     STREAK_COUNT=$(echo "$STREAK_DATA" | wc -l)
+      #     echo "streak=$STREAK_COUNT" >> $GITHUB_OUTPUT
+
+      #     # Get last 7 days activity for a mini report
+      #     LAST_WEEK=$(git log --since="7 days ago" --author="$PRACTICE_AUTHOR_EMAIL" --date=short --pretty=format:"%ad" | sort | uniq)
+      #     echo "last_week<<EOF" >> $GITHUB_OUTPUT
+      #     echo "$LAST_WEEK" >> $GITHUB_OUTPUT
+      #     echo "EOF" >> $GITHUB_OUTPUT
       - name: Analyze Practice Activity
         id: activity_analysis
         env:
           PRACTICE_AUTHOR_EMAIL: ${{ secrets.USER_EMAIL }}
         run: |
+          # --- START DEBUGGING ---
+          echo "--- DEBUGGING ---"
+          echo "Running on branch: $(git rev-parse --abbrev-ref HEAD)"
+          echo "Using email for author check: ${{ secrets.USER_EMAIL }}"
+
+          echo "--- RECENT COMMIT LOG (LAST 15 COMMITS) ---"
+          git log -n 15 --pretty=format:"%h %ad | %an <%ae> | %s"
+          echo "------------------------------------------"
+          # --- END DEBUGGING ---
+
           # Get today's date
           TODAY=$(date +"%Y-%m-%d")
           echo "today=$TODAY" >> $GITHUB_OUTPUT
@@ -40,6 +78,15 @@ jobs:
           # Calculate streak by counting days with commits in the last 30 days
           STREAK_DATA=$(git log --since="30 days ago" --author="$PRACTICE_AUTHOR_EMAIL" --date=short --pretty=format:"%ad" | sort | uniq)
           STREAK_COUNT=$(echo "$STREAK_DATA" | wc -l)
+
+          # --- START DEBUGGING ---
+          echo "--- STREAK CALCULATION ---"
+          echo "Raw streak data found:"
+          echo "${STREAK_DATA}"
+          echo "Calculated streak count: ${STREAK_COUNT}"
+          echo "--------------------------"
+          # --- END DEBUGGING ---
+
           echo "streak=$STREAK_COUNT" >> $GITHUB_OUTPUT
 
           # Get last 7 days activity for a mini report
@@ -48,6 +95,7 @@ jobs:
           echo "$LAST_WEEK" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+          
       - name: Generate Activity Badge
         run: |
           mkdir -p .github/badges
