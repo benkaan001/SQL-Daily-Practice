@@ -8,7 +8,7 @@ Last updated: 2025-06-12
 
 ## Practice Streak
 
-**Current streak:** 15 days
+**Current streak:** 20 days
 
 ## Recent Activity
 
@@ -16,7 +16,6 @@ Days with practice in the last week:
 
 ```
 2025-06-06
-2025-06-07
 2025-06-08
 2025-06-09
 2025-06-10
