@@ -33,16 +33,19 @@
 Question 2: Countries with No Official Languages
 Task: Identify all countries that do not have any official languages listed in the country_languagies table. For these countries, also list their most spoken unofficial language (the one with the highest percentage).
 
-Expected Output:
-| country_name | most_spoken_unofficial_language | percentage |
-|--------------|---------------------------------|------------|
-| Cameroon     | Fang                            | 19.7       |
-| Côte d’Ivoire| Akan                            | 30.0       |
-| Ethiopia     | Oromo                           | 31.0       |
-| Ghana        | Akan                            | 52.4       |
-| Guinea       | Ful                             | 38.6       |
-| Mozambique   | Makua                           | 27.8       |
-| Tanzania     | Nyamwesi                        | 21.1       |
+| country_name                          | most_spoken_unofficial_language | percentage |
+| ------------------------------------- | ------------------------------- | ---------- |
+| Angola                                | Ovimbundu                       | 37.2       |
+| Cameroon                              | Fang                            | 19.7       |
+| Congo, The Democratic Republic of the | Luba                            | 18.0       |
+| Côte d’Ivoire                         | Akan                            | 30.0       |
+| Ethiopia                              | Oromo                           | 31.0       |
+| Ghana                                 | Akan                            | 52.4       |
+| Guinea                                | Ful                             | 38.6       |
+| Kenya                                 | Kikuyu                          | 20.9       |
+| Mozambique                            | Makua                           | 27.8       |
+| Nigeria                               | Joruba                          | 21.4       |
+| Zambia                                | Bemba                           | 29.7       |
 
 SQL Solution
 ```sql
@@ -54,14 +57,13 @@ Task: Calculate the total population for each continent. Then, for each country,
 
 Expected Output:
 | continent     | country_name       | country_population | continent_population | percentage_of_continent_pop |
-|---------------|--------------------|--------------------|----------------------|-----------------------------|
-| Asia          | China              | 1277558000         | 3705025700           | 34.48                       |
-| Africa        | Nigeria            | 111506000          | 784475000            | 14.21                       |
-| North America | United States      | 278357000          | 482993000            | 57.63                       |
-| South America | Brazil             | 170115000          | 345780000            | 49.20                       |
-| Europe        | Russian Federation | 146934000          | 730074600            | 20.13                       |
-| Oceania       | Australia          | 18886000           | 30449400             | 62.02                       |
-
+| ------------- | ------------------ | ------------------ | -------------------- | --------------------------- |
+| Africa        | Nigeria            | 111506000          | 603995000            | 18.46                       |
+| Asia          | China              | 1277558000         | 3587208000           | 35.61                       |
+| Europe        | Russian Federation | 146934000          | 614114600            | 23.93                       |
+| North America | United States      | 278357000          | 428081000            | 65.02                       |
+| Oceania       | Australia          | 18886000           | 18886000             | 100.00                      |
+| South America | Brazil             | 170115000          | 330494000            | 51.47                       |
 SQL Solution
 ```sql
 -- Write your SQL query here
