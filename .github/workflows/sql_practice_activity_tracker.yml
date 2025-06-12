@@ -140,7 +140,7 @@ jobs:
             echo "# SQL Daily Practice" > README.md
           fi
 
-          # Update or add badge section
+          # Update or add badge section using correct markers
           if grep -q "" README.md; then
             # Update existing badges
             sed -i '//,//c\\n![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-status.svg)\n![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n' README.md
