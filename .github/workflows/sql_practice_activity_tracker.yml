@@ -89,11 +89,16 @@ jobs:
           if [ ! -f README.md ]; then
             echo "# SQL Daily Practice" > README.md
           fi
-          if grep -q "" README.md; then
-            sed -i '//,//c\\n![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-status.svg)\n![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n' README.md
+
+          if grep -q "![Practice Status]" README.md; then
+            sed -i 's|![Practice Status](.*)|![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-status.svg)|' README.md
+            sed -i 's|![Practice Streak](.*)|![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)|' README.md
           else
-            sed -i '1a \n![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n' README.md
+            sed -i '1a ![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-status.svg)' README.md
+            sed -i '2a ![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)' README.md
           fi
+
+          # Add a section for automation features if missing
           if ! grep -q "## Automation Features" README.md; then
             cat >> README.md << EOF
 
