@@ -1,4 +1,6 @@
 # SQL-Daily-Practice
+![Practice Status](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-status.svg)
+![Practice Streak](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-streak.svg)
 <!-- PRACTICE-BADGES:START -->
 ![Practice Status](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-status.svg)
 ![Practice Streak](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-streak.svg)
