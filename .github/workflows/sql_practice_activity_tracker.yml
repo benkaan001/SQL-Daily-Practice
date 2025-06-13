@@ -92,7 +92,7 @@ jobs:
           if grep -q "" README.md; then
             sed -i '//,//c\\n![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-status.svg)\n![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n' README.md
           else
-            sed -i '1a \n![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-status.svg)\n![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n' README.md
+            sed -i '1a \n![Practice Status](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n![Practice Streak](https://github.com/${{ github.repository }}/blob/main/.github/badges/practice-streak.svg)\n' README.md
           fi
           if ! grep -q "## Automation Features" README.md; then
             cat >> README.md << EOF
