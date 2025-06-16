@@ -1,61 +1,173 @@
-## Question 1: Neighboring Cities by Population
+## Question 1: Countries with No Megacities
 
-**Task:** For every city with a population over 3 million, find another city **in the same country** with a population that is within 20% (either higher or lower) of its own. List the primary city's name and population, alongside the neighboring city's name and population. Ensure you don't list a city paired with itself.
+**Task:** Find all countries that do not have any cities with a population of 1 million or more listed in the `cities` table. For these countries, also list their most populous city (if any city is listed for them at all).
 
 **Expected Output:**
-| primary_city_name | primary_city_pop | neighboring_city_name | neighboring_city_pop |
-|-------------------|------------------|------------------------|-----------------------|
-| Sydney            | 3276207          | Melbourne              | 2865329               |
-| Melbourne         | 2865329          | Sydney                 | 3276207               |
-| Calcutta [Kolkata] | 4399819          | Chennai (Madras)       | 3841396               |
-| Chennai (Madras)  | 3841396          | Calcutta [Kolkata]     | 4399819               |
-| Shanghai          | 9696300          | Peking                 | 7472000               |
-| Peking            | 7472000          | Shanghai               | 9696300               |
-| Peking            | 7472000          | Chongqing              | 6351600               |
-| Chongqing         | 6351600          | Peking                 | 7472000               |
+| country_name                 | country_population | most_populous_city_name | city_population |
+|------------------------------|--------------------|-------------------------|-----------------|
 
 ### SQL Solution
 ```sql
--- Write your SQL query here
+WITH ranked_cites AS (
+    SELECT
+        name,
+        population,
+        country_code,
+        RANK() OVER(PARTITION BY country_code ORDER BY population DESC) as rnk
+    FROM
+        cities
+),
+excluded_countries AS (
+    SELECT DISTINCT
+        country_code
+    FROM
+        cities
+    WHERE
+        population >= 1000000
+)
+SELECT
+    co.name AS country_name,
+    co.population AS country_population,
+    rc.name AS most_populous_city_name,
+    rc.population AS city_population
+FROM
+    countries co
+JOIN
+    ranked_cites rc ON co.code = rc.country_code
+WHERE
+    rc.rnk = 1
+    AND co.code NOT IN (SELECT country_code FROM excluded_countries)
+ORDER BY
+    co.population DESC;
+
 ```
 ---
 
-## Question 2: Countries with Unique Official Languages
+## Question 2: GNP Gap Analysis Within Continents
 
-**Task:** Identify countries that have exactly one official language recorded, where that same language is **not** an official language in any other country in the dataset. This will find countries with a truly unique official language.
+**Task:** For each continent, find the country with the highest Gross National Product (GNP). Then, for all other countries on the same continent, calculate the difference between their GNP and the highest GNP. From this list, identify the 5 largest GNP differences globally
 
 **Expected Output:**
-| country_name | unique_official_language |
-|--------------|--------------------------|
-| Bangladesh   | Bengali                  |
-| Iran         | Persian                  |
-| Japan        | Japanese                 |
-| Poland       | Polish                   |
-| Thailand     | Thai                     |
-| Turkey       | Turkish                  |
-| Vietnam      | Vietnamese               |
+| continent     | country_name  | gnp      | top_country_gnp | gnp_gap    |
+| ------------- | ------------- | -------- | --------------- | ---------- |
+| Africa        | South Africa  | 2352.00  | 116729.00       | 114377.00  |
+| Asia          | Japan         | 1813.00  | 3787042.00      | 3785229.00 |
+| Europe        | Germany       | 12178.00 | 2133367.00      | 2121189.00 |
+| North America | United States | 15846.00 | 8510700.00      | 8494854.00 |
+| South America | Brazil        | 19770.00 | 776739.00       | 756969.00  |
+
 
 ### SQL Solution
 ```sql
--- Write your SQL query here
+WITH ranked_gnps AS (
+  SELECT
+    continent,
+    name AS country_name,
+    gnp,
+    RANK() OVER (PARTITION BY continent ORDER BY gnp DESC) AS gnp_rank
+  FROM
+    countries
+),
+top_gnps AS (
+  SELECT
+    continent,
+    country_name,
+    gnp AS top_country_gnp
+  FROM
+    ranked_gnps
+  WHERE
+    gnp_rank = 1
+),
+bottom_gnps AS (
+  SELECT
+    continent,
+    country_name,
+    MIN(gnp) AS gnp
+  FROM
+    ranked_gnps
+  WHERE
+    gnp_rank != 1
+  GROUP BY
+    continent,
+    country_name
+),
+ranked_gnp_gaps AS (
+  SELECT
+    top.continent,
+    top.country_name,
+    bottom.gnp,
+    top.top_country_gnp,
+    (top.top_country_gnp - bottom.gnp) AS gnp_gap,
+    ROW_NUMBER() OVER (PARTITION BY top.continent ORDER BY (top.top_country_gnp - bottom.gnp) DESC) AS gnp_gap_rank
+  FROM
+    bottom_gnps bottom
+  JOIN
+    top_gnps top ON top.continent = bottom.continent
+)
+SELECT
+  continent,
+  country_name,
+  gnp,
+  top_country_gnp,
+  gnp_gap
+FROM
+  ranked_gnp_gaps
+WHERE
+  gnp_gap_rank = 1
 ```
 ---
 
-## Question 3: Continent City Population Distribution
+## Question 3: Urbanization Concentration Analysis
 
-**Task:** For each continent, categorize its total city population into three buckets: 'Small' (cities under 1 million), 'Medium' (cities from 1 million to 5 million), and 'Large' (cities over 5 million). The final output should have one row per continent with the total population for each category.
+**Task:** Calculate the total population of all listed cities for each country. Then, calculate an "Urbanization Ratio" by dividing this total city population by the country's total population. Find all countries where this urbanization ratio is greater than 25% and their total country population is less than the average population of all countries in their continent.
 
 **Expected Output:**
-| continent     | small_city_population | medium_city_population | large_city_population |
-|---------------|-----------------------|------------------------|-----------------------|
-| Africa        | 0                     | 16733600               | 11853479              |
-| Asia          | 0                     | 120531454              | 104253100             |
-| Europe        | 0                     | 26644026               | 28459200              |
-| North America | 0                     | 18788914               | 28284581              |
-| Oceania       | 0                     | 8530164                | 0                     |
-| South America | 0                     | 19729868               | 39626090              |
+| country_name           | continent     | urbanization_ratio | country_population | continent_avg_population |
+| ---------------------- | ------------- | ------------------ | ------------------ | ------------------------ |
+| Armenia                | Asia          | 0.35               | 3520000            | 123,696,828              |
+| Chile                  | South America | 0.31               | 15211000           | 41,311,750               |
+| Ecuador                | South America | 0.29               | 12646000           | 41,311,750               |
+| Hong Kong              | Asia          | 0.49               | 6782000            | 123,696,828              |
+| South Korea            | Asia          | 0.49               | 46844000           | 123,696,828              |
+| Lebanon                | Asia          | 0.34               | 3282000            | 123,696,828              |
+| Libyan Arab Jamahiriya | Africa        | 0.30               | 5605000            | 31,789,211               |
+| Peru                   | South America | 0.25               | 25662000           | 41,311,750               |
+| Singapore              | Asia          | 1.13               | 3567000            | 123,696,828              |
+| Uruguay                | South America | 0.37               | 3337000            | 41,311,750               |
 
 ### SQL Solution
 ```sql
--- Write your SQL query here
+WITH city_populations AS (
+    SELECT
+        country_code,
+        SUM(population) AS total_city_population
+    FROM
+        cities
+    GROUP BY
+        country_code
+),
+avg_continent_populations AS (
+    SELECT
+        continent,
+        AVG(population) AS continent_avg_population
+    FROM
+        countries
+    GROUP BY
+        continent
+)
+SELECT
+    co.name AS country_name,
+    co.continent,
+    ROUND(cp.total_city_population / co.population, 2) AS urbanization_ratio,
+    co.population AS country_population,
+    FORMAT(acp.continent_avg_population, 0) AS continent_avg_population
+FROM
+    countries co
+JOIN
+    city_populations cp ON co.code = cp.country_code
+JOIN
+    avg_continent_populations acp ON co.continent = acp.continent
+WHERE
+    cp.total_city_population / co.population > 0.25
+    AND co.population < acp.continent_avg_population;
 ```
