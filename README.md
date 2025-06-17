@@ -3,8 +3,6 @@
 ![Practice Status](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-status.svg)
 ![Practice Streak](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-streak.svg)
 <!-- PRACTICE-BADGES:END -->
-![Practice Status](https://github.com/benkaan001/SQL-Daily-Practice/blob/main/.github/badges/practice-status.svg)
-<!-- PRACTICE-BADGES:END -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
