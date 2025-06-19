@@ -4,31 +4,31 @@ Retrieve the first name, last name, salary, department name, and rank of the top
 
 **Expected Output:**
 
-| **first_name** | **last_name** | **salary** | **department_name** | **employee_rank** |
-| -------------------- | ------------------- | ---------------- | ------------------------- | ----------------------- |
-| Alice                | Williams            | 130000.00        | Engineering               | 1                       |
-| Liam                 | Harris              | 92000.00         | Engineering               | 2                       |
-| Kevin                | White               | 90000.00         | Engineering               | 3                       |
-| Mia                  | Martin              | 90000.00         | Engineering               | 3                       |
-| Charlie              | Davis               | 115000.00        | Finance                   | 1                       |
-| Rachel               | Clark               | 80000.00         | Finance                   | 2                       |
-| Tina                 | Walker              | 80000.00         | Finance                   | 2                       |
-| Sam                  | Lewis               | 72000.00         | Finance                   | 3                       |
-| Bob                  | Brown               | 95000.00         | Human Resources           | 1                       |
-| Paul                 | Martinez            | 65000.00         | Human Resources           | 2                       |
-| Quinn                | Robinson            | 50000.00         | Human Resources           | 3                       |
-| Peter                | Jones               | 110000.00        | Marketing                 | 1                       |
-| Hannah               | Anderson            | 70000.00         | Marketing                 | 2                       |
-| Julia                | Jackson             | 70000.00         | Marketing                 | 2                       |
-| Ian                  | Thomas              | 55000.00         | Marketing                 | 3                       |
-| Jane                 | Smith               | 120000.00        | Sales                     | 1                       |
-| Ethan                | Wilson              | 62000.00         | Sales                     | 2                       |
-| Diana                | Miller              | 60000.00         | Sales                     | 3                       |
-| Fiona                | Moore               | 60000.00         | Sales                     | 3                       |
+| first_name | last_name | salary    | department_name | employee_rank |
+| ---------- | --------- | --------- | --------------- | ------------- |
+| John       | Doe       | 150000.00 | Null            | 1             |
+| Wendy      | Young     | 140000.00 | Null            | 2             |
+| Alice      | Williams  | 130000.00 | Engineering     | 1             |
+| Liam       | Harris    | 92000.00  | Engineering     | 2             |
+| Kevin      | White     | 90000.00  | Engineering     | 3             |
+| Mia        | Martin    | 90000.00  | Engineering     | 3             |
+| Charlie    | Davis     | 115000.00 | Finance         | 1             |
+| Rachel     | Clark     | 80000.00  | Finance         | 2             |
+| Tina       | Walker    | 80000.00  | Finance         | 2             |
+| Bob        | Brown     | 95000.00  | Human Resources | 1             |
+| Paul       | Martinez  | 65000.00  | Human Resources | 2             |
+| Quinn      | Robinson  | 50000.00  | Human Resources | 3             |
+| Peter      | Jones     | 110000.00 | Marketing       | 1             |
+| Hannah     | Anderson  | 70000.00  | Marketing       | 2             |
+| Julia      | Jackson   | 70000.00  | Marketing       | 2             |
+| Jane       | Smith     | 120000.00 | Sales           | 1             |
+| Ethan      | Wilson    | 62000.00  | Sales           | 2             |
+| Diana      | Miller    | 60000.00  | Sales           | 3             |
+| Fiona      | Moore     | 60000.00  | Sales           | 3             |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -41,11 +41,11 @@ Calculate the average salary of employees who report to a manager (i.e., `manage
 
 | **avg_salary_managed** | **avg_salary_unmanaged** |
 | ---------------------------- | ------------------------------ |
-| 84500.00                     | 145000.00                      |
+| 75750.00                     | 145000.00                      |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -64,7 +64,7 @@ Identify departments where the average tenure (time in years an employee has bee
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
