@@ -23,7 +23,7 @@ Order the results by longest_consecutive_days descending, then by employee_id as
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -44,16 +44,16 @@ Order the results by average_productive_hours descending.
 
 **Expected Output:**
 
-| **department** | **average_productive_hours** |
-| -------------------- | ---------------------------------- |
-| Sales                | 8.33                               |
-| Engineering          | 8.08                               |
-| HR                   | 8.00                               |
-| Marketing            | 8.00                               |
+| department  | average_productive_hours |
+| ----------- | ------------------------ |
+| Sales       | 8.25                     |
+| HR          | 8.02                     |
+| Marketing   | 8.00                     |
+| Engineering | 7.97                     |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -68,14 +68,13 @@ Order the results by number_of_incomplete_logs descending, then by employee_id a
 
 **Expected Output:**
 
-| **employee_id** | **first_name** | **last_name** | **number_of_incomplete_logs** |
-| --------------------- | -------------------- | ------------------- | ----------------------------------- |
-| 102                   | Bob                  | Johnson             | 2                                   |
-| 104                   | Diana                | Miller              | 1                                   |
+| employee_id | first_name | last_name | number_of_incomplete_logs |
+| ----------- | ---------- | --------- | ------------------------- |
+| 102         | Bob        | Johnson   | 2                         |
+| 104         | Diana      | Miller    | 1                         |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
-
 ```
