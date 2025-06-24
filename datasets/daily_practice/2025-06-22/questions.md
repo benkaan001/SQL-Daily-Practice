@@ -12,24 +12,23 @@ Order the results by `completion_percentage` descending, then by `project_id` as
 
 **Expected Output:**
 
-| **project_id** | **project_name** | **total_tasks** | **completed_tasks** | **completion_percentage** | **longest_task_name** | **longest_task_duration_days** |
-| -------------------- | ---------------------- | --------------------- | ------------------------- | ------------------------------- | --------------------------- | ------------------------------------ |
-| 3                    | Internal Tools Upgrade | 4                     | 2                         | 50.00                           | Audit Current Tools         | 18                                   |
-| 1                    | Website Redesign       | 7                     | 4                         | 57.14                           | Develop Backend             | 51                                   |
-| 4                    | Data Migration Project | 4                     | 2                         | 50.00                           | Data Transformation         | 36                                   |
-| 2                    | Mobile App Development | 5                     | 2                         | 40.00                           | Define Features             | 11                                   |
-| 5                    | New Product Launch     | 3                     | 1                         | 33.33                           | Market Research             | 24                                   |
-
+| project_id | project_name           | total_tasks | completed_tasks | completion_percentage | longest_task_name   | longest_task_duration_days |
+| ---------- | ---------------------- | ----------- | --------------- | --------------------- | ------------------- | -------------------------- |
+| 1          | Website Redesign       | 7           | 4               | 57.14                 | Develop Backend     | 51                         |
+| 3          | Internal Tools Upgrade | 4           | 2               | 50.00                 | Audit Current Tools | 18                         |
+| 4          | Data Migration Project | 4           | 2               | 50.00                 | Data Transformation | 36                         |
+| 2          | Mobile App Development | 5           | 2               | 40.00                 | Database Design     | 36                         |
+| 5          | New Product Launch     | 3           | 1               | 33.33                 | Market Research     | 24                         |
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
 
 ### Question 2: Employee Overdue Task Report
 
-Identify employees who are currently assigned to at least one task that is 'In Progress' or 'Not Started' and is past its due_date (relative to the current date: June 22, 2025).
+Identify employees who are currently assigned to at least one task that is 'In Progress' or 'Not Started' and is past its due_date (relative to the current date: June 22, 2024).
 
 For such employees, return their assigned_to name, the total_overdue_tasks_count, and the oldest_overdue_task_name (the task with the earliest due_date among their overdue tasks).
 
@@ -41,16 +40,14 @@ Order the results by total_overdue_tasks_count descending, then by assigned_to a
 
 **Expected Output:**
 
-| **assigned_to** | **total_overdue_tasks_count** | **oldest_overdue_task_name** |
-| --------------------- | ----------------------------------- | ---------------------------------- |
-| Bob Johnson           | 1                                   | Integrate APIs                     |
-| Charlie Brown         | 2                                   | Deploy Website                     |
-| Diana Miller          | 1                                   | Testing Phase                      |
-| Henry King            | 1                                   | Load Data                          |
+| assigned_to | total_overdue_tasks_count | oldest_overdue_task_name |
+| ----------- | ------------------------- | ------------------------ |
+| Bob Johnson | 1                         | Integrate APIs           |
+
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -73,7 +70,7 @@ Order the results by earliest_high_priority_completion_date ascending.
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```

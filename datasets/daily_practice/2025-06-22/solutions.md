@@ -12,24 +12,64 @@ Order the results by `completion_percentage` descending, then by `project_id` as
 
 **Expected Output:**
 
-| **project_id** | **project_name** | **total_tasks** | **completed_tasks** | **completion_percentage** | **longest_task_name** | **longest_task_duration_days** |
-| -------------------- | ---------------------- | --------------------- | ------------------------- | ------------------------------- | --------------------------- | ------------------------------------ |
-| 3                    | Internal Tools Upgrade | 4                     | 2                         | 50.00                           | Audit Current Tools         | 18                                   |
-| 1                    | Website Redesign       | 7                     | 4                         | 57.14                           | Develop Backend             | 51                                   |
-| 4                    | Data Migration Project | 4                     | 2                         | 50.00                           | Data Transformation         | 36                                   |
-| 2                    | Mobile App Development | 5                     | 2                         | 40.00                           | Define Features             | 11                                   |
-| 5                    | New Product Launch     | 3                     | 1                         | 33.33                           | Market Research             | 24                                   |
+| project_id | project_name           | total_tasks | completed_tasks | completion_percentage | longest_task_name   | longest_task_duration_days |
+| ---------- | ---------------------- | ----------- | --------------- | --------------------- | ------------------- | -------------------------- |
+| 1          | Website Redesign       | 7           | 4               | 57.14                 | Develop Backend     | 51                         |
+| 3          | Internal Tools Upgrade | 4           | 2               | 50.00                 | Audit Current Tools | 18                         |
+| 4          | Data Migration Project | 4           | 2               | 50.00                 | Data Transformation | 36                         |
+| 2          | Mobile App Development | 5           | 2               | 40.00                 | Database Design     | 36                         |
+| 5          | New Product Launch     | 3           | 1               | 33.33                 | Market Research     | 24                         |
 
 **Your Solution:**
 
-```
---- Write your solution here
+```sql
+WITH aggregated_tasks AS (
+  SELECT
+    p.project_id,
+    p.project_name,
+    COUNT(DISTINCT t.task_id) AS total_tasks,
+    SUM(CASE WHEN t.status = 'Completed' THEN 1 ELSE 0 END) AS completed_tasks
+  FROM
+    Tasks t
+  JOIN
+    Projects p ON p.project_id = t.project_id
+  GROUP BY
+    p.project_id,
+    p.project_name
+),
+grouped_tasks AS (
+  SELECT
+    task_id,
+    task_name,
+    project_id,
+    DATEDIFF(actual_end_date, actual_start_date) AS task_duration_days,
+    ROW_NUMBER() OVER (PARTITION BY project_id ORDER BY DATEDIFF(actual_end_date, actual_start_date) DESC, task_name ASC) AS rn
+  FROM
+    Tasks
+)
+SELECT
+  at.project_id,
+  at.project_name,
+  at.total_tasks,
+  at.completed_tasks,
+  ROUND(at.completed_tasks * 100.0 / at.total_tasks, 2) AS completion_percentage,
+  gt.task_name AS longest_task_name,
+  gt.task_duration_days AS longest_task_duration_days
+FROM
+  aggregated_tasks at
+JOIN
+  grouped_tasks gt ON at.project_id = gt.project_id
+WHERE
+  gt.rn = 1
+ORDER BY
+  completion_percentage DESC,
+  project_id ASC;
 
 ```
 
 ### Question 2: Employee Overdue Task Report
 
-Identify employees who are currently assigned to at least one task that is 'In Progress' or 'Not Started' and is past its due_date (relative to the current date: June 22, 2025).
+Identify employees who are currently assigned to at least one task that is 'In Progress' or 'Not Started' and is past its due_date (relative to the current date: June 22, 2024).
 
 For such employees, return their assigned_to name, the total_overdue_tasks_count, and the oldest_overdue_task_name (the task with the earliest due_date among their overdue tasks).
 
@@ -41,18 +81,49 @@ Order the results by total_overdue_tasks_count descending, then by assigned_to a
 
 **Expected Output:**
 
-| **assigned_to** | **total_overdue_tasks_count** | **oldest_overdue_task_name** |
-| --------------------- | ----------------------------------- | ---------------------------------- |
-| Bob Johnson           | 1                                   | Integrate APIs                     |
-| Charlie Brown         | 2                                   | Deploy Website                     |
-| Diana Miller          | 1                                   | Testing Phase                      |
-| Henry King            | 1                                   | Load Data                          |
+| assigned_to | total_overdue_tasks_count | oldest_overdue_task_name |
+| ----------- | ------------------------- | ------------------------ |
+| Bob Johnson | 1                         | Integrate APIs           |
 
 **Your Solution:**
 
-```
---- Write your solution here
-
+```sql
+WITH overdue_tasks AS (
+  SELECT
+    assigned_to,
+    task_name,
+    ROW_NUMBER() OVER (PARTITION BY assigned_to ORDER BY due_date ASC, task_name ASC) AS rn
+  FROM
+    Tasks
+  WHERE
+    status IN ('In Progress', 'Not Started')
+    AND due_date < '2024-06-22'
+  	AND assigned_to IS NOT NULL
+),
+assigned_tasks AS (
+  SELECT
+    assigned_to,
+    COUNT(task_id) AS total_overdue_tasks_count
+  FROM
+    Tasks
+  WHERE
+    status IN ('In Progress', 'Not Started')
+    AND due_date < '2024-06-22'
+  GROUP BY
+    assigned_to
+  HAVING
+  	total_overdue_tasks_count > 0
+)
+SELECT
+  at.assigned_to,
+  at.total_overdue_tasks_count,
+  ot.task_name AS oldest_overdue_task_name
+FROM
+  assigned_tasks at
+JOIN
+  overdue_tasks ot ON ot.assigned_to = at.assigned_to
+WHERE
+  ot.rn = 1;
 ```
 
 ### Question 3: Projects with Rapid High Priority Task Completion
@@ -73,7 +144,7 @@ Order the results by earliest_high_priority_completion_date ascending.
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
