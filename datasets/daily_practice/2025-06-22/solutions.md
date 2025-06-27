@@ -145,6 +145,35 @@ Order the results by earliest_high_priority_completion_date ascending.
 **Your Solution:**
 
 ```sql
---- Write your solution here
-
+WITH task_summary AS (
+    SELECT
+        p.project_id,
+        p.project_name,
+        p.end_date AS project_end_date,
+        COUNT(CASE WHEN t.priority = 'High' THEN t.task_id END) AS total_high_priority_tasks,
+        COUNT(CASE WHEN t.priority = 'High' AND t.status = 'Completed' THEN t.task_id END) AS completed_high_priority_tasks,
+        MIN(CASE WHEN t.priority = 'High' AND t.status = 'Completed' THEN t.actual_end_date END) AS earliest_high_priority_completion_date
+    FROM
+        Projects p
+    JOIN
+        Tasks t ON p.project_id = t.project_id
+    GROUP BY
+        p.project_id,
+        p.project_name,
+        p.end_date
+)
+SELECT
+    ts.project_name,
+    ts.project_end_date,
+    ts.earliest_high_priority_completion_date
+FROM
+    task_summary ts
+WHERE
+    -- at least one high-priority task in the project
+    ts.total_high_priority_tasks > 0
+    -- all high-priority tasks equals the completed high-priority tasks
+    AND ts.total_high_priority_tasks = ts.completed_high_priority_tasks
+    -- the earliest completion date exists and is before the project's end_date
+    AND ts.earliest_high_priority_completion_date IS NOT NULL
+    AND ts.earliest_high_priority_completion_date < ts.project_end_date;
 ```
