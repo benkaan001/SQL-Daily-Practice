@@ -1,27 +1,4 @@
-### Question 1: Users with Increasing Daily Login Count
-
-Identify users who have shown an increasing trend in their daily login counts over at least two consecutive days within June 2025.
-
-A login is defined by an activity_type of 'login'.
-
-Return the user_id, username, start_date_of_trend (the first day of the increasing streak), and trend_length_days.
-
-Only consider streaks of 2 or more days. If a user has multiple such streaks, return the longest one. If there's a tie for the longest streak, return the one with the earliest start_date_of_trend.
-
-**Expected Output:**
-
-| **user_id** | **username** | **start_date_of_trend** | **trend_length_days** |
-| ----------------- | ------------------ | ----------------------------- | --------------------------- |
-| 2                 | userB              | 2025-06-16                    | 3                           |
-
-**Your Solution:**
-
-```
---- Write your solution here
-
-```
-
-### Question 2: Monthly Active Users (MAU) by Country and Growth
+### Question 1: Monthly Active Users (MAU) by Country and Growth
 
 Calculate the Monthly Active Users (MAU) for each country for each month in 2025.
 
@@ -43,19 +20,61 @@ Order the results by country ascending, then by month_year ascending.
 
 **Expected Output:**
 
-| **country** | **month_year** | **current_month_mau** | **previous_month_mau** | **growth_rate_percentage** |
-| ----------------- | -------------------- | --------------------------- | ---------------------------- | -------------------------------- |
-| Canada            | 2025-06              | 1                           | ``                    | ``                        |
-| France            | 2025-06              | 1                           | ``                    | ``                        |
-| Germany           | 2025-06              | 0                           | ``                    | ``                        |
-| UK                | 2025-05              | 1                           | ``                    | ``                        |
-| USA               | 2025-06              | 2                           | ``                    | ``                        |
-| USA               | 2025-11              | 1                           | 2                            | -50.00                           |
+| country | month_year | current_month_mau | previous_month_mau | growth_rate_percentage |
+| ------- | ---------- | ----------------- | ------------------ | ---------------------- |
+| Canada  | 2025-06    | 1                 |                    |                        |
+| France  | 2025-06    | 1                 |                    |                        |
+| UK      | 2025-05    | 1                 |                    |                        |
+| USA     | 2025-06    | 3                 |                    |                        |
+| USA     | 2025-11    | 1                 | 3                  | -66.67                 |
 
 **Your Solution:**
 
-```
---- Write your solution here
+```sql
+WITH monthly_users AS (
+    SELECT
+        u.country,
+        DATE_FORMAT(al.activity_timestamp, '%Y-%m') AS month_year,
+        MONTH(al.activity_timestamp) AS month_numeric,
+        YEAR(al.activity_timestamp) AS year_numeric,
+        COUNT(DISTINCT al.user_id) AS current_month_mau
+    FROM
+        ActivityLogs al
+    JOIN
+        Users u ON al.user_id = u.user_id
+    WHERE
+        al.activity_type IN ('login', 'purchase')
+        AND YEAR(al.activity_timestamp) = 2025
+        AND u.country IS NOT NULL
+    GROUP BY
+        u.country,
+        month_year,
+        month_numeric,
+        year_numeric
+),
+maus AS (
+    SELECT
+        country,
+        month_year,
+        month_numeric,
+        current_month_mau,
+        LAG(current_month_mau, 1, 0) OVER (PARTITION BY country ORDER BY year_numeric, month_numeric) AS previous_month_mau
+    FROM
+        monthly_users
+)
+SELECT
+    country,
+    month_year,
+    current_month_mau,
+    NULLIF(previous_month_mau, 0) AS previous_month_mau,
+    ROUND(
+        (current_month_mau - previous_month_mau) * 100.0 / NULLIF(previous_month_mau, 0), 2
+    ) AS growth_rate_percentage
+FROM
+    maus
+ORDER BY
+    country ASC,
+    month_year ASC;
 
 ```
 
