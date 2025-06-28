@@ -36,31 +36,31 @@ Order the results by country ascending, then by month_year ascending.
 
 ### Question 2: User Session Duration Analysis
 
-For each user, calculate their average session duration (in minutes) for sessions that start with a 'login' and end with a 'logout' on the same day.
+For each user, calculate their average daily activity duration (in minutes) for days where they have both a 'login' and a 'logout' activity.
 
-A session is defined as the time between a 'login' and the immediately following 'logout' for the same user on the same day. If a 'login' is not followed by a 'logout' on the same day, that session is considered incomplete and should be excluded from this calculation.
+An "activity day" duration is defined as the time between the earliest 'login' activity and the latest 'logout' activity for the same user on the same calendar day. If a user logs in but does not have a corresponding logout on the same day, that day's activity should be excluded from this calculation.
 
-Return user_id, username, and average_session_duration_minutes.
+Return user_id, username, and average_daily_activity_duration_minutes.
 
-Round average_session_duration_minutes to two decimal places.
+Round average_daily_activity_duration_minutes to two decimal places.
 
-Only include users who have at least one complete session.
+Only include users who have at least one complete "activity day" (i.e., at least one day with both a login and a logout).
 
 Order the results by user_id ascending.
 
+
 **Expected Output:**
 
-| **user_id** | **username** | **average_session_duration_minutes** |
-| ----------------- | ------------------ | ------------------------------------------ |
-| 1                 | userA              | 322.50                                     |
-| 2                 | userB              | 570.00                                     |
-| 3                 | userC              | 480.00                                     |
-| 4                 | userD              | 60.00                                      |
-| 8                 | userH              | 540.00                                     |
+| user_id | username | average_session_duration_minutes |
+| ------- | -------- | -------------------------------- |
+| 1       | userA    | 371.25                           |
+| 2       | userB    | 590.00                           |
+| 3       | userC    | 480.00                           |
+| 4       | userD    | 240.00                           |
+| 8       | userH    | 540.00                           |
 
 **Your Solution:**
 
 ```sql
 --- Write your solution here
-
 ```

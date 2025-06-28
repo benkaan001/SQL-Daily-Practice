@@ -78,33 +78,82 @@ ORDER BY
 
 ```
 
-### Question 3: User Session Duration Analysis
+### Question 2: User Session Duration Analysis
 
-For each user, calculate their average session duration (in minutes) for sessions that start with a 'login' and end with a 'logout' on the same day.
+For each user, calculate their average daily activity duration (in minutes) for days where they have both a 'login' and a 'logout' activity.
 
-A session is defined as the time between a 'login' and the immediately following 'logout' for the same user on the same day. If a 'login' is not followed by a 'logout' on the same day, that session is considered incomplete and should be excluded from this calculation.
+An "activity day" duration is defined as the time between the earliest 'login' activity and the latest 'logout' activity for the same user on the same calendar day. If a user logs in but does not have a corresponding logout on the same day, that day's activity should be excluded from this calculation.
 
-Return user_id, username, and average_session_duration_minutes.
+Return user_id, username, and average_daily_activity_duration_minutes.
 
-Round average_session_duration_minutes to two decimal places.
+Round average_daily_activity_duration_minutes to two decimal places.
 
-Only include users who have at least one complete session.
+Only include users who have at least one complete "activity day" (i.e., at least one day with both a login and a logout).
 
 Order the results by user_id ascending.
 
+
 **Expected Output:**
 
-| **user_id** | **username** | **average_session_duration_minutes** |
-| ----------------- | ------------------ | ------------------------------------------ |
-| 1                 | userA              | 322.50                                     |
-| 2                 | userB              | 570.00                                     |
-| 3                 | userC              | 480.00                                     |
-| 4                 | userD              | 60.00                                      |
-| 8                 | userH              | 540.00                                     |
+| user_id | username | average_session_duration_minutes |
+| ------- | -------- | -------------------------------- |
+| 1       | userA    | 371.25                           |
+| 2       | userB    | 590.00                           |
+| 3       | userC    | 480.00                           |
+| 4       | userD    | 240.00                           |
+| 8       | userH    | 540.00                           |
 
 **Your Solution:**
 
-```
---- Write your solution here
-
+```sql
+WITH sessions AS (
+	SELECT
+		u.user_id,
+        u.username,
+		DATE_FORMAT(al.activity_timestamp, '%m-%d') AS month_day,
+		CASE WHEN al.activity_type = 'login' THEN al.activity_timestamp ELSE NULL END AS login_time,
+		CASE WHEN al.activity_type  = 'logout' THEN al.activity_timestamp ELSE NULL END AS logout_time
+	FROM
+		ActivityLogs al
+	JOIN
+		Users u ON u.user_id = al.user_id
+	WHERE
+		al.activity_type IN ('login', 'logout')
+),
+activity_times AS (
+	SELECT
+		user_id,
+        username,
+		month_day,
+		MAX(logout_time) AS logout_time,
+		MIN(login_time) AS login_time
+	FROM
+		sessions
+	GROUP BY
+		user_id,
+		month_day
+),
+session_duration AS (
+	SELECT
+		user_id,
+        username,
+		month_day,
+		TO_SECONDS(logout_time) - TO_SECONDS(login_time) AS session_duration_seconds
+	FROM
+		activity_times
+	WHERE
+		logout_time IS NOT NULL
+		AND logout_time IS NOT NULL
+)
+SELECT
+	user_id,
+	username,
+	ROUND(AVG(session_duration_seconds) / 60, 2) AS average_session_duration_minutes
+FROM
+	session_duration
+GROUP BY
+	user_id,
+	username
+ORDER BY
+	user_id ASC;
 ```
