@@ -17,7 +17,7 @@ Order the results by patient_id ascending, then start_date_of_streak ascending.
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -36,20 +36,20 @@ Order results by no_show_rate_percentage descending, then by doctor_name ascendi
 
 **Expected Output:**
 
-| **doctor_name** | **specialty** | **total_scheduled_appointments** | **total_completed_appointments** | **no_show_rate_percentage** |
-| --------------------- | ------------------- | -------------------------------------- | -------------------------------------- | --------------------------------- |
-| Dr. Green             | Pediatrics          | 2                                      | 2                                      | 50.00                             |
-| Dr. Smith             | Cardiology          | 2                                      | 1                                      | 0.00                              |
-| Dr. Adams             | General Practice    | 1                                      | 3                                      | 0.00                              |
-| Dr. Brown             | Orthopedics         | 2                                      | 3                                      | 0.00                              |
-| Dr. Evans             | Dermatology         | 1                                      | 1                                      | 0.00                              |
-| Dr. Gray              | Dentistry           | 0                                      | 1                                      | 0.00                              |
-| Dr. Long              | Geriatrics          | 0                                      | 3                                      | 0.00                              |
-| Dr. White             | Ophthalmology       | 0                                      | 1                                      | 0.00                              |
+| doctor_name | specialty        | total_scheduled_appointments | total_completed_appointments | no_show_rate_percentage |
+| ----------- | ---------------- | ---------------------------- | ---------------------------- | ----------------------- |
+| Dr. Green   | Pediatrics       | 0                            | 2                            | 100.00                  |
+| Dr. Adams   | General Practice | 0                            | 4                            | 0.00                    |
+| Dr. Brown   | Orthopedics      | 0                            | 3                            | 0.00                    |
+| Dr. Evans   | Dermatology      | 1                            | 1                            | 0.00                    |
+| Dr. Gray    | Dentistry        | 0                            | 1                            | 0.00                    |
+| Dr. Long    | Geriatrics       | 0                            | 3                            | 0.00                    |
+| Dr. Smith   | Cardiology       | 1                            | 1                            | 0.00                    |
+| Dr. White   | Ophthalmology    | 0                            | 1                            | 0.00                    |                       |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -64,14 +64,14 @@ Order the results by patient_id ascending, then by specialty ascending.
 
 **Expected Output:**
 
-| **patient_id** | **first_name** | **last_name** | **specialty** | **last_jan_2024_appointment_date** |
-| -------------------- | -------------------- | ------------------- | ------------------- | ---------------------------------------- |
-| 3                    | Peter                | Jones               | Orthopedics         | 2024-01-20                               |
-| 4                    | Alice                | Williams            | Dentistry           | 2024-01-25                               |
-
+| patient_id | first_name | last_name | specialty  | last_jan_2024_appointment_date |
+| ---------- | ---------- | --------- | ---------- | ------------------------------ |
+| 1          | John       | Doe       | Cardiology | 2024-01-10                     |
+| 4          | Alice      | Williams  | Dentistry  | 2024-01-25                     |
+| 5          | Bob        | Brown     | Geriatrics | 2024-01-15                     |
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
