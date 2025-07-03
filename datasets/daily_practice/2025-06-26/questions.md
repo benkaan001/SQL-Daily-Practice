@@ -14,15 +14,16 @@ Order the results by difficulty in the order of 'Beginner', 'Intermediate', 'Adv
 
 **Expected Output:**
 
-| **difficulty** | **total_enrollments** | **total_completions** | **completion_rate_percentage** |
-| -------------------- | --------------------------- | --------------------------- | ------------------------------------ |
-| Beginner             | 5                           | 3                           | 60.00                                |
-| Intermediate         | 5                           | 2                           | 40.00                                |
-| Advanced             | 2                           | 0                           | 0.00                                 |
+| difficulty   | total_enrollments | total_completions | completion_rate_percentage |
+| ------------ | ----------------- | ----------------- | -------------------------- |
+| Beginner     | 7                 | 4                 | 57.14                      |
+| Intermediate | 9                 | 3                 | 33.33                      |
+| Advanced     | 2                 | 0                 | 0.00                       |
+
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -51,7 +52,7 @@ Order the results by number_of_categories descending, then by student_id ascendi
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -72,14 +73,14 @@ Order results by average_completion_time_days ascending.
 
 **Expected Output:**
 
-| **course_name**      | **average_completion_time_days** | **overall_intermediate_avg_days** |
-| -------------------------- | -------------------------------------- | --------------------------------------- |
-| SQL for Data Analysis      | 50.00                                  | 55.50                                   |
-| Cloud Computing Essentials | 60.00                                  | 55.50                                   |
+| course_name                | ROUND(average_completion_time_days, 2) | overall_completion_avg_days |
+| -------------------------- | -------------------------------------- | --------------------------- |
+| SQL for Data Analysis      | 48.00                                  | 54.00                       |
+| Cloud Computing Essentials | 60.00                                  | 54.00                       |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
