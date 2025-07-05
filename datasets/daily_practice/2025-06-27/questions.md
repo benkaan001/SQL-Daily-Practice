@@ -12,15 +12,16 @@ Only include users who have at least one post.
 
 **Expected Output:**
 
-| **user_id** | **username** | **engagement_score** |
-| ----------------- | ------------------ | -------------------------- |
-| 101               | AlexG              | 12                         |
-| 103               | ChrisM             | 10                         |
-| 105               | EthanK             | 6                          |
+| user_id | username | engagement_score |
+| ------- | -------- | ---------------- |
+| 103     | ChrisM   | 10               |
+| 101     | AlexG    | 9                |
+| 105     | EthanK   | 6                |
+
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -39,13 +40,23 @@ Order the results by views_count ascending, then by post_id ascending.
 
 **Expected Output:**
 
-| **post_id** | **post_text**   | **username** | **views_count** | **likes_count** |
-| ----------------- | --------------------- | ------------------ | --------------------- | --------------------- |
-| 14                | Healthy eating guide. | EthanK             | 9000                  | 1                     |
+| post_id | post_text                             | username | views_count | likes_count |
+| ------- | ------------------------------------- | -------- | ----------- | ----------- |
+| 12      | Harvesting tomatoes!                  | DanaW    | 300         | 1           |
+| 5       | New photography series coming soon!   | BellaR   | 800         | 2           |
+| 1       | Loving the new data science trends!   | AlexG    | 1500        | 3           |
+| 2       | My thoughts on effective programming. | AlexG    | 2000        | 1           |
+| 3       | Quick update from my workshop.        | AlexG    | 3000        | 1           |
+| 8       | A deep dive into AI ethics.           | ChrisM   | 5000        | 2           |
+| 9       | Future of tech is here.               | ChrisM   | 6000        | 3           |
+| 10      | Just published a new paper.           | ChrisM   | 7000        | 1           |
+| 13      | My daily fitness routine.             | EthanK   | 8000        | 5           |
+| 14      | Healthy eating guide.                 | EthanK   | 9000        | 1           |
+
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -67,7 +78,7 @@ Order the results by user_id ascending.
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
