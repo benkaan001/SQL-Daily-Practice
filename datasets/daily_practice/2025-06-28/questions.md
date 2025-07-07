@@ -10,13 +10,14 @@ Order the results by part_id ascending, then by order_id ascending (NULLs last).
 
 **Expected Output:**
 
-| **part_id** | **part_name** | **current_stock** | **reorder_level** | **order_id** | **quantity_ordered** |
-| ----------------- | ------------------- | ----------------------- | ----------------------- | ------------------ | -------------------------- |
-| 1007              | Graphics Card Y     | 40                      | 50                      | 7                  | 25                         |
+| part_id | part_name       | current_stock | reorder_level | order_id | quantity_ordered |
+| ------- | --------------- | ------------- | ------------- | -------- | ---------------- |
+| 1007    | Graphics Card Y | 40            | 50            | 4        | 20               |
+| 1007    | Graphics Card Y | 40            | 50            | 7        | 25               |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -39,21 +40,21 @@ Order the results by month_year ascending, then by category ascending.
 
 **Expected Output:**
 
-| **month_year** | **category** | **total_value_decrease** |
-| -------------------- | ------------------ | ------------------------------ |
-| 2025-01              | Electronics        | 3400.00                        |
-| 2025-01              | Hardware           | 375.00                         |
-| 2025-02              | Electronics        | 710.00                         |
-| 2025-02              | Accessories        | 250.00                         |
-| 2025-03              | Electronics        | 3000.00                        |
-| 2025-03              | Peripherals        | 300.00                         |
-| 2025-04              | Electronics        | 400.00                         |
-| 2025-04              | Hardware           | 375.00                         |
-| 2025-05              | Peripherals        | 400.00                         |
+| month_year | category    | total_value_decrease |
+| ---------- | ----------- | -------------------- |
+| 2025-01    | Electronics | 4100.00              |
+| 2025-01    | Hardware    | 825.00               |
+| 2025-02    | Accessories | 250.00               |
+| 2025-02    | Electronics | 8230.00              |
+| 2025-03    | Electronics | 3000.00              |
+| 2025-03    | Peripherals | 300.00               |
+| 2025-04    | Electronics | 400.00               |
+| 2025-04    | Hardware    | 300.00               |
+| 2025-05    | Peripherals | 400.00               |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
@@ -68,15 +69,15 @@ Order the results by customer_name ascending.
 
 **Expected Output:**
 
-| **customer_name** | **count_of_pending_or_shipped_orders** | **count_of_delivered_orders** |
-| ----------------------- | -------------------------------------------- | ----------------------------------- |
-| Global Systems Ltd.     | 2                                            | 1                                   |
-| Innovate Corp.          | 1                                            | 1                                   |
-| Tech Solutions Inc.     | 1                                            | 2                                   |
+| customer_name       | count_of_pending_or_shipped_orders | count_of_delivered_orders |
+| ------------------- | ---------------------------------- | ------------------------- |
+| Global Systems Ltd. | 2                                  | 1                         |
+| Innovate Corp.      | 1                                  | 1                         |
+| Tech Solutions Inc. | 1                                  | 2                         |
 
 **Your Solution:**
 
-```
+```sql
 --- Write your solution here
 
 ```
