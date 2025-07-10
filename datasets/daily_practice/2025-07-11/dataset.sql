@@ -2,9 +2,6 @@
 CREATE DATABASE IF NOT EXISTS daily_practice_20250711_schema;
 USE daily_practice_20250711_schema;
 
--- Drop tables if they exist to allow clean re-creation for testing
-DROP TABLE IF EXISTS Returns;
-DROP TABLE IF EXISTS Orders;
 
 -- Create Orders Table
 CREATE TABLE Orders (
