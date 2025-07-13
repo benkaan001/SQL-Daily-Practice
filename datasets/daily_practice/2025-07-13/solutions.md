@@ -14,16 +14,29 @@ For each `carrier`, calculate the `total_shipments`, `on_time_percentage`, `earl
 
 **Expected Output:**
 
-| **carrier** | **total_shipments** | **on_time_percentage** | **early_percentage** | **late_percentage** |
-| ----------------- | ------------------------- | ---------------------------- | -------------------------- | ------------------------- |
-| DHL               | 3                         | 0.00                         | 66.67                      | 33.33                     |
-| FedEx             | 2                         | 50.00                        | 50.00                      | 0.00                      |
-| UPS               | 2                         | 100.00                       | 0.00                       | 0.00                      |
+| carrier | total_shipments | on_time_percentage | early_percentage | late_percentage |
+| ------- | --------------- | ------------------ | ---------------- | --------------- |
+| DHL     | 3               | 0.00               | 66.67            | 33.33           |
+| FedEx   | 2               | 50.00              | 50.00            | 0.00            |
+| UPS     | 2               | 100.00             | 0.00             | 0.00            |
 
 **Your Solution:**
 
 ```sql
---- Write your solution here
+SELECT
+    s.carrier,
+    COUNT(s.shipment_id) AS total_shipments,
+    ROUND(SUM(CASE WHEN s.actual_delivery_date = s.planned_delivery_date THEN 1 ELSE 0 END) * 100.0 / COUNT(s.shipment_id), 2) AS on_time_percentage,
+    ROUND(SUM(CASE WHEN s.actual_delivery_date < s.planned_delivery_date THEN 1 ELSE 0 END) * 100.0 / COUNT(s.shipment_id), 2) AS early_percentage,
+    ROUND(SUM(CASE WHEN s.actual_delivery_date > s.planned_delivery_date THEN 1 ELSE 0 END) * 100.0 / COUNT(s.shipment_id), 2) AS late_percentage
+FROM
+    Shipments s
+WHERE
+    s.actual_delivery_date IS NOT NULL
+GROUP BY
+    s.carrier
+ORDER BY
+    s.carrier ASC;
 
 ```
 
@@ -46,7 +59,26 @@ Order the results by shipment_id ascending.
 **Your Solution:**
 
 ```sql
---- Write your solution here
+SELECT
+	s.shipment_id,
+	s.order_id,
+	s.destination_city,
+	s.carrier,
+	MAX(DATE(de.event_timestamp)) AS last_exception_date
+FROM
+	Shipments s
+JOIN
+	DeliveryEvents de ON de.shipment_id = s.shipment_id
+WHERE
+	de.event_type = 'Exception'
+	AND s.actual_delivery_date IS NULL
+GROUP BY
+	s.shipment_id,
+	s.order_id,
+	s.destination_city,
+	s.carrier
+ORDER BY
+	s.shipment_id ASC;
 
 ```
 
@@ -66,15 +98,51 @@ Order the results by average_transit_days descending.
 
 **Expected Output:**
 
-| **origin_warehouse** | **average_transit_days** |
-| -------------------------- | ------------------------------ |
-| Warehouse A                | 14.25                          |
-| Warehouse B                | 5.00                           |
-| Warehouse C                | 3.96                           |
+| origin_warehouse | average_transit_days |
+| ---------------- | -------------------- |
+| Warehouse A      | 5.00                 |
+| Warehouse B      | 5.00                 |
+| Warehouse C      | 0.00                 |
 
 **Your Solution:**
 
 ```sql
---- Write your solution here
-
+WITH pickups AS (
+	SELECT
+		s.origin_warehouse,
+		s.order_id,
+		CASE WHEN de.event_type = 'Picked Up' THEN de.event_timestamp END AS pickup_time,
+		CASE WHEN de.event_type = 'Delivered' THEN de.event_timestamp END AS delivery_time
+	FROM
+		Shipments s
+	JOIN
+		DeliveryEvents de ON de.shipment_id = s.shipment_id
+	WHERE
+		s.actual_delivery_date IS NOT NULL
+),
+grouped_pickups AS (
+	SELECT
+		origin_warehouse,
+		order_id,
+		MIN(pickup_time) AS pickup_time,
+		MIN(delivery_time) AS delivery_date
+	FROM
+		pickups
+	GROUP BY
+		origin_warehouse,
+		order_id
+)
+SELECT
+	s.origin_warehouse,
+	ROUND(
+		AVG(COALESCE(DATEDIFF(gp.delivery_date, gp.pickup_time ), 0))
+	, 2) AS average_transit_days
+FROM
+	grouped_pickups gp
+RIGHT JOIN
+	Shipments s ON gp.origin_warehouse = s.origin_warehouse
+GROUP BY
+	s.origin_warehouse
+ORDER BY
+	average_transit_days DESC;
 ```

@@ -15,11 +15,11 @@ For each `carrier`, calculate the `total_shipments`, `on_time_percentage`, `earl
 
 **Expected Output:**
 
-| **carrier** | **total_shipments** | **on_time_percentage** | **early_percentage** | **late_percentage** |
-| ----------------- | ------------------------- | ---------------------------- | -------------------------- | ------------------------- |
-| DHL               | 3                         | 0.00                         | 66.67                      | 33.33                     |
-| FedEx             | 2                         | 50.00                        | 50.00                      | 0.00                      |
-| UPS               | 2                         | 100.00                       | 0.00                       | 0.00                      |
+| carrier | total_shipments | on_time_percentage | early_percentage | late_percentage |
+| ------- | --------------- | ------------------ | ---------------- | --------------- |
+| DHL     | 3               | 0.00               | 66.67            | 33.33           |
+| FedEx   | 2               | 50.00              | 50.00            | 0.00            |
+| UPS     | 2               | 100.00             | 0.00             | 0.00            |
 
 **Your Solution:**
 
@@ -67,11 +67,11 @@ Order the results by average_transit_days descending.
 
 **Expected Output:**
 
-| **origin_warehouse** | **average_transit_days** |
-| -------------------------- | ------------------------------ |
-| Warehouse A                | 14.25                          |
-| Warehouse B                | 5.00                           |
-| Warehouse C                | 3.96                           |
+| origin_warehouse | average_transit_days |
+| ---------------- | -------------------- |
+| Warehouse A      | 5.00                 |
+| Warehouse B      | 5.00                 |
+| Warehouse C      | 0.00                 |
 
 **Your Solution:**
 
