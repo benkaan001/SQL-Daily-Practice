@@ -14,9 +14,11 @@ Order the results by employee_id ascending.
 
 **Expected Output:**
 
-| **employee_id** | **first_name** | **last_name** | **department** | **last_review_rating** |
-| --------------------- | -------------------- | ------------------- | -------------------- | ---------------------------- |
-| 106                   | Frank                | Wilson              | Marketing            | 4                            |
+| employee_id | first_name | last_name | department  | last_review_rating |
+| ----------- | ---------- | --------- | ----------- | ------------------ |
+| 101         | Alice      | Smith     | Engineering | 5                  |
+| 103         | Charlie    | Brown     | HR          | 4                  |
+| 104         | Diana      | Miller    | Sales       | 5                  |
 
 **Your Solution:**
 
@@ -43,11 +45,11 @@ Order the results by promotion_rate_per_department descending, then by departmen
 
 **Expected Output:**
 
-| **department** | **average_time_to_promotion_days** | **promotion_rate_per_department** |
-| -------------------- | ---------------------------------------- | --------------------------------------- |
-| HR                   | 395                                      | 50.00                                   |
-| Sales                | 377                                      | 50.00                                   |
-| Engineering          | 691                                      | 33.33                                   |
+| department  | average_time_to_promotion_days | promotion_rate_per_department |
+| ----------- | ------------------------------ | ----------------------------- |
+| Engineering | 872                            | 66.67                         |
+| HR          | 394                            | 50.00                         |
+| Sales       | 377                            | 50.00                         |
 
 **Your Solution:**
 
@@ -70,14 +72,15 @@ Order the results by employee_id ascending.
 
 **Expected Output:**
 
-| **employee_id** | **first_name** | **last_name** | **earliest_review_date** | **earliest_rating** | **latest_review_date** | **latest_rating** | **rating_change** | **salary_growth_percentage** |
-| --------------------- | -------------------- | ------------------- | ------------------------------ | ------------------------- | ---------------------------- | ----------------------- | ----------------------- | ---------------------------------- |
-| 101                   | Alice                | Smith               | 2023-07-01                     | 5                         | 2024-07-01                   | 5                       | 0                       | 10.00                              |
-| 102                   | Bob                  | Johnson             | 2023-07-15                     | 4                         | 2024-07-15                   | 4                       | 0                       | 0.00                               |
-| 103                   | Charlie              | Brown               | 2023-08-01                     | 3                         | 2024-08-01                   | 4                       | 1                       | 0.00                               |
-| 104                   | Diana                | Miller              | 2023-07-01                     | 5                         | 2024-07-01                   | 5                       | 0                       | 0.00                               |
-| 105                   | Eve                  | Davis               | 2023-08-10                     | 3                         | 2024-08-10                   | 3                       | 0                       | 0.00                               |
-| 106                   | Frank                | Wilson              | 2023-07-20                     | 4                         | 2024-07-20                   | 4                       | 0                       | 0.00                               |
+| employee_id | first_name | last_name | earliest_review_date | earliest_rating | latest_review_date | latest_rating | rating_change | salary_growth_percentage |
+| ----------- | ---------- | --------- | -------------------- | --------------- | ------------------ | ------------- | ------------- | ------------------------ |
+| 101         | Alice      | Smith     | 2023-07-01           | 5               | 2024-07-01         | 5             | 0             | 10.00                    |
+| 102         | Bob        | Johnson   | 2023-07-15           | 4               | 2024-07-15         | 4             | 0             | 11.76                    |
+| 103         | Charlie    | Brown     | 2023-08-01           | 3               | 2024-08-01         | 4             | 1             | 7.69                     |
+| 104         | Diana      | Miller    | 2023-07-01           | 5               | 2024-07-01         | 5             | 0             | 20.00                    |
+| 105         | Eve        | Davis     | 2023-08-10           | 3               | 2024-08-10         | 3             | 0             | 0.00                     |
+| 106         | Frank      | Wilson    | 2023-07-20           | 4               | 2024-07-20         | 4             | 0             | 0.00                     |
+
 
 **Your Solution:**
 
