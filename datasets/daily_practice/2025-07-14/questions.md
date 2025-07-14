@@ -11,11 +11,11 @@ Identify patients who have been diagnosed with a "chronic condition" (for this p
 
 **Expected Output:**
 
-| **patient_id** | **first_name** | **last_name** | **diagnosis_name**         | **diagnosis_status** |
-| -------------------- | -------------------- | ------------------- | -------------------------------- | -------------------------- |
-| 1                    | Alice                | Smith               | Simple chronic bronchitis        | New                        |
-| 2                    | Bob                  | Johnson             | Low back pain                    | New                        |
-| 4                    | Diana                | Miller              | Essential (primary) hypertension | New                        |
+| patient_id | first_name | last_name | diagnosis_name                   | diagnosis_status |
+| ---------- | ---------- | --------- | -------------------------------- | ---------------- |
+| 1          | Alice      | Smith     | Simple chronic bronchitis        | New              |
+| 2          | Bob        | Johnson   | Low back pain                    | New              |
+| 4          | Diana      | Miller    | Essential (primary) hypertension | New              |
 
 **Your Solution:**
 
@@ -36,16 +36,16 @@ Order the results by doctor_name ascending, then by diagnosis_count descending, 
 
 **Expected Output:**
 
-| **doctor_name** | **diagnosis_name**                                                  | **diagnosis_count** | **rank_by_doctor** |
-| --------------------- | ------------------------------------------------------------------------- | ------------------------- | ------------------------ |
-| Dr. Chen              | Simple chronic bronchitis                                                 | 2                         | 1                        |
-| Dr. Chen              | Allergic contact dermatitis, unspecified                                  | 1                         | 2                        |
-| Dr. Chen              | Allergic rhinitis due to pollen                                           | 1                         | 2                        |
-| Dr. Kim               | Low back pain                                                             | 2                         | 1                        |
-| Dr. Kim               | Pain in knee, left                                                        | 1                         | 2                        |
-| Dr. Kim               | Sprain of knee                                                            | 1                         | 2                        |
-| Dr. Lee               | Encounter for general adult medical examination without abnormal findings | 3                         | 1                        |
-| Dr. Lee               | Essential (primary) hypertension                                          | 1                         | 2                        |
+| doctor_name | diagnosis_name                                                            | diagnosis_count | rank_by_doctor |
+| ----------- | ------------------------------------------------------------------------- | --------------- | -------------- |
+| Dr. Chen    | Simple chronic bronchitis                                                 | 2               | 1              |
+| Dr. Chen    | Allergic contact dermatitis, unspecified                                  | 1               | 2              |
+| Dr. Chen    | Allergic rhinitis due to pollen                                           | 1               | 2              |
+| Dr. Kim     | Low back pain                                                             | 2               | 1              |
+| Dr. Kim     | Pain in knee, left                                                        | 1               | 2              |
+| Dr. Kim     | Sprain of knee                                                            | 1               | 2              |
+| Dr. Lee     | Encounter for general adult medical examination without abnormal findings | 3               | 1              |
+| Dr. Lee     | Essential (primary) hypertension                                          | 1               | 2              |
 
 **Your Solution:**
 
@@ -64,9 +64,9 @@ Order the results by patient_id ascending.
 
 **Expected Output:**
 
-| **patient_id** | **first_name** | **last_name** | **blood_type** | **allergies** |
-| -------------------- | -------------------- | ------------------- | -------------------- | ------------------- |
-| 3                    | Charlie              | Brown               | B+                   | Pollen              |
+| patient_id | first_name | last_name | blood_type | allergies |
+| ---------- | ---------- | --------- | ---------- | --------- |
+| 3          | Charlie    | Brown     | B+         | Pollen    |
 
 **Your Solution:**
 
