@@ -15,13 +15,12 @@ Order the results by department ascending.
 
 **Expected Output:**
 
-| **department** | **a_percentage** | **b_percentage** | **c_percentage** | **below_c_percentage** |
-| -------------------- | ---------------------- | ---------------------- | ---------------------- | ---------------------------- |
-| Computer Science     | 50.00                  | 37.50                  | 12.50                  | 0.00                         |
-| History              | 0.00                   | 100.00                 | 0.00                   | 0.00                         |
-| Mathematics          | 33.33                  | 50.00                  | 0.00                   | 16.67                        |
-| Physics              | 66.67                  | 0.00                   | 0.00                   | 0.00                         |
-
+| department       | a_percentage | b_percentage | c_percentage | below_c_percentage |
+| ---------------- | ------------ | ------------ | ------------ | ------------------ |
+| Computer Science | 0.40         | 0.40         | 0.20         | 0.00               |
+| History          | 0.00         | 1.00         | 0.00         | 0.00               |
+| Mathematics      | 0.33         | 0.50         | 0.00         | 0.17               |
+| Physics          | 1.00         | 0.00         | 0.00         | 0.00               |
 **Your Solution:**
 
 ```sql
@@ -40,22 +39,21 @@ For each student, determine their `academic_standing` for each semester they hav
   Order the results by student_id ascending, then by semester (chronologically: Fall 2023, Spring 2024, Summer 2024).
 
 **Expected Output:**
-
-| **student_id** | **first_name** | **last_name** | **semester** | **semester_average_grade** | **academic_standing** |
-| -------------------- | -------------------- | ------------------- | ------------------ | -------------------------------- | --------------------------- |
-| 101                  | Alice                | Smith               | Fall 2023          | 3.75                             | Excellent                   |
-| 101                  | Alice                | Smith               | Spring 2024        | 3.90                             | Excellent                   |
-| 101                  | Alice                | Smith               | Summer 2024        | 4.00                             | Excellent                   |
-| 102                  | Bob                  | Johnson             | Fall 2023          | 3.00                             | Good                        |
-| 102                  | Bob                  | Johnson             | Spring 2024        | 3.50                             | Excellent                   |
-| 102                  | Bob                  | Johnson             | Summer 2024        | 2.50                             | Good                        |
-| 103                  | Charlie              | Brown               | Fall 2023          | 4.00                             | Excellent                   |
-| 103                  | Charlie              | Brown               | Spring 2024        | 3.80                             | Excellent                   |
-| 103                  | Charlie              | Brown               | Summer 2024        | 3.00                             | Good                        |
-| 104                  | Diana                | Miller              | Fall 2023          | 3.50                             | Excellent                   |
-| 104                  | Diana                | Miller              | Spring 2024        | 3.00                             | Good                        |
-| 105                  | Eve                  | Davis               | Spring 2024        | 3.00                             | Good                        |
-| 106                  | Frank                | Wilson              | Fall 2023          | 1.50                             | Probation                   |
+| student_id | first_name | last_name | semester    | ROUND(semester_average_grade, 2) | academic_standing |
+| ---------- | ---------- | --------- | ----------- | -------------------------------- | ----------------- |
+| 101        | Alice      | Smith     | Fall 2023   | 3.75                             | Excellent         |
+| 101        | Alice      | Smith     | Spring 2024 | 3.90                             | Excellent         |
+| 101        | Alice      | Smith     | Summer 2024 | 4.00                             | Excellent         |
+| 102        | Bob        | Johnson   | Fall 2023   | 3.00                             | Good              |
+| 102        | Bob        | Johnson   | Spring 2024 | 3.50                             | Excellent         |
+| 102        | Bob        | Johnson   | Summer 2024 | 2.50                             | Good              |
+| 103        | Charlie    | Brown     | Fall 2023   | 4.00                             | Excellent         |
+| 103        | Charlie    | Brown     | Spring 2024 | 3.80                             | Excellent         |
+| 103        | Charlie    | Brown     | Summer 2024 | 3.00                             | Good              |
+| 104        | Diana      | Miller    | Fall 2023   | 3.50                             | Excellent         |
+| 104        | Diana      | Miller    | Spring 2024 | 3.00                             | Good              |
+| 105        | Eve        | Davis     | Spring 2024 | 3.00                             | Good              |
+| 106        | Frank      | Wilson    | Fall 2023   | 1.50                             | Probation         |
 
 **Your Solution:**
 
@@ -76,11 +74,11 @@ Order the results by grade_standard_deviation descending, then by course_id asce
 
 **Expected Output:**
 
-| **course_id** | **course_name** | **department** | **grade_standard_deviation** |
-| ------------------- | --------------------- | -------------------- | ---------------------------------- |
-| 1006                | Operating Systems     | Computer Science     | 0.92                               |
-| 1002                | Calculus I            | Mathematics          | 0.81                               |
-| 1001                | Intro to Programming  | Computer Science     | 0.75                               |
+| course_id | course_name          | department       | grade_standard_deviation |
+| --------- | -------------------- | ---------------- | ------------------------ |
+| 1002      | Calculus I           | Mathematics      | 1.26                     |
+| 1006      | Operating Systems    | Computer Science | 0.92                     |
+| 1001      | Intro to Programming | Computer Science | 0.84                     |
 
 **Your Solution:**
 
