@@ -15,6 +15,23 @@ Output month_year (format %Y-%m), category, total_tickets_created, total_tickets
 
 Order the results by month_year ascending, then by category ascending.
 
+**Expected Output:**
+| year_and_month | category  | total_tickets_created | total_tickets_resolved | resolution_rate_percentage |
+| -------------- | --------- | --------------------- | ---------------------- | -------------------------- |
+| 2024-01        | Billing   | 1                     | 1                      | 100.00                     |
+| 2024-01        | General   | 2                     | 2                      | 100.00                     |
+| 2024-01        | Technical | 1                     | 1                      | 100.00                     |
+| 2024-02        | Billing   | 1                     | 1                      | 100.00                     |
+| 2024-02        | General   | 1                     | 1                      | 100.00                     |
+| 2024-02        | Technical | 3                     | 1                      | 33.33                      |
+| 2024-03        | Billing   | 1                     | 0                      | 0.00                       |
+| 2024-03        | General   | 3                     | 3                      | 100.00                     |
+| 2024-03        | Technical | 1                     | 1                      | 100.00                     |
+| 2024-04        | Billing   | 2                     | 2                      | 100.00                     |
+| 2024-04        | General   | 1                     | 1                      | 100.00                     |
+| 2024-04        | Technical | 2                     | 1                      | 50.00                      |
+
+
 ```sql
 --- Write your solution here
 ```
@@ -29,11 +46,11 @@ Order the results by customer_id ascending.
 
 **Expected Output:**
 
-| **customer_id** | **customer_name** | **total_high_priority_tickets** | **total_open_or_in_progress_high_priority_tickets** |
-| --------------------- | ----------------------- | ------------------------------------- | --------------------------------------------------------- |
-| 101                   | Alice Smith             | 2                                     | 1                                                         |
-| 102                   | Bob Johnson             | 2                                     | 1                                                         |
-| 106                   | Fiona Hall              | 1                                     | 1                                                         |
+| customer_id | customer_name | total_high_priority_tickets | total_open_or_in_progress_high_priority_tickets |
+| ----------- | ------------- | --------------------------- | ----------------------------------------------- |
+| 101         | Alice Smith   | 2                           | 1                                               |
+| 102         | Bob Johnson   | 1                           | 1                                               |
+| 106         | Fiona Hall    | 1                           | 1                                               |
 
 **Your Solution:**
 
@@ -54,6 +71,15 @@ Round average_resolution_time_days to two decimal places.
 Output priority, category, and average_resolution_time_days.
 
 Order the results by priority (High, Medium, Low), then by category ascending.
+
+**Expected Output:**
+
+| priority | category  | average_resolution_time_days |
+| -------- | --------- | ---------------------------- |
+| High     | Technical | 1.00                         |
+| Medium   | Billing   | 2.00                         |
+| Medium   | Technical | 1.00                         |
+| Low      | General   | 0.86                         |
 
 ```sql
 --- Write your solution here
