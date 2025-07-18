@@ -8,27 +8,27 @@ Order the results by date and then by platform.
 
 **Expected Output:**
 
-| **session_date** | **platform** | **total_sessions** | **unique_users** | **total_duration_minutes** | **total_daily_spend** |
-| ---------------------- | ------------------ | ------------------------ | ---------------------- | -------------------------------- | --------------------------- |
-| 2023-03-01             | Desktop            | 1                        | 1                      | 35                               | 49.99                       |
-| 2023-03-01             | Mobile             | 2                        | 2                      | 55                               | 19.99                       |
-| 2023-03-02             | Desktop            | 2                        | 2                      | 115                              | 240.40                      |
-| 2023-03-02             | Tablet             | 1                        | 1                      | 30                               | 0.00                        |
-| 2023-03-03             | Desktop            | 1                        | 1                      | 45                               | 75.00                       |
-| 2023-03-03             | Mobile             | 2                        | 2                      | 40                               | 25.00                       |
-| 2023-03-04             | Desktop            | 1                        | 1                      | 55                               | 250.00                      |
-| 2023-03-04             | Mobile             | 1                        | 1                      | 15                               | 12.50                       |
-| 2023-03-04             | Tablet             | 1                        | 1                      | 30                               | 0.00                        |
-| 2023-03-05             | Desktop            | 2                        | 2                      | 70                               | 110.75                      |
-| 2023-03-05             | Mobile             | 1                        | 1                      | 15                               | 0.00                        |
-| 2023-03-06             | Desktop            | 2                        | 2                      | 85                               | 211.99                      |
-| 2023-03-06             | Mobile             | 1                        | 1                      | 15                               | 9.99                        |
-| 2023-03-07             | Desktop            | 1                        | 1                      | 10                               | 0.00                        |
-| 2023-03-07             | Mobile             | 2                        | 2                      | 55                               | 55.50                       |
-| 2023-03-07             | Tablet             | 1                        | 1                      | 20                               | 35.00                       |
-| 2023-03-08             | Desktop            | 1                        | 1                      | 45                               | 180.00                      |
-| 2023-03-08             | Mobile             | 1                        | 1                      | 35                               | 22.75                       |
-| 2023-03-08             | Tablet             | 1                        | 1                      | 30                               | 40.00                       |
+| session_date | platform | total_sessions | unique_users | total_duration_minutes | total_daily_spend |
+| ------------ | -------- | -------------- | ------------ | ---------------------- | ----------------- |
+| 2023-03-01   | Desktop  | 1              | 1            | 35                     | 49.99             |
+| 2023-03-01   | Mobile   | 2              | 2            | 55                     | 19.99             |
+| 2023-03-02   | Desktop  | 2              | 2            | 115                    | 240.40            |
+| 2023-03-02   | Tablet   | 1              | 1            | 30                     | 0.00              |
+| 2023-03-03   | Desktop  | 1              | 1            | 45                     | 75.00             |
+| 2023-03-03   | Mobile   | 2              | 2            | 40                     | 25.00             |
+| 2023-03-04   | Desktop  | 1              | 1            | 55                     | 250.00            |
+| 2023-03-04   | Mobile   | 1              | 1            | 15                     | 12.50             |
+| 2023-03-04   | Tablet   | 1              | 1            | 30                     | 0.00              |
+| 2023-03-05   | Desktop  | 2              | 2            | 70                     | 110.75            |
+| 2023-03-05   | Mobile   | 1              | 1            | 15                     | 0.00              |
+| 2023-03-06   | Desktop  | 2              | 2            | 85                     | 211.99            |
+| 2023-03-06   | Mobile   | 1              | 1            | 15                     | 9.99              |
+| 2023-03-07   | Desktop  | 1              | 1            | 10                     | 0.00              |
+| 2023-03-07   | Mobile   | 2              | 2            | 55                     | 55.50             |
+| 2023-03-07   | Tablet   | 1              | 1            | 20                     | 35.00             |
+| 2023-03-08   | Desktop  | 1              | 1            | 45                     | 180.00            |
+| 2023-03-08   | Mobile   | 1              | 1            | 35                     | 22.75             |
+| 2023-03-08   | Tablet   | 1              | 1            | 30                     | 40.00             |
 
 **Your Solution:**
 
@@ -84,7 +84,7 @@ Order the results by `user_id` and then by the session rank.
 
 ## Question 3: Identifying Back-to-Back Sessions
 
-Find all instances where a user starts a new session within 60 minutes of their previous session ending.
+Find all instances where a user starts a new session after their previous session ending.
 
 For each such occurrence, the report should show the `user_id`, the `platform` and `session_end` time of the first session, and the `platform` and `session_start` time of the subsequent session. Also, calculate the time difference in minutes between the two sessions.
 
@@ -92,10 +92,23 @@ Order the results by `user_id` and then by the end time of the first session.
 
 **Expected Output:**
 
-| **user_id** | **previous_platform** | **previous_session_end** | **next_platform** | **next_session_start** | **idle_time_minutes** |
-| ----------------- | --------------------------- | ------------------------------ | ----------------------- | ---------------------------- | --------------------------- |
-| 102               | Mobile                      | 2023-03-01 09:45:00            | Desktop                 | 2023-03-02 14:30:00          | 285                         |
-| 104               | Tablet                      | 2023-03-02 11:30:00            | Mobile                  | 2023-03-04 15:10:00          | 250                         |
+| user_id | previous_platform | previous_session_end | next_platform | next_session_start  | idle_time_minutes |
+| ------- | ----------------- | -------------------- | ------------- | ------------------- | ----------------- |
+| 101     | Desktop           | 2023-03-01 08:35:00  | Mobile        | 2023-03-01 19:00:00 | 625               |
+| 101     | Mobile            | 2023-03-01 19:25:00  | Desktop       | 2023-03-03 11:00:00 | 2375              |
+| 101     | Desktop           | 2023-03-03 11:45:00  | Mobile        | 2023-03-05 18:45:00 | 3300              |
+| 101     | Mobile            | 2023-03-05 19:00:00  | Mobile        | 2023-03-07 21:00:00 | 3000              |
+| 102     | Mobile            | 2023-03-01 09:45:00  | Desktop       | 2023-03-02 14:30:00 | 1725              |
+| 102     | Desktop           | 2023-03-02 15:10:00  | Tablet        | 2023-03-04 20:00:00 | 3170              |
+| 102     | Tablet            | 2023-03-04 20:30:00  | Desktop       | 2023-03-06 17:00:00 | 2670              |
+| 102     | Desktop           | 2023-03-06 17:45:00  | Mobile        | 2023-03-08 11:00:00 | 2475              |
+| 103     | Desktop           | 2023-03-02 11:15:00  | Mobile        | 2023-03-03 16:00:00 | 1725              |
+| 103     | Mobile            | 2023-03-03 16:20:00  | Desktop       | 2023-03-06 11:20:00 | 4020              |
+| 103     | Desktop           | 2023-03-06 12:00:00  | Tablet        | 2023-03-08 15:00:00 | 3060              |
+| 104     | Tablet            | 2023-03-02 11:30:00  | Mobile        | 2023-03-04 15:10:00 | 3100              |
+| 104     | Mobile            | 2023-03-04 15:25:00  | Desktop       | 2023-03-07 13:30:00 | 4205              |
+| 105     | Mobile            | 2023-03-03 08:05:00  | Desktop       | 2023-03-05 12:00:00 | 3115              |
+| 106     | Desktop           | 2023-03-04 13:55:00  | Mobile        | 2023-03-07 16:50:00 | 4495              |
 
 **Your Solution:**
 
