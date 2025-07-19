@@ -23,8 +23,20 @@ Order the results by month (chronologically) and then by product category alphab
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+	DATE_FORMAT(transaction_date, '%Y-%m') AS sales_month,
+	category,
+	COUNT(DISTINCT product_id) AS unique_products_sold,
+	SUM(quantity) AS total_units_sold,
+	SUM(quantity * price_per_unit) AS total_revenue
+FROM
+	sales_data
+GROUP BY
+	DATE_FORMAT(transaction_date, '%Y-%m'),
+	category
+ORDER BY
+	sales_month,
+	category;
 ```
 
 ## Question 2: Identifying High-Value Customers
@@ -46,8 +58,19 @@ Order the results by total lifetime spend in descending order.
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+	customer_id,
+	COUNT(transaction_id) AS transaction_count,
+	ROUND(SUM(quantity * price_per_unit), 2) AS total_lifetime_spend
+FROM
+	sales_data
+GROUP BY
+	customer_id
+HAVING
+	transaction_count >= 3
+	AND total_lifetime_spend > 500
+ORDER BY
+	total_lifetime_spend DESC;
 ```
 
 ## Question 3: Time Between a Customer's First and Second Purchase
@@ -70,6 +93,24 @@ Order the results by `customer_id`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH purchases AS (
+	SELECT
+		customer_id,
+		transaction_date,
+		LEAD(transaction_date, 1, NULL) OVER (PARTITION BY customer_id ORDER BY transaction_date) AS next_purchase_date
+	FROM
+		sales_data
 
+)
+SELECT
+	customer_id,
+	DATEDIFF(MIN(next_purchase_date), MIN(transaction_date)) AS days_between_first_and_second_purchase
+FROM
+	purchases
+WHERE
+	next_purchase_date IS NOT NULL
+GROUP BY
+	customer_id
+ORDER BY
+	customer_id;
 ```
