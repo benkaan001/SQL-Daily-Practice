@@ -8,21 +8,30 @@ Order the results by the hour of the day.
 
 **Expected Output:**
 
-| **hour** | **total_hits** | **unique_visitors** | **total_bytes_sent** |
-| -------------- | -------------------- | ------------------------- | -------------------------- |
-| 8              | 5                    | 3                         | 84821                      |
-| 9              | 4                    | 4                         | 49928                      |
-| 10             | 1                    | 1                         | 512                        |
-| 11             | 2                    | 2                         | 26900                      |
-| 14             | 3                    | 1                         | 53776                      |
-| 15             | 2                    | 2                         | 26522                      |
-| 18             | 2                    | 2                         | 35060                      |
+| hour | total_hits | unique_visitors | total_bytes_sent |
+| ---- | ---------- | --------------- | ---------------- |
+| 8    | 6          | 3               | 112445           |
+| 9    | 5          | 4               | 50705            |
+| 10   | 1          | 1               | 512              |
+| 11   | 2          | 2               | 26900            |
+| 14   | 3          | 1               | 53776            |
+| 15   | 2          | 2               | 26522            |
+| 18   | 2          | 2               | 35060            |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+	HOUR(log_timestamp) `hour`,
+	COUNT(request_url) AS total_hits,
+    COUNT(DISTINCT user_id) + COUNT(DISTINCT CASE WHEN user_id IS NULL THEN ip_address END) AS unique_visitors,
+    SUM(bytes_sent) AS total_bytes_sent
+FROM
+    website_logs
+GROUP BY
+    HOUR(log_timestamp)
+ORDER BY
+    `hour`;
 ```
 
 ## Question 2: Daily Error Rate Monitoring
@@ -35,17 +44,34 @@ Order the results by date.
 
 **Expected Output:**
 
-| **log_date** | **total_requests** | **error_count** | **error_rate_pct** |
-| ------------------ | ------------------------ | --------------------- | ------------------------ |
-| 2023-04-01         | 9                        | 2                     | 22.22                    |
-| 2023-04-02         | 6                        | 1                     | 16.67                    |
-| 2023-04-03         | 5                        | 1                     | 20.00                    |
+| log_date   | total_requests | error_count | error_rate_pct |
+| ---------- | -------------- | ----------- | -------------- |
+| 2023-04-01 | 9              | 2           | 22.22          |
+| 2023-04-02 | 7              | 1           | 14.29          |
+| 2023-04-03 | 5              | 1           | 20.00          |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH errors AS (
+	SELECT
+		DATE(log_timestamp) AS log_date,
+		COUNT(*) AS total_requests,
+		SUM(CASE WHEN http_status >= 400 THEN 1 ELSE 0 END) AS error_count
+	FROM
+		website_logs
+	GROUP BY
+		DATE(log_timestamp)
+)
+SELECT
+	log_date,
+	total_requests,
+	error_count,
+	ROUND(error_count * 100.0 / total_requests, 2) AS error_rate_pct
+FROM
+	errors
+ORDER BY
+	log_date;
 ```
 
 ## Question 3: User Conversion Funnel Analysis
@@ -58,14 +84,29 @@ Order the results by `user_id` and then by date.
 
 **Expected Output:**
 
-| **user_id** | **activity_date** | **first_product_view_ts** | **first_cart_view_ts** |
-| ----------------- | ----------------------- | ------------------------------- | ---------------------------- |
-| 101               | 2023-04-01              | 2023-04-01 09:15:30             | 2023-04-01 09:16:10          |
-| 104               | 2023-04-02              | 2023-04-02 14:01:25             | 2023-04-02 14:02:00          |
+| user_id | activity_date | first_product_view_ts | first_cart_view_ts  |
+| ------- | ------------- | --------------------- | ------------------- |
+| 101     | 2023-04-01    | 2023-04-01 09:15:30   | 2023-04-01 09:16:10 |
+| 104     | 2023-04-02    | 2023-04-02 14:01:25   | 2023-04-02 14:02:00 |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+	user_id,
+	DATE(log_timestamp) AS activity_date,
+	MIN(CASE WHEN request_url LIKE '%product%' THEN log_timestamp END) AS first_product_view_ts,
+	MIN(CASE WHEN request_url LIKE '%cart%' THEN log_timestamp END) AS first_cart_view_ts
+FROM
+	website_logs
+WHERE
+	user_id IS NOT NULL
+GROUP BY
+	user_id,
+	activity_date
+HAVING
+	first_product_view_ts IS NOT NULL
+	AND first_cart_view_ts IS NOT NULL
+ORDER BY
+	user_id;
 ```
