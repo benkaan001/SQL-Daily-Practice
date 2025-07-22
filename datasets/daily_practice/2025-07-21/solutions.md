@@ -17,8 +17,19 @@ Order the results by department name alphabetically.
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+	department,
+	ROUND(AVG(performance_score), 2) AS avg_performance_score,
+	ROUND(AVG(potential_score), 2) AS avg_potential_score,
+	SUM(projects_completed) AS total_projects_completed
+FROM
+	employee_reviews
+WHERE
+	review_date BETWEEN '2023-12-01' AND '2023-12-31'
+GROUP BY
+	department
+ORDER BY
+	department;
 ```
 
 ## Question 2: Employee Performance Progression
@@ -56,8 +67,26 @@ Order the results by `employee_id` and then by `review_date`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH scores AS (
+	SELECT
+		employee_id,
+		review_date,
+		performance_score,
+		LAG(performance_score, 1, NULL) OVER (PARTITION BY employee_id ORDER BY review_date) AS previous_performance_score
+	FROM
+		employee_reviews
+)
+SELECT
+	employee_id,
+	review_date,
+	performance_score,
+	previous_performance_score,
+	ROUND(performance_score - previous_performance_score, 2)  AS score_change
+FROM
+	scores
+ORDER BY
+	employee_id,
+	review_date;
 ```
 
 ## Question 3: Identifying High-Potential Employees Due for Promotion
@@ -78,6 +107,34 @@ Order the results by the months since the last promotion in descending order.
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH filtered_employees AS (
+	SELECT
+		employee_id,
+		department,
+		MAX(review_date) OVER (PARTITION BY employee_id) AS latest_review_date,
+		performance_score,
+		potential_score,
+		last_promotion_date,
+		MAX(last_promotion_date) OVER (PARTITION BY employee_id) AS actual_last_promotion_date
+	FROM
+		employee_reviews
+	WHERE
+		YEAR(review_date) = 2023
+		AND performance_score >= 4.5
+		AND potential_score >= 4.8
+		AND last_promotion_date IS NOT NULL
+)
+SELECT
+	employee_id,
+	department,
+	latest_review_date,
+	performance_score,
+	potential_score,
+	TIMESTAMPDIFF(MONTH, TIMESTAMP(actual_last_promotion_date), TIMESTAMP(latest_review_date)) AS months_since_last_promotion
+FROM
+	filtered_employees
+WHERE
+	actual_last_promotion_date = last_promotion_date
+ORDER BY
+	months_since_last_promotion DESC;
 ```
