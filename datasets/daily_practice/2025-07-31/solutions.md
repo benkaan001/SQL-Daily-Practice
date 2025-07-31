@@ -8,18 +8,31 @@ Order the results by the total number of tickets handled in descending order.
 
 **Expected Output:**
 
-| **agent_id** | **total_tickets_handled** | **avg_satisfaction_rating** | **avg_resolution_time_hours** |
-| ------------------ | ------------------------------- | --------------------------------- | ----------------------------------- |
-| 501                | 6                               | 3.25                              | 67.25                               |
-| 502                | 5                               | 4.50                              | 25.47                               |
-| 503                | 4                               | 5.00                              | 24.38                               |
-| 504                | 4                               | 5.00                              | 49.50                               |
-| 505                | 3                               | 4.00                              | 48.21                               |
-
+| agent_id | total_tickets_handled | avg_satisfaction_rating | avg_resolution_time_hours |
+| -------- | --------------------- | ----------------------- | ------------------------- |
+| 501      | 6                     | 3.00                    | 56.94                     |
+| 502      | 5                     | 4.50                    | 30.00                     |
+| 503      | 4                     | 4.67                    | 30.42                     |
+| 504      | 4                     | 4.33                    | 32.14                     |
+| 505      | 3                     | 4.00                    | 25.56                     |
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	agent_id,
+	COUNT(*) AS total_tickets_handled,
+	ROUND(AVG(satisfaction_rating), 2) AS avg_satisfaction_rating,
+	ROUND(AVG(TIMESTAMPDIFF(MINUTE, date_opened, date_closed) / 60.0), 2) AS avg_resolution_time_hours
+FROM
+	customer_support_tickets
+WHERE
+	agent_id IS NOT NULL
+GROUP BY
+	agent_id
+HAVING
+	COUNT(*) >= 1
+ORDER BY
+	total_tickets_handled DESC;
 ```
 
 ## Question 2: Customer Ticket Analysis
@@ -32,27 +45,52 @@ Order the results by `customer_id`.
 
 **Expected Output:**
 
-| **customer_id** | **first_ticket_category** | **first_ticket_date** | **latest_ticket_category** | **latest_ticket_date** |
-| --------------------- | ------------------------------- | --------------------------- | -------------------------------- | ---------------------------- |
-| 101                   | Electronics                     | 2023-01-15 10:30:00         | Software                         | 2023-02-04 11:00:00          |
-| 102                   | Software                        | 2023-01-16 11:05:00         | Software                         | 2023-01-30 09:00:00          |
-| 103                   | Home Goods                      | 2023-01-17 14:00:00         | Electronics                      | 2023-01-27 16:00:00          |
-| 104                   | Electronics                     | 2023-01-19 16:20:00         | Electronics                      | 2023-02-06 17:30:00          |
-| 105                   | Apparel                         | 2023-01-20 13:15:00         | Home Goods                       | 2023-02-02 13:00:00          |
-| 106                   | Home Goods                      | 2023-01-22 11:50:00         | Home Goods                       | 2023-02-08 14:00:00          |
-| 107                   | Electronics                     | 2023-01-23 10:00:00         | Electronics                      | 2023-02-03 15:00:00          |
-| 108                   | Books                           | 2023-01-25 09:45:00         | Books                            | 2023-02-09 18:00:00          |
-| 109                   | Home Goods                      | 2023-01-26 12:10:00         | Home Goods                       | 2023-01-26 12:10:00          |
-| 110                   | Software                        | 2023-01-28 11:30:00         | Software                         | 2023-01-28 11:30:00          |
-| 111                   | Apparel                         | 2023-02-01 10:00:00         | Apparel                          | 2023-02-01 10:00:00          |
-| 112                   | Home Goods                      | 2023-02-05 16:00:00         | Home Goods                       | 2023-02-05 16:00:00          |
-| 113                   | Software                        | 2023-02-07 09:20:00         | Software                         | 2023-02-07 09:20:00          |
+| customer_id | first_ticket_category | first_ticket_date   | latest_ticket_category | latest_ticket_date  |
+| ----------- | --------------------- | ------------------- | ---------------------- | ------------------- |
+| 101         | Electronics           | 2023-01-15 10:30:00 | Software               | 2023-02-04 11:00:00 |
+| 102         | Software              | 2023-01-16 11:05:00 | Software               | 2023-01-30 09:00:00 |
+| 103         | Home Goods            | 2023-01-17 14:00:00 | Electronics            | 2023-01-27 16:00:00 |
+| 104         | Electronics           | 2023-01-19 16:20:00 | Electronics            | 2023-02-06 17:30:00 |
+| 105         | Apparel               | 2023-01-20 13:15:00 | Home Goods             | 2023-02-02 13:00:00 |
+| 106         | Home Goods            | 2023-01-22 11:50:00 | Home Goods             | 2023-02-08 14:00:00 |
+| 107         | Electronics           | 2023-01-23 10:00:00 | Electronics            | 2023-02-03 15:00:00 |
+| 108         | Books                 | 2023-01-25 09:45:00 | Books                  | 2023-02-09 18:00:00 |
+| 109         | Home Goods            | 2023-01-26 12:10:00 | Home Goods             | 2023-01-26 12:10:00 |
+| 110         | Software              | 2023-01-28 11:30:00 | Software               | 2023-01-28 11:30:00 |
+| 111         | Apparel               | 2023-02-01 10:00:00 | Apparel                | 2023-02-01 10:00:00 |
+| 112         | Home Goods            | 2023-02-05 16:00:00 | Home Goods             | 2023-02-05 16:00:00 |
+| 113         | Software              | 2023-02-07 09:20:00 | Software               | 2023-02-07 09:20:00 |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH ranked_tickets AS (
+	SELECT
+		customer_id,
+		product_category,
+		date_opened,
+		RANK() OVER (PARTITION BY customer_id ORDER BY date_opened) AS ascending_rank,
+		RANK() OVER (PARTITION BY customer_id ORDER BY date_opened DESC) AS descending_rank
+	FROM
+		customer_support_tickets
+	WHERE
+		date_opened IS NOT NULL
+)
+SELECT
+	customer_id,
+	MAX(CASE WHEN ascending_rank = 1 THEN product_category END)AS first_ticket_category,
+	MAX(CASE WHEN ascending_rank = 1 THEN date_opened END) AS first_ticket_date,
+	MAX(CASE WHEN descending_rank = 1 THEN product_category END) AS latest_ticket_category,
+	MAX(CASE WHEN descending_rank = 1 THEN date_opened END) AS latest_ticket_date
+FROM
+	ranked_tickets
+WHERE
+	ascending_rank = 1
+	OR descending_rank = 1
+GROUP BY
+	customer_id
+ORDER BY
+	customer_id;
 ```
 
 ## Question 3: Unresolved High-Priority Tickets
@@ -65,13 +103,25 @@ Order the results by the number of days open, from longest to shortest.
 
 **Expected Output:**
 
-| **ticket_id** | **priority** | **days_open** | **product_category** | **follow_up_agent** |
-| ------------------- | ------------------ | ------------------- | -------------------------- | ------------------------- |
-| 12                  | High               | 20                  | Home Goods                 | 504                       |
+| ticket_id | priority | days_open | product_category | follow_up_agent |
+| --------- | -------- | --------- | ---------------- | --------------- |
+| 12        | High     | 20        | Home Goods       | 504             |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	ticket_id,
+	priority,
+	DATEDIFF('2023-02-15', DATE(date_opened)) AS days_open,
+	product_category,
+	agent_id AS follow_up_agent
+FROM
+	customer_support_tickets
+WHERE
+	date_closed IS NULL
+	AND priority IN ('High', 'Critical')
+ORDER BY
+	days_open DESC;
 ```
 

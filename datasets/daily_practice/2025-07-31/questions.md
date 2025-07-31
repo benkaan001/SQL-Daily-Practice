@@ -8,13 +8,13 @@ Order the results by the total number of tickets handled in descending order.
 
 **Expected Output:**
 
-| **agent_id** | **total_tickets_handled** | **avg_satisfaction_rating** | **avg_resolution_time_hours** |
-| ------------------ | ------------------------------- | --------------------------------- | ----------------------------------- |
-| 501                | 6                               | 3.25                              | 67.25                               |
-| 502                | 5                               | 4.50                              | 25.47                               |
-| 503                | 4                               | 5.00                              | 24.38                               |
-| 504                | 4                               | 5.00                              | 49.50                               |
-| 505                | 3                               | 4.00                              | 48.21                               |
+| agent_id | total_tickets_handled | avg_satisfaction_rating | avg_resolution_time_hours |
+| -------- | --------------------- | ----------------------- | ------------------------- |
+| 501      | 6                     | 3.00                    | 56.94                     |
+| 502      | 5                     | 4.50                    | 30.00                     |
+| 503      | 4                     | 4.67                    | 30.42                     |
+| 504      | 4                     | 4.33                    | 32.14                     |
+| 505      | 3                     | 4.00                    | 25.56                     |                            |
 
 **Your Solution:**
 
@@ -32,21 +32,21 @@ Order the results by `customer_id`.
 
 **Expected Output:**
 
-| **customer_id** | **first_ticket_category** | **first_ticket_date** | **latest_ticket_category** | **latest_ticket_date** |
-| --------------------- | ------------------------------- | --------------------------- | -------------------------------- | ---------------------------- |
-| 101                   | Electronics                     | 2023-01-15 10:30:00         | Software                         | 2023-02-04 11:00:00          |
-| 102                   | Software                        | 2023-01-16 11:05:00         | Software                         | 2023-01-30 09:00:00          |
-| 103                   | Home Goods                      | 2023-01-17 14:00:00         | Electronics                      | 2023-01-27 16:00:00          |
-| 104                   | Electronics                     | 2023-01-19 16:20:00         | Electronics                      | 2023-02-06 17:30:00          |
-| 105                   | Apparel                         | 2023-01-20 13:15:00         | Home Goods                       | 2023-02-02 13:00:00          |
-| 106                   | Home Goods                      | 2023-01-22 11:50:00         | Home Goods                       | 2023-02-08 14:00:00          |
-| 107                   | Electronics                     | 2023-01-23 10:00:00         | Electronics                      | 2023-02-03 15:00:00          |
-| 108                   | Books                           | 2023-01-25 09:45:00         | Books                            | 2023-02-09 18:00:00          |
-| 109                   | Home Goods                      | 2023-01-26 12:10:00         | Home Goods                       | 2023-01-26 12:10:00          |
-| 110                   | Software                        | 2023-01-28 11:30:00         | Software                         | 2023-01-28 11:30:00          |
-| 111                   | Apparel                         | 2023-02-01 10:00:00         | Apparel                          | 2023-02-01 10:00:00          |
-| 112                   | Home Goods                      | 2023-02-05 16:00:00         | Home Goods                       | 2023-02-05 16:00:00          |
-| 113                   | Software                        | 2023-02-07 09:20:00         | Software                         | 2023-02-07 09:20:00          |
+| customer_id | first_ticket_category | first_ticket_date   | latest_ticket_category | latest_ticket_date  |
+| ----------- | --------------------- | ------------------- | ---------------------- | ------------------- |
+| 101         | Electronics           | 2023-01-15 10:30:00 | Software               | 2023-02-04 11:00:00 |
+| 102         | Software              | 2023-01-16 11:05:00 | Software               | 2023-01-30 09:00:00 |
+| 103         | Home Goods            | 2023-01-17 14:00:00 | Electronics            | 2023-01-27 16:00:00 |
+| 104         | Electronics           | 2023-01-19 16:20:00 | Electronics            | 2023-02-06 17:30:00 |
+| 105         | Apparel               | 2023-01-20 13:15:00 | Home Goods             | 2023-02-02 13:00:00 |
+| 106         | Home Goods            | 2023-01-22 11:50:00 | Home Goods             | 2023-02-08 14:00:00 |
+| 107         | Electronics           | 2023-01-23 10:00:00 | Electronics            | 2023-02-03 15:00:00 |
+| 108         | Books                 | 2023-01-25 09:45:00 | Books                  | 2023-02-09 18:00:00 |
+| 109         | Home Goods            | 2023-01-26 12:10:00 | Home Goods             | 2023-01-26 12:10:00 |
+| 110         | Software              | 2023-01-28 11:30:00 | Software               | 2023-01-28 11:30:00 |
+| 111         | Apparel               | 2023-02-01 10:00:00 | Apparel                | 2023-02-01 10:00:00 |
+| 112         | Home Goods            | 2023-02-05 16:00:00 | Home Goods             | 2023-02-05 16:00:00 |
+| 113         | Software              | 2023-02-07 09:20:00 | Software               | 2023-02-07 09:20:00 |
 
 **Your Solution:**
 
@@ -65,9 +65,9 @@ Order the results by the number of days open, from longest to shortest.
 
 **Expected Output:**
 
-| **ticket_id** | **priority** | **days_open** | **product_category** | **follow_up_agent** |
-| ------------------- | ------------------ | ------------------- | -------------------------- | ------------------------- |
-| 12                  | High               | 20                  | Home Goods                 | 504                       |
+| ticket_id | priority | days_open | product_category | follow_up_agent |
+| --------- | -------- | --------- | ---------------- | --------------- |
+| 12        | High     | 20        | Home Goods       | 504             |                    |
 
 **Your Solution:**
 
