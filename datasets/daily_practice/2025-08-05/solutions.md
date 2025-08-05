@@ -20,5 +20,52 @@ Order the results by `course_id`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH grouped_courses AS (
+	SELECT
+		course_id,
+		COUNT(DISTINCT CASE WHEN activity_type = 'enroll' THEN user_id END) AS total_enrollments,
+		COUNT(DISTINCT CASE WHEN activity_type = 'start_lesson' THEN user_id END) AS total_started
+	FROM
+		course_activity
+	GROUP BY
+		course_id
+),
+final_quizzes AS (
+	SELECT
+		course_id,
+		MAX(lesson_or_quiz_id) AS final_quiz_id
+	FROM
+		course_activity
+	WHERE
+		activity_type = 'take_quiz'
+	GROUP BY
+		course_id
+),
+completed_courses AS (
+	SELECT
+		ca.course_id,
+		COUNT(DISTINCT ca.user_id) AS total_completed
+	FROM
+		course_activity ca
+	LEFT JOIN
+		final_quizzes fq ON ca.course_id = fq.course_id
+		AND ca.lesson_or_quiz_id = fq.final_quiz_id
+	WHERE
+		ca.quiz_score >= 70
+	GROUP BY
+		ca.course_id
+)
+SELECT
+	gc.course_id,
+	gc.total_enrollments,
+	gc.total_started,
+	COALESCE(cc.total_completed, 0) AS total_completed,
+	ROUND(COALESCE(cc.total_completed, 0) * 100.0 / gc.total_enrollments, 2 ) AS completion_rate_pct
+FROM
+	completed_courses cc
+RIGHT JOIN
+	grouped_courses gc ON gc.course_id = cc.course_id
+ORDER BY
+	gc.course_id;
 ```
+
