@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS daily_practice_20250807_schema;
-USE daily_practice_20250807_schema;
+CREATE DATABASE IF NOT EXISTS daily_practice_20250811_schema;
+USE daily_practice_20250811_schema;
 
 -- This table logs critical events from a distributed system.
 CREATE TABLE system_events (
