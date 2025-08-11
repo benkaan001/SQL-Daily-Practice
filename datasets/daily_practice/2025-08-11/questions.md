@@ -8,10 +8,11 @@ The final report should include the `node_id`, `service_name`, the `restart_time
 
 **Expected Output:**
 
-| **node_id** | **service_name** | **restart_time** | **last_high_cpu_event** | **max_cpu_before_restart** |
-| ----------------- | ---------------------- | ---------------------- | ----------------------------- | -------------------------------- |
-| 1                 | api_gateway            | 2023-11-20 10:01:00    | 2023-11-20 09:55:00           | 95.80                            |
-| 1                 | api_gateway            | 2023-11-23 18:08:00    | 2023-11-23 18:02:00           | 94.00                            |
+| node_id | service_name  | restart_time        | last_high_cpu_event | max_cpu_before_restart |
+| ------- | ------------- | ------------------- | ------------------- | ---------------------- |
+| 1       | api_gateway   | 2023-11-20 10:01:00 | 2023-11-20 09:55:00 | 95.80                  |
+| 2       | user_database | 2023-11-21 14:20:00 | 2023-11-21 14:15:00 | 98.00                  |
+| 1       | api_gateway   | 2023-11-23 18:08:00 | 2023-11-23 18:02:00 | 94.00                  |
 
 **Your Solution:**
 
@@ -29,9 +30,9 @@ The report should list the `failed_service`, the `failed_deployment_time`, the `
 
 **Expected Output:**
 
-| **failed_service** | **failed_deployment_time** | **node_id** | **cascading_service_name** | **cascading_restart_time** |
-| ------------------------ | -------------------------------- | ----------------- | -------------------------------- | -------------------------------- |
-| data_pipeline            | 2023-11-21 14:10:00              | 2                 | user_database                    | 2023-11-21 14:20:00              |
+| failed_service | failed_deployment_time | node_id | cascading_service_name | cascading_restart_time |
+| -------------- | ---------------------- | ------- | ---------------------- | ---------------------- |
+| data_pipeline  | 2023-11-21 14:10:00    | 2       | user_database          | 2023-11-21 14:20:00    |
 
 **Your Solution:**
 
@@ -49,9 +50,9 @@ The report should show the `node_id`, `service_name`, the `first_restart_in_wind
 
 **Expected Output:**
 
-| **node_id** | **service_name** | **first_restart_in_window** | **last_restart_in_window** | **restart_count** |
-| ----------------- | ---------------------- | --------------------------------- | -------------------------------- | ----------------------- |
-| 1                 | api_gateway            | 2023-11-20 10:30:00               | 2023-11-20 11:15:00              | 3                       |
+| node_id | service_name | first_restart_in_window | last_restart_in_window | restart_count |
+| ------- | ------------ | ----------------------- | ---------------------- | ------------- |
+| 1       | api_gateway  | 2023-11-20 10:01:00     | 2023-11-20 10:50:00    | 3             |
 
 **Your Solution:**
 
