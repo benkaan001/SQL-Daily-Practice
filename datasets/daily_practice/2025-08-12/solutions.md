@@ -13,12 +13,26 @@ The final report should compare the two versions side-by-side.
 | 1          | 3                 | 0.00        | 85.00           | 128.00             |
 | 2          | 3                 | 33.33       | 173.33          | 135.00             |
 
+
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+    version_id,
+    COUNT(invocation_id) AS total_invocations,
+    ROUND(AVG(CASE WHEN status = 'ERROR' THEN 1 ELSE 0 END) * 100.0, 2) AS error_rate_pct,
+    ROUND(AVG(duration_ms), 2) AS avg_duration_ms,
+    ROUND(AVG(memory_used_mb), 2) AS avg_memory_used_mb
+FROM
+    function_invocations
+WHERE
+    function_name = 'image_processor'
+    AND start_timestamp BETWEEN '2023-12-01 10:00:00' AND '2023-12-01 10:01:00'
+GROUP BY
+    version_id;
 ```
+
 
 ## Scenario 2: Identifying Chained Function Invocations
 
@@ -38,8 +52,63 @@ For each link in a chain, the report should show the `function_name`, the `previ
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH prev_invocations AS (
+    SELECT
+        function_name,
+        invocation_id,
+        start_timestamp,
+        LAG(invocation_id, 1) OVER (PARTITION BY function_name ORDER BY start_timestamp) AS previous_invocation_id,
+        LAG(end_timestamp, 1) OVER (PARTITION BY function_name ORDER BY start_timestamp) AS previous_end_timestamp
+    FROM
+        function_invocations
+)
+SELECT
+    function_name,
+    previous_invocation_id,
+    invocation_id AS chained_invocation_id,
+    start_timestamp AS chained_start_timestamp
+FROM
+    prev_invocations
+WHERE
+    previous_invocation_id IS NOT NULL
+    AND TIMESTAMPDIFF(MICROSECOND, previous_end_timestamp, start_timestamp) BETWEEN 0 AND 1000;
+```
 
+```sql
+-- Using self join
+WITH chained_functions AS (
+	SELECT
+		f1.function_name,
+		f1.invocation_id AS previous_invocation_id,
+		f2.invocation_id AS chained_invocation_id,
+		f2.start_timestamp AS chained_start_timestamp
+	FROM
+		function_invocations f1
+	JOIN
+		function_invocations f2 ON f1.invocation_id != f2.invocation_id
+		AND f1.function_name = f2.function_name
+		AND TIMESTAMPDIFF(MICROSECOND, f1.end_timestamp, f2.start_timestamp) BETWEEN 0 AND 1000
+),
+ordered_chains AS (
+	SELECT
+		function_name,
+		previous_invocation_id,
+		chained_invocation_id,
+		chained_start_timestamp,
+		ROW_NUMBER() OVER (PARTITION BY previous_invocation_id ORDER BY chained_start_timestamp) AS rn
+
+	FROM
+		chained_functions
+)
+SELECT
+	function_name,
+	previous_invocation_id,
+	chained_invocation_id,
+	chained_start_timestamp
+FROM
+	ordered_chains
+WHERE
+	rn = 1
 ```
 
 ## Scenario 3: Correlating Errors with High Invocation Frequency
@@ -58,9 +127,22 @@ The final report should list the `window_start_time` (the timestamp truncated to
 | window_start_time   | invocation_count | error_rate_pct |
 | ------------------- | ---------------- | -------------- |
 
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+SELECT
+    DATE_FORMAT(start_timestamp, '%Y-%m-%d %H:%i:%s') AS window_start_time,
+    COUNT(*) AS invocation_count,
+    ROUND(
+      AVG(CASE WHEN status = 'ERROR' THEN 1 ELSE 0 END) * 100.0
+    , 2) AS error_rate_pct
+FROM
+    function_invocations
+WHERE
+    function_name = 'data_enrichment'
+GROUP BY
+    window_start_time
+HAVING
+    COUNT(*) >= 3;
 ```
