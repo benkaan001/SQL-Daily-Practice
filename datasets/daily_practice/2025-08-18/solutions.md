@@ -20,12 +20,43 @@ Order the results by `pipeline_start_time`.
 | i9j0k1l2    | auth_service  | 2023-12-11 09:00:00 | SUCCESS      | 45                     |
 | m3n4o5p6    | order_service | 2023-12-12 14:00:00 | FAILURE      | 25                     |
 | q7r8s9t0    | order_service | 2023-12-12 14:55:00 | SUCCESS      | 25                     |
-
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH pipeline_starts AS (
+	SELECT
+		commit_hash,
+		service_name,
+		event_timestamp AS pipeline_start_time
+	FROM
+		cicd_pipeline_events
+	WHERE
+		event_type = 'BUILD_STARTED'
+),
+pipeline_ending AS (
+	SELECT
+		commit_hash,
+		service_name,
+		event_timestamp AS pipeline_ending,
+		CASE WHEN event_type = 'DEPLOY_SUCCESS' THEN 'SUCCESS' ELSE 'FAILURE' END AS final_status
+	FROM
+		cicd_pipeline_events
+	WHERE
+		event_type IN ('DEPLOY_SUCCESS', 'DEPLOY_FAILURE', 'BUILD_FAILURE')
 
+)
+SELECT
+	pe.commit_hash,
+	pe.service_name,
+	ps.pipeline_start_time,
+	pe.final_status,
+	TIMESTAMPDIFF(MINUTE, ps.pipeline_start_time, pe.pipeline_ending) AS total_duration_minutes
+FROM
+	pipeline_starts ps
+JOIN
+	pipeline_ending pe ON ps.commit_hash = pe.commit_hash AND ps.service_name = pe.service_name
+ORDER BY
+	ps.pipeline_start_time;
 ```
 
 ## Scenario 2: Identifying Flaky Test Suites
@@ -42,11 +73,36 @@ The report should show the `service_name`, `commit_hash`, the `test_suite` that 
 | ------------ | ----------- | ----------------- | ------------------- | ------------------- |
 | auth_service | i9j0k1l2    | integration_tests | 2023-12-11 09:20:00 | 2023-12-11 09:40:00 |
 
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH test_events AS (
+	SELECT
+		service_name,
+		commit_hash,
+		JSON_EXTRACT(details, '$.test_suite') AS test_suite,
+		CASE WHEN event_type = 'TEST_FAILURE' THEN event_timestamp END AS first_failure,
+		CASE WHEN event_type = 'TEST_SUCCESS' THEN event_timestamp END AS first_success
+	FROM
+		cicd_pipeline_events
+	WHERE
+		event_type IN ('TEST_SUCCESS', 'TEST_FAILURE')
+)
+SELECT
+	service_name,
+	commit_hash,
+	JSON_UNQUOTE(test_suite) AS test_suite,
+	MIN(first_failure) AS first_failure,
+	MIN(first_success) AS first_success
+FROM
+	test_events
+GROUP BY
+	service_name,
+	commit_hash,
+	test_suite
+HAVING
+	COUNT(first_failure) > 0 AND COUNT(first_success) > 0;
 ```
 
 ## Scenario 3: Calculating Mean Time To Recovery (MTTR)
@@ -62,9 +118,30 @@ The report should show the `service_name`, the timestamp of the `failure_event`,
 | service_name  | failure_event       | recovery_event      | time_to_recovery_minutes |
 | ------------- | ------------------- | ------------------- | ------------------------ |
 | order_service | 2023-12-12 14:25:00 | 2023-12-12 15:20:00 | 55                       |
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH events AS (
+    SELECT
+        service_name,
+        event_timestamp,
+        event_type,
+        LEAD(event_timestamp, 1) OVER (PARTITION BY service_name ORDER BY event_timestamp) AS next_event_timestamp,
+        LEAD(event_type, 1) OVER (PARTITION BY service_name ORDER BY event_timestamp) AS next_event_type
+    FROM
+        cicd_pipeline_events
+    WHERE
+        event_type IN ('DEPLOY_FAILURE', 'DEPLOY_SUCCESS')
+)
+SELECT
+    service_name,
+    event_timestamp AS failure_event,
+    next_event_timestamp AS recovery_event,
+    ROUND(TIMESTAMPDIFF(MINUTE, event_timestamp, next_event_timestamp), 2) AS time_to_recovery_minutes
+FROM
+    events
+WHERE
+    event_type = 'DEPLOY_FAILURE'
+    AND next_event_type = 'DEPLOY_SUCCESS';
 ```
