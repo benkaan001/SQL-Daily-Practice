@@ -21,7 +21,39 @@ The final report should show the `api_key` and the `throttling_start_time` (the 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH latencies AS (
+	SELECT
+		api_key,
+		latency_ms,
+		SUM(latency_ms) OVER (PARTITION BY api_key ORDER BY request_timestamp) AS latency_running_total,
+		request_timestamp,
+		LEAD(request_timestamp, 1) OVER (PARTITION BY api_key ORDER BY request_timestamp) AS next_request_timestamp
+	FROM
+		api_usage_logs
+),
+filtered_latencies AS (
+	SELECT
+		api_key,
+		latency_ms,
+		latency_running_total,
+		request_timestamp,
+		next_request_timestamp
+	FROM
+		latencies
+	WHERE
+		latency_running_total >= 100
+		AND next_request_timestamp IS NOT NULL
+		AND TIMESTAMPDIFF(SECOND, request_timestamp, next_request_timestamp) <= 60* 5
+)
+SELECT
+	api_key,
+	MIN(request_timestamp) AS throttling_start_time
+FROM
+	filtered_latencies
+WHERE
+	latency_ms < 100
+GROUP BY
+	api_key;
 ```
 
 ## Scenario 2: Latency Degradation Detection
@@ -41,13 +73,50 @@ The report should show the `endpoint`, the `degradation_hour`, the `p95_latency_
 | endpoint | degradation_hour    | p95_latency_current_hour | p95_latency_previous_hour |
 | -------- | ------------------- | ------------------------ | ------------------------- |
 | /orders  | 2023-11-25 14:00:00 | 480                      | 210                       |
-| /users   | 2023-11-25 17:00:00 | 300                      | 55                        |                           |
+| /users   | 2023-11-25 17:00:00 | 300                      | 55                        |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH ranked_latencies AS (
+    SELECT
+        endpoint,
+        DATE_FORMAT(request_timestamp, '%Y-%m-%d %H:00:00') AS hour,
+        latency_ms,
+        ROW_NUMBER() OVER (PARTITION BY endpoint, DATE_FORMAT(request_timestamp, '%Y-%m-%d %H:00:00') ORDER BY latency_ms) AS latency_rank,
+        COUNT(*) OVER (PARTITION BY endpoint, DATE_FORMAT(request_timestamp, '%Y-%m-%d %H:00:00')) AS total_in_group
+    FROM
+        api_usage_logs
+),
+hourly_P95 AS (
+    SELECT
+        endpoint,
+        hour,
+        latency_ms AS p95_latency
+    FROM
+        ranked_latencies
+    WHERE
+        latency_rank = CEIL(0.95 * total_in_group)
+),
+hourly_changes AS (
+    SELECT
+        endpoint,
+        hour,
+        p95_latency,
+        LAG(p95_latency, 1) OVER (PARTITION BY endpoint ORDER BY hour) AS p95_latency_previous_hour
+    FROM
+        hourly_P95
+)
+SELECT
+    endpoint,
+    hour AS degradation_hour,
+    p95_latency AS p95_latency_current_hour,
+    p95_latency_previous_hour
+FROM
+    hourly_changes
+WHERE
+    p95_latency_previous_hour IS NOT NULL
+    AND p95_latency > p95_latency_previous_hour * 1.5;
 ```
 
 ## Scenario 3: Correlating Errors with Payload Size
@@ -67,5 +136,36 @@ The final report should only include endpoints where the average payload of fail
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH successful_payloads AS (
+	SELECT
+		endpoint,
+		AVG(request_payload_kb) AS avg_payload_success_kb
+	FROM
+		api_usage_logs
+	WHERE
+		status_code < 500
+	GROUP BY
+		endpoint
+),
+failed_payloads AS (
+	SELECT
+		endpoint,
+		AVG(request_payload_kb) AS avg_payload_failed_kb
+	FROM
+		api_usage_logs
+	WHERE
+		status_code >= 500
+	GROUP BY
+		endpoint
+)
+SELECT
+	sp.endpoint,
+	sp.avg_payload_success_kb,
+	fp.avg_payload_failed_kb
+FROM
+	successful_payloads sp
+JOIN
+	failed_payloads fp ON sp.endpoint = fp.endpoint
+WHERE
+	fp.avg_payload_failed_kb >= sp.avg_payload_success_kb * 10;
 ```
