@@ -1,4 +1,3 @@
-
 ## 1: User Engagement Scoring
 
 **Objective:** As a data analyst, you need to create a daily engagement score for each user. The score is calculated based on their actions within a 24-hour period (a "day" is a calendar date).
@@ -26,7 +25,24 @@ The final report should show the `activity_date`, `user_id`, and their calculate
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	DATE(event_timestamp) AS activity_date,
+	user_id,
+	SUM(CASE
+		WHEN event_type = 'PLAY' THEN 1
+		WHEN event_type = 'LIKE' THEN 5
+		WHEN event_type = 'ADD_TO_PLAYLIST' THEN 10
+		WHEN event_type = 'SKIP' THEN -2
+		ELSE 0
+	END) AS daily_engagement_score
+
+FROM
+	music_streaming_events
+GROUP BY
+	activity_date,
+	user_id
+HAVING
+	daily_engagement_score > 0;
 ```
 
 
@@ -47,5 +63,29 @@ The report should show the `user_id`, `session_id`, `song_id`, and the calculate
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH timestamped_events AS (
+	SELECT
+	 	user_id,
+	 	session_id,
+	 	song_id,
+	 	MIN(CASE WHEN event_type = 'LIKE' THEN event_timestamp END) AS like_event_timestamp,
+	 	MIN(CASE WHEN event_type = 'ADD_TO_PLAYLIST' THEN event_timestamp END) AS adding_event_timestamp
+	FROM
+		music_streaming_events
+	GROUP BY
+		user_id,
+		session_id,
+		song_id
+)
+SELECT
+	user_id,
+	session_id,
+	song_id,
+	TIMESTAMPDIFF(SECOND, like_event_timestamp, adding_event_timestamp ) AS time_to_convert_seconds
+FROM
+	timestamped_events
+WHERE
+	like_event_timestamp IS NOT NULL
+	AND adding_event_timestamp IS NOT NULL
+	AND adding_event_timestamp > like_event_timestamp;
 ```
