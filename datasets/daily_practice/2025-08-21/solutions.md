@@ -15,7 +15,75 @@ The final report should only include users who have at least two orders in both 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+-- Step 1: Find the very first subscription date for each user
+WITH FirstSubDate AS (
+    SELECT
+        user_id,
+        MIN(start_date) AS first_sub_date
+    FROM
+        subscription_periods
+    WHERE
+        start_date IS NOT NULL
+    GROUP BY
+        user_id
+),
+
+-- Step 2: Categorize each order as 'before' or 'after' the first subscription
+CategorizedOrders AS (
+    SELECT
+        uo.user_id,
+        uo.order_timestamp,
+        CASE
+            WHEN uo.order_timestamp < fs.first_sub_date THEN 'before'
+            ELSE 'after'
+        END AS period
+    FROM
+        user_orders uo
+    JOIN
+        FirstSubDate fs ON uo.user_id = fs.user_id
+),
+
+-- Step 3: Use LAG() to find the time difference between consecutive orders within each period
+OrderGaps AS (
+    SELECT
+        user_id,
+        period,
+        -- Calculate the difference in days from the previous order in the same period
+        DATEDIFF(order_timestamp, LAG(order_timestamp, 1) OVER (
+            PARTITION BY user_id, period
+            ORDER BY order_timestamp
+        )) AS days_between_orders
+    FROM
+        CategorizedOrders
+),
+
+-- Step 4: Calculate the average gap and order count for each period
+PeriodStats AS (
+    SELECT
+        user_id,
+        period,
+        AVG(days_between_orders) AS avg_days,
+        COUNT(*) AS order_count
+    FROM
+        OrderGaps
+    GROUP BY
+        user_id,
+        period
+)
+
+-- Final Step: Pivot the results and filter for users with enough data
+SELECT
+    user_id,
+    ROUND(MAX(CASE WHEN period = 'before' THEN avg_days END), 2) AS avg_days_between_orders_before_sub,
+    ROUND(MAX(CASE WHEN period = 'after' THEN avg_days END), 2) AS avg_days_between_orders_after_sub
+FROM
+    PeriodStats
+GROUP BY
+    user_id
+HAVING
+    -- Filter for users with at least 2 orders in both periods
+    MAX(CASE WHEN period = 'before' THEN order_count END) >= 2
+    AND MAX(CASE WHEN period = 'after' THEN order_count END) >= 2;
 ```
 
 ## Scenario 2: Churn Analysis - Pre-Cancellation Behavior
@@ -30,10 +98,25 @@ The final report should only include users who have at least two orders in both 
 | ------- | --------------- | ------------ | ------------------------------- |
 | 102     | 2               | 1            | 38.000000                       |
 | 104     | 4               | 1            | 33.000000                       |
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	sp.user_id,
+	sp.subscription_id,
+	COUNT(uo.order_id) AS total_orders,
+	AVG(uo.order_value) AS avg_order_value_in_last_30_days
+FROM
+	subscription_periods sp
+LEFT JOIN
+	user_orders uo ON sp.user_id = uo.user_id
+	AND uo.order_timestamp BETWEEN DATE_SUB(sp.end_date, INTERVAL 30 DAY) AND sp.end_date
+WHERE
+	sp.end_date IS NOT NULL
+GROUP BY
+	user_id,
+	subscription_id;
 ```
 
 ## Scenario 3: Calculating Customer Lifetime Value (CLV) by Subscription Cohort
@@ -46,14 +129,50 @@ The report should show the `cohort_month` (formatted as 'YYYY-MM'), the `total_u
 
 **Expected Output:**
 
+
 | cohort_month | total_users | avg_clv |
 | ------------ | ----------- | ------- |
 | 2023-03      | 2           | 171.00  |
 | 2023-04      | 1           | 135.00  |
 | 2023-05      | 1           | 125.00  |
 
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH cohorts AS (
+	SELECT
+		user_id,
+		MIN(start_date) AS first_sub_date,
+		DATE_FORMAT(MIN(start_date), '%Y-%m') AS cohort_month
+	FROM
+		subscription_periods
+	WHERE
+		start_date IS NOT NULL
+	GROUP BY
+		user_id
+),
+customer_clv AS (
+	SELECT
+		uo.user_id,
+		SUM(uo.order_value) AS clv
+	FROM
+		user_orders uo
+	JOIN
+		cohorts c ON uo.user_id = c.user_id
+	WHERE
+		uo.order_timestamp >= c.first_sub_date
+	GROUP BY
+		uo.user_id
+)
+SELECT
+	c.cohort_month,
+	COUNT(c.user_id) AS total_users,
+	ROUND(AVG(COALESCE(cclv.clv, 0)), 2) AS avg_clv
+FROM
+	customer_clv cclv
+RIGHT JOIN
+	cohorts c ON c.user_id = cclv.user_id
+GROUP BY
+	c.cohort_month;
 ```
