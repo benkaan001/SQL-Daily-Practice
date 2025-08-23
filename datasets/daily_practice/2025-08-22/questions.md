@@ -10,12 +10,12 @@ An "initial sale" is any 'SALE' event. A "returned sale" is an initial sale that
 
 **Expected Output:**
 
-| **product_id** | **net_revenue** |
-| -------------------- | --------------------- |
-| 101                  | 50.00                 |
-| 102                  | 70.00                 |
-| 103                  | 0.00                  |
-| 104                  | 180.00                |
+| product_id | net_revenue |
+| ---------- | ----------- |
+| 101        | 50          |
+| 102        | 145         |
+| 103        | 120         |
+| 104        | 180         |
 
 **Your Solution:**
 
@@ -36,11 +36,11 @@ The final report should be ordered by `return_count` in descending order.
 
 **Expected Output:**
 
-| **reason** | **return_count** | **avg_days_to_return** |
-| ---------------- | ---------------------- | ---------------------------- |
-| Wrong Size       | 2                      | 3.50                         |
-| Changed Mind     | 2                      | 4.00                         |
-| Defective        | 2                      | 3.50                         |
+| reason         | return_count | avg_days_to_return |
+| -------------- | ------------ | ------------------ |
+| "Wrong Size"   | 2            | 3.50               |
+| "Defective"    | 2            | 3.50               |
+| "Changed Mind" | 2            | 4.00               |
 
 **Your Solution:**
 
@@ -58,9 +58,9 @@ The final report should show the `item_sku`, the `product_id`, the `order_id` of
 
 **Expected Output:**
 
-| **item_sku** | **product_id** | **order_id** | **days_since_request** |
-| ------------------ | -------------------- | ------------------ | ---------------------------- |
-| SKU-E-001          | 102                  | ORD-005            | 22                           |
+| item_sku  | product_id | order_id | days_since_request |
+| --------- | ---------- | -------- | ------------------ |
+| SKU-E-001 | 102        | ORD-005  | 22                 |
 
 **Your Solution:**
 
