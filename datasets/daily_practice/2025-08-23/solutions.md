@@ -16,10 +16,26 @@ Order the results by `order_id`.
 | 104      | 3             | 2023-12-05 12:10:00 | 2023-12-05 12:11:00        | 60.00                  |
 | 105      | 2             | 2023-12-06 12:30:00 | 2023-12-06 12:30:30        | 30.00                  |
 | 106      | 1             | 2023-12-06 19:00:00 | 2023-12-06 19:04:00        | 240.00                 |
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	creations.order_id,
+	creations.restaurant_id,
+	creations.log_timestamp AS created_at,
+	assignments.log_timestamp AS assigned_at,
+	ROUND(TIMESTAMPDIFF(MICROSECOND, creations.log_timestamp, assignments.log_timestamp) / 1000000.0, 2) AS time_to_assign_seconds
+FROM
+	delivery_dispatch_logs creations
+JOIN
+	delivery_dispatch_logs assignments ON creations.order_id = assignments.order_id
+	AND creations.restaurant_id = assignments.restaurant_id
+WHERE
+	creations.event_type = 'ORDER_CREATED'
+	AND assignments.event_type = 'COURIER_ASSIGNED'
+ORDER BY
+	creations.order_id;
 ```
 
 ## Scenario 2: Courier Performance by Time of Day
@@ -42,6 +58,49 @@ Order the results by `order_id`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH meal_rushes AS (
+	SELECT
+		assignments.courier_id,
+		CASE
+			WHEN HOUR(pickups.log_timestamp) BETWEEN 11 AND 14 THEN 'Lunch'
+			WHEN HOUR(pickups.log_timestamp) BETWEEN 18 AND 21 THEN 'Dinner'
+		END AS meal_rush,
+		TIMESTAMPDIFF(SECOND, assignments.log_timestamp, pickups.log_timestamp) / 60 AS time_to_pickup
+	FROM
+		delivery_dispatch_logs assignments
+	JOIN
+		delivery_dispatch_logs pickups ON assignments.log_timestamp  < pickups.log_timestamp
+		AND assignments.order_id = pickups.order_id
+	WHERE
+		assignments.event_type = 'COURIER_ASSIGNED'
+		AND pickups.event_type = 'ORDER_PICKED_UP'
+),
+averages AS (
+	SELECT
+		meal_rush,
+		courier_id,
+		AVG(time_to_pickup) AS avg_time_to_pickup_minutes
+	FROM
+		meal_rushes
+	GROUP BY
+		meal_rush,
+		courier_id
+),
+ranked_deliveries AS (
+	SELECT
+		meal_rush,
+		courier_id,
+		avg_time_to_pickup_minutes,
+		ROW_NUMBER() OVER (PARTITION BY meal_rush ORDER BY avg_time_to_pickup_minutes) AS rn
+	FROM
+		averages
+)
+SELECT
+	meal_rush,
+	courier_id,
+	avg_time_to_pickup_minutes
+FROM
+	ranked_deliveries
+WHERE
+	rn = 1;
 ```
-
