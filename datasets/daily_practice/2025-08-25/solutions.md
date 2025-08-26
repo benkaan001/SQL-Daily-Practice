@@ -11,12 +11,30 @@
 | db_dump_20231001.gz  | 2023-10-01 03:00:00 | 2023-10-02 04:00:00 |
 | app_log_20231005.log | 2023-10-05 10:00:00 |                     |
 
-
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH objects AS (
+    SELECT
+        object_key,
+        MAX(CASE WHEN event_type = 'PUT' THEN event_timestamp END) AS last_modified,
+        MAX(CASE WHEN event_type = 'GET' THEN event_timestamp END) AS last_accessed
+    FROM
+        cloud_storage_logs
+    WHERE
+        bucket_name = 'backups'
+    GROUP BY
+        object_key
+)
+SELECT
+    object_key,
+    last_modified,
+    last_accessed
+FROM
+    objects
+WHERE
+    last_accessed IS NULL
+    OR DATEDIFF('2023-11-30', last_accessed) > 30;
 ```
 
 ## Scenario 2: Detecting Egress Cost Anomalies
@@ -33,11 +51,46 @@ The report should list the `alert_date`, `user_id`, the `anomalous_egress_gb`, a
 | ---------- | ------- | ------------------- | ------------------------- |
 | 2023-11-17 | 904     | 0.47                | 0.01                      |
 
+
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH egress AS (
+    SELECT
+        user_id,
+        DATE(event_timestamp) AS event_date,
+        SUM(bytes_transferred) AS total_bytes
+    FROM
+        cloud_storage_logs
+    WHERE
+        event_type = 'GET'
+    GROUP BY
+        user_id,
+        DATE(event_timestamp)
+),
+rolling_averages AS (
+    SELECT
+        user_id,
+        event_date,
+        total_bytes,
+        AVG(total_bytes) OVER (
+            PARTITION BY user_id
+            ORDER BY event_date
+            ROWS BETWEEN 7 PRECEDING AND 1 PRECEDING
+        ) AS seven_day_avg_bites
+    FROM
+        egress
+)
+SELECT
+    event_date AS alert_date,
+    user_id,
+    ROUND(total_bytes / 1073741824, 2) AS anomalous_egress_gb,
+    ROUND(seven_day_avg_bites / 1073741824, 2) AS avg_egress_gb_last_7_days
+FROM
+    rolling_averages
+WHERE
+    seven_day_avg_bites IS NOT NULL
+    AND total_bytes > seven_day_avg_bites * 10;
 ```
 
 ## Scenario 3: Identifying "Leaky" Buckets
