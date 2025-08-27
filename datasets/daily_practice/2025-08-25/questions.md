@@ -50,10 +50,9 @@ The report should show the `bucket_name`, the timestamp of the `first_private_up
 
 **Expected Output:**
 
-| **bucket_name** | **first_private_upload** | **first_public_upload** |
-| --------------------- | ------------------------------ | ----------------------------- |
-| public-assets         | 2023-10-15 11:00:00            | 2023-10-20 14:00:00           |
-
+| alert_date | user_id | anomalous_egress_gb | avg_egress_gb_last_7_days |
+| ---------- | ------- | ------------------- | ------------------------- |
+| 2023-11-17 | 904     | 0.47                | 0.01                      |
 **Your Solution:**
 
 ```sql

@@ -103,13 +103,33 @@ The report should show the `bucket_name`, the timestamp of the `first_private_up
 
 **Expected Output:**
 
-| **bucket_name** | **first_private_upload** | **first_public_upload** |
-| --------------------- | ------------------------------ | ----------------------------- |
-| public-assets         | 2023-10-15 11:00:00            | 2023-10-20 14:00:00           |
+| alert_date | user_id | anomalous_egress_gb | avg_egress_gb_last_7_days |
+| ---------- | ------- | ------------------- | ------------------------- |
+| 2023-11-17 | 904     | 0.47                | 0.01                      |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH uploads AS (
+    SELECT
+        bucket_name,
+        MIN(CASE WHEN is_public = 0 THEN event_timestamp END) AS first_private_upload,
+        MIN(CASE WHEN is_public = 1 THEN event_timestamp END) AS first_public_upload
+    FROM
+        cloud_storage_logs
+    WHERE
+        event_type = 'PUT'
+    GROUP BY
+        bucket_name
+)
+SELECT
+    bucket_name,
+    first_private_upload,
+    first_public_upload
+FROM
+    uploads
+WHERE
+    first_private_upload IS NOT NULL
+    AND first_public_upload IS NOT NULL
+    AND first_public_upload > first_private_upload;
 ```
