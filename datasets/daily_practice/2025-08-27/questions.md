@@ -11,9 +11,10 @@
 
 **Expected Output:**
 
-| **search_to_view_rate** | **view_to_book_rate** |
-| ----------------------------- | --------------------------- |
-| **66.67**               | **50.00**             |
+| search_to_view_rate | view_to_book_rate |
+| ------------------- | ----------------- |
+| 66.67               | 50.00             |
+
 
 **Your Solution:**
 
@@ -27,17 +28,18 @@
 
 **Your Task:**
 
-1. **Identify all "last-minute" cancellations. A cancellation is considered last-minute if the **`<span class="selected">cancel_booking</span>` event occurs within 48 hours of the initial `<span class="selected">book_flight</span>` or `<span class="selected">book_hotel</span>` event for the same `<span class="selected">booking_id</span>`.
-2. **Calculate the **`<span class="selected">total_lost_revenue</span>` from these specific cancellations.
-3. **Project the **`<span class="selected">potential_recovered_revenue</span>` assuming the company could implement a policy that prevents 25% of this lost revenue.
+1. **Identify all "last-minute" cancellations. A cancellation is considered last-minute if the **`cancel_booking` event occurs within 48 hours of the initial `book_flight` or `book_hotel` event for the same `booking_id`.
+2. **Calculate the **`total_lost_revenue` from these specific cancellations.
+3. **Project the **`potential_recovered_revenue` assuming the company could implement a policy that prevents 25% of this lost revenue.
 
-**The final report should contain the **`<span class="selected">total_lost_revenue</span>` and the `<span class="selected">potential_recovered_revenue</span>`.
+**The final report should contain the **`total_lost_revenue` and the `potential_recovered_revenue`.
 
 **Expected Output:**
 
-| **total_lost_revenue** | **potential_recovered_revenue** |
-| ---------------------------- | ------------------------------------- |
-| **450.00**             | **112.50**                      |
+| total_lost_revenue | potential_recovered_revenue |
+| ------------------ | --------------------------- |
+| 450.0              | 112.5                       |
+
 
 **Your Solution:**
 
@@ -49,16 +51,16 @@
 
 **The Scenario:** A bug has been reported where some users are able to book a flight without having first performed a flight search in their current session. This indicates a flaw in the user workflow.
 
-**Your Task:** Find all sessions where a `<span class="selected">book_flight</span>` event occurred without a preceding `<span class="selected">search_flights</span>` event  *within that same session* **.**
+**Your Task:** Find all sessions where a `book_flight` event occurred without a preceding `search_flights` event  *within that same session* **.**
 
-**The report should list the **`<span class="selected">session_id</span>`, `<span class="selected">user_id</span>`, and the `<span class="selected">booking_timestamp</span>` of these "ghost bookings."
+**The report should list the **`session_id`, `user_id`, and the `booking_timestamp` of these "ghost bookings."
 
 **Expected Output:**
 
-| **session_id** | **user_id** | **booking_timestamp**   |
-| -------------------- | ----------------- | ----------------------------- |
-| **sess_D**     | **104**     | **2023-11-16 14:00:00** |
-| **sess_F**     | **106**     | **2023-11-18 13:05:00** |
+| session_id | user_id | booking_timestamp   |
+| ---------- | ------- | ------------------- |
+| sess_D     | 104     | 2023-11-16 14:00:00 |
+| sess_F     | 106     | 2023-11-18 13:05:00 |
 
 **Your Solution:**
 
