@@ -8,11 +8,11 @@ The final report should show the `rollout_date`, the `daily_new_users_exposed`, 
 
 **Expected Output:**
 
-| **rollout_date** | **daily_new_users_exposed** | **cumulative_exposure_pct** |
-| ---------------------- | --------------------------------- | --------------------------------- |
-| 2023-11-20             | 2                                 | 20.00                             |
-| 2023-11-21             | 3                                 | 50.00                             |
-| 2023-11-22             | 1                                 | 60.00                             |
+| rollout_date | daily_new_users_exposed | cumulative_exposure_pct |
+| ------------ | ----------------------- | ----------------------- |
+| 2023-11-20   | 2                       | 20.00                   |
+| 2023-11-21   | 3                       | 50.00                   |
+| 2023-11-22   | 1                       | 60.00                   |
 
 **Your Solution:**
 
