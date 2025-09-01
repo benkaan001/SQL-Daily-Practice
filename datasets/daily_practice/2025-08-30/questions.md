@@ -8,24 +8,23 @@ The final report should be ordered by `machine_id` and then `start_time`.
 
 **Expected Output:**
 
-| **machine_id** | **status** | **start_time** | **end_time**  |
-| -------------------- | ---------------- | -------------------- | ------------------- |
-| 101                  | RUNNING          | 2023-12-01 08:00:00  | 2023-12-01 09:30:00 |
-| 101                  | IDLE             | 2023-12-01 09:30:00  | 2023-12-01 09:45:00 |
-| 101                  | RUNNING          | 2023-12-01 09:45:00  | 2023-12-01 12:00:00 |
-| 101                  | OFFLINE          | 2023-12-01 12:00:00  | NULL                |
-| 102                  | RUNNING          | 2023-12-01 08:00:00  | 2023-12-01 08:31:05 |
-| 102                  | ERROR            | 2023-12-01 08:31:05  | 2023-12-01 09:00:00 |
-| 102                  | OFFLINE          | 2023-12-01 09:00:00  | NULL                |
-| 103                  | RUNNING          | 2023-12-02 10:00:00  | 2023-12-02 10:16:00 |
-| 103                  | SHUTDOWN_MANUAL  | 2023-12-02 10:16:00  | NULL                |
-| 104                  | RUNNING          | 2023-12-02 11:00:00  | NULL                |
+| machine_id | status          | start_time          | end_time            |
+| ---------- | --------------- | ------------------- | ------------------- |
+| 101        | RUNNING         | 2023-12-01 08:00:00 | 2023-12-01 09:30:00 |
+| 101        | IDLE            | 2023-12-01 09:30:00 | 2023-12-01 09:45:00 |
+| 101        | RUNNING         | 2023-12-01 09:45:00 | 2023-12-01 12:00:00 |
+| 101        | OFFLINE         | 2023-12-01 12:00:00 |                     |
+| 102        | RUNNING         | 2023-12-01 08:00:00 | 2023-12-01 08:31:05 |
+| 102        | ERROR           | 2023-12-01 08:31:05 | 2023-12-01 09:00:00 |
+| 102        | OFFLINE         | 2023-12-01 09:00:00 |                     |
+| 103        | RUNNING         | 2023-12-02 10:00:00 | 2023-12-02 10:16:00 |
+| 103        | SHUTDOWN_MANUAL | 2023-12-02 10:16:00 |                     |
+| 104        | RUNNING         | 2023-12-02 11:00:00 |                     |
 
 **Your Solution:**
 
 ```sql
 -- Write your solution here
-
 ```
 
 ## Puzzle 2: The Correlated Anomaly Hunter
@@ -38,15 +37,14 @@ The report should show the `machine_id`, the timestamp and values of the `anomal
 
 **Expected Output:**
 
-| **machine_id** | **anomalous_reading_time** | **anomalous_temp** | **anomalous_vibration** | **previous_reading_time** | **previous_temp** | **previous_vibration** |
-| -------------------- | -------------------------------- | ------------------------ | ----------------------------- | ------------------------------- | ----------------------- | ---------------------------- |
-| 102                  | 2023-12-01 08:30:45              | 115.0                    | 1.50                          | 2023-12-01 08:30:00             | 90.0                    | 0.30                         |
+| machine_id | anomalous_reading_time | anomalous_temp | anomalous_vibration | previous_reading_time | previous_temp | previous_vibration |
+| ---------- | ---------------------- | -------------- | ------------------- | --------------------- | ------------- | ------------------ |
+| 102        | 2023-12-01 08:30:45    | 115.0          | 1.5                 | 2023-12-01 08:30:00   | 90.0          | 0.3                |
 
 **Your Solution:**
 
 ```sql
 -- Write your solution here
-
 ```
 
 ## Puzzle 3: The Missing Data Imputer
@@ -59,17 +57,16 @@ The final report should show the `log_timestamp` and the `imputed_temperature` f
 
 **Expected Output:**
 
-| **log_timestamp** | **imputed_temperature** |
-| ----------------------- | ----------------------------- |
-| 2023-12-02 11:10:00.000 | 92.00                         |
-| 2023-12-02 11:10:30.000 | 92.00                         |
-| 2023-12-02 11:11:00.000 | 92.50                         |
-| 2023-12-02 11:11:30.000 | 92.50                         |
-| 2023-12-02 11:12:00.000 | 93.00                         |
+| log_timestamp       | imputed_temperature |
+| ------------------- | ------------------- |
+| 2023-12-02 11:10:00 | 92.0                |
+| 2023-12-02 11:10:30 | 92.0                |
+| 2023-12-02 11:11:00 | 92.5                |
+| 2023-12-02 11:11:30 | 92.5                |
+| 2023-12-02 11:12:00 | 93.0                |
 
 **Your Solution:**
 
 ```sql
 -- Write your solution here
-
 ```

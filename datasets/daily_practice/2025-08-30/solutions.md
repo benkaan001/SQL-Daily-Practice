@@ -8,24 +8,35 @@ The final report should be ordered by `machine_id` and then `start_time`.
 
 **Expected Output:**
 
-| **machine_id** | **status** | **start_time** | **end_time**  |
-| -------------------- | ---------------- | -------------------- | ------------------- |
-| 101                  | RUNNING          | 2023-12-01 08:00:00  | 2023-12-01 09:30:00 |
-| 101                  | IDLE             | 2023-12-01 09:30:00  | 2023-12-01 09:45:00 |
-| 101                  | RUNNING          | 2023-12-01 09:45:00  | 2023-12-01 12:00:00 |
-| 101                  | OFFLINE          | 2023-12-01 12:00:00  | NULL                |
-| 102                  | RUNNING          | 2023-12-01 08:00:00  | 2023-12-01 08:31:05 |
-| 102                  | ERROR            | 2023-12-01 08:31:05  | 2023-12-01 09:00:00 |
-| 102                  | OFFLINE          | 2023-12-01 09:00:00  | NULL                |
-| 103                  | RUNNING          | 2023-12-02 10:00:00  | 2023-12-02 10:16:00 |
-| 103                  | SHUTDOWN_MANUAL  | 2023-12-02 10:16:00  | NULL                |
-| 104                  | RUNNING          | 2023-12-02 11:00:00  | NULL                |
+| machine_id | status          | start_time          | end_time            |
+| ---------- | --------------- | ------------------- | ------------------- |
+| 101        | RUNNING         | 2023-12-01 08:00:00 | 2023-12-01 09:30:00 |
+| 101        | IDLE            | 2023-12-01 09:30:00 | 2023-12-01 09:45:00 |
+| 101        | RUNNING         | 2023-12-01 09:45:00 | 2023-12-01 12:00:00 |
+| 101        | OFFLINE         | 2023-12-01 12:00:00 |                     |
+| 102        | RUNNING         | 2023-12-01 08:00:00 | 2023-12-01 08:31:05 |
+| 102        | ERROR           | 2023-12-01 08:31:05 | 2023-12-01 09:00:00 |
+| 102        | OFFLINE         | 2023-12-01 09:00:00 |                     |
+| 103        | RUNNING         | 2023-12-02 10:00:00 | 2023-12-02 10:16:00 |
+| 103        | SHUTDOWN_MANUAL | 2023-12-02 10:16:00 |                     |
+| 104        | RUNNING         | 2023-12-02 11:00:00 |                     |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	machine_id,
+	JSON_UNQUOTE(JSON_EXTRACT(details, '$.status')) AS status,
+	log_timestamp AS start_time,
+	LEAD(log_timestamp, 1) OVER (PARTITION BY machine_id ORDER BY log_timestamp) AS end_time
 
+FROM
+	factory_iot_logs
+WHERE
+	event_type = 'STATUS_CHANGE'
+ORDER BY
+	machine_id,
+	start_time;
 ```
 
 ## Puzzle 2: The Correlated Anomaly Hunter
@@ -38,14 +49,49 @@ The report should show the `machine_id`, the timestamp and values of the `anomal
 
 **Expected Output:**
 
-| **machine_id** | **anomalous_reading_time** | **anomalous_temp** | **anomalous_vibration** | **previous_reading_time** | **previous_temp** | **previous_vibration** |
-| -------------------- | -------------------------------- | ------------------------ | ----------------------------- | ------------------------------- | ----------------------- | ---------------------------- |
-| 102                  | 2023-12-01 08:30:45              | 115.0                    | 1.50                          | 2023-12-01 08:30:00             | 90.0                    | 0.30                         |
+| machine_id | anomalous_reading_time | anomalous_temp | anomalous_vibration | previous_reading_time | previous_temp | previous_vibration |
+| ---------- | ---------------------- | -------------- | ------------------- | --------------------- | ------------- | ------------------ |
+| 102        | 2023-12-01 08:30:45    | 115.0          | 1.5                 | 2023-12-01 08:30:00   | 90.0          | 0.3                |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+
+WITH readings AS (
+    SELECT
+        machine_id,
+        log_timestamp,
+        JSON_UNQUOTE(JSON_EXTRACT(details, '$.temperature')) AS temperature,
+        JSON_UNQUOTE(JSON_EXTRACT(details, '$.vibration')) AS vibration
+    FROM
+        factory_iot_logs
+    WHERE
+        event_type = 'SENSOR_READING'
+),
+previous_readings AS (
+    SELECT
+        machine_id,
+        log_timestamp AS anomalous_reading_time,
+        temperature AS anomalous_temp,
+        vibration AS anomalous_vibration,
+        LAG(log_timestamp, 1) OVER (PARTITION BY machine_id ORDER BY log_timestamp) AS previous_reading_time,
+        LAG(temperature, 1) OVER (PARTITION BY machine_id ORDER BY log_timestamp) AS previous_temp,
+        LAG(vibration, 1) OVER (PARTITION BY machine_id ORDER BY log_timestamp) AS previous_vibration
+    FROM
+        readings
+)
+SELECT
+	machine_id,
+	anomalous_reading_time,
+	anomalous_temp,
+	anomalous_vibration,
+	previous_reading_time,
+	previous_temp,
+	previous_vibration
+FROM
+	previous_readings
+WHERE
+    anomalous_temp > 100 AND anomalous_vibration > 1.0;
 
 ```
 
@@ -59,17 +105,36 @@ The final report should show the `log_timestamp` and the `imputed_temperature` f
 
 **Expected Output:**
 
-| **log_timestamp** | **imputed_temperature** |
-| ----------------------- | ----------------------------- |
-| 2023-12-02 11:10:00.000 | 92.00                         |
-| 2023-12-02 11:10:30.000 | 92.00                         |
-| 2023-12-02 11:11:00.000 | 92.50                         |
-| 2023-12-02 11:11:30.000 | 92.50                         |
-| 2023-12-02 11:12:00.000 | 93.00                         |
+| log_timestamp       | imputed_temperature |
+| ------------------- | ------------------- |
+| 2023-12-02 11:10:00 | 92.0                |
+| 2023-12-02 11:10:30 | 92.0                |
+| 2023-12-02 11:11:00 | 92.5                |
+| 2023-12-02 11:11:30 | 92.5                |
+| 2023-12-02 11:12:00 | 93.0                |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH readings AS (
+    SELECT
+        log_timestamp,
+        JSON_UNQUOTE(JSON_EXTRACT(details, '$.temperature')) AS temperature,
+        COUNT(
+            CASE
+              	WHEN JSON_UNQUOTE(JSON_EXTRACT(details, '$.temperature')) != 'null'
+                THEN 1
+            END
+        ) OVER (PARTITION BY machine_id ORDER BY log_timestamp) AS value_group
+    FROM
+        factory_iot_logs
+    WHERE
+        machine_id = 104 AND event_type = 'SENSOR_READING'
+)
+SELECT
+    log_timestamp,
+    FIRST_VALUE(temperature) OVER (PARTITION BY value_group ORDER BY log_timestamp) AS imputed_temperature
+FROM
+    readings;
 
 ```
