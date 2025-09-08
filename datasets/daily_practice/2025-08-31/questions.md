@@ -8,10 +8,10 @@ The final report should show the `api_key`, the `request_timestamp` of the throt
 
 **Expected Output:**
 
-| **api_key** | **request_timestamp** | **requests_in_last_60s** |
-| ----------------- | --------------------------- | ------------------------------ |
-| key-B             | 2023-09-20 10:30:35.000     | 4                              |
-| key-B             | 2023-09-20 10:30:40.000     | 5                              |
+| api_key | request_timestamp   | requests_in_last_60s |
+| ------- | ------------------- | -------------------- |
+| key-B   | 2023-09-20 10:30:35 | 4                    |
+| key-B   | 2023-09-20 10:30:40 | 5                    |
 
 **Your Solution:**
 
