@@ -8,15 +8,40 @@ The final report should show the `api_key`, the `request_timestamp` of the throt
 
 **Expected Output:**
 
-| **api_key** | **request_timestamp** | **requests_in_last_60s** |
-| ----------------- | --------------------------- | ------------------------------ |
-| key-B             | 2023-09-20 10:30:35.000     | 4                              |
-| key-B             | 2023-09-20 10:30:40.000     | 5                              |
+| api_key | request_timestamp   | requests_in_last_60s |
+| ------- | ------------------- | -------------------- |
+| key-B   | 2023-09-20 10:30:35 | 4                    |
+| key-B   | 2023-09-20 10:30:40 | 5                    |
+
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH throttled_requests AS (
+    SELECT
+        api_key,
+        request_id,
+        request_timestamp
+    FROM
+        api_gateway_logs
+    WHERE
+        status_code = 429
+)
+SELECT
+    tr.api_key,
+    tr.request_timestamp,
+    COUNT(logs.request_id) AS requests_in_last_60s
+FROM
+    throttled_requests tr
+LEFT JOIN
+    api_gateway_logs logs ON tr.api_key = logs.api_key
+    AND logs.request_timestamp BETWEEN DATE_SUB(tr.request_timestamp, INTERVAL 60 SECOND) AND tr.request_timestamp
+    AND logs.request_id != tr.request_id
+GROUP BY
+    tr.api_key,
+    tr.request_timestamp
+ORDER BY
+    tr.request_timestamp;
 ```
 
 ## Puzzle 2: The Cascading Failure
