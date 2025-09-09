@@ -12,17 +12,54 @@
 
 If a stage did not occur for a trip (e.g., `trip_duration_seconds` for a cancelled trip), the value should be `NULL`.
 
-| **trip_id** | **driver_wait_seconds** | **rider_wait_seconds** | **trip_duration_seconds** | **time_to_cancel_seconds** | **final_status** |
-| ----------------- | ----------------------------- | ---------------------------- | ------------------------------- | -------------------------------- | ---------------------- |
-| 101               | 60.000                        | 240.000                      | 600.000                         | NULL                             | DROPOFF                |
-| 102               | 60.000                        | NULL                         | NULL                            | 120.000                          | CANCEL_DRIVER          |
-| 103               | NULL                          | NULL                         | NULL                            | 60.000                           | CANCEL_RIDER           |
-| 104               | 90.000                        | 390.000                      | 720.000                         | NULL                             | DROPOFF                |
-| 105               | NULL                          | NULL                         | NULL                            | NULL                             | REQUEST                |
+| trip_id | driver_wait_seconds | rider_wait_seconds | trip_duration_seconds | time_to_cancel_seconds | final_status  |
+| ------- | ------------------- | ------------------ | --------------------- | ---------------------- | ------------- |
+| 101     | 60                  | 240                | 600                   |                        | DROPOFF       |
+| 102     | 60                  |                    |                       | 120                    | CANCEL_DRIVER |
+| 103     |                     |                    |                       | 60                     | CANCEL_RIDER  |
+| 104     | 90                  | 390                | 720                   |                        | DROPOFF       |
+| 105     |                     |                    |                       |                        | REQUEST       |
 
 **Your Solution:**
 
-```
--- Write your solution here
+```sql
+WITH trip_times AS (
+	SELECT
+		trip_id,
+		MIN(CASE WHEN event_type = 'REQUEST' THEN event_timestamp END) AS request_time,
+		MIN(CASE WHEN event_type = 'ACCEPT' THEN event_timestamp END) AS accept_time,
+		MIN(CASE WHEN event_type = 'PICKUP' THEN event_timestamp END) AS pickup_time,
+		MIN(CASE WHEN event_type = 'DROPOFF' THEN event_timestamp END) AS dropoff_time,
+		MIN(CASE WHEN event_type IN ('CANCEL_RIDER', 'CANCEL_DRIVER') THEN event_timestamp END) AS cancel_time
+	FROM
+		trip_events
+	GROUP BY
+		trip_id
+),
+trip_categories AS (
+	SELECT
+		trip_id,
+		ROUND(TIMESTAMPDIFF(SECOND, request_time, accept_time), 2) AS driver_wait_seconds,
+		ROUND(TIMESTAMPDIFF(SECOND, accept_time, pickup_time ), 2) AS rider_wait_seconds,
+		ROUND(TIMESTAMPDIFF(SECOND, pickup_time, dropoff_time), 2) AS trip_duration_seconds,
+		ROUND(TIMESTAMPDIFF(SECOND, COALESCE(dropoff_time, pickup_time, accept_time, request_time),cancel_time), 2) AS time_to_cancel_seconds
+	FROM
+		trip_times
+)
+SELECT
+	trip_id,
+	driver_wait_seconds,
+	rider_wait_seconds,
+	trip_duration_seconds,
+	time_to_cancel_seconds,
+	CASE
+		WHEN driver_wait_seconds IS NULL AND time_to_cancel_seconds IS NOT NULL THEN 'CANCEL_RIDER'
+		WHEN rider_wait_seconds IS NULL AND time_to_cancel_seconds IS NOT NULL THEN 'CANCEL_DRIVER'
+		WHEN time_to_cancel_seconds IS NULL AND trip_duration_seconds IS NOT NULL THEN 'DROPOFF'
+		WHEN time_to_cancel_seconds IS NULL AND driver_wait_seconds IS NULL THEN 'REQUEST'
+		ELSE 'UNKNOWN'
+	END AS final_status
 
+FROM
+	trip_categories;
 ```

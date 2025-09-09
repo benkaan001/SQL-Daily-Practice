@@ -12,17 +12,16 @@
 
 If a stage did not occur for a trip (e.g., `trip_duration_seconds` for a cancelled trip), the value should be `NULL`.
 
-| **trip_id** | **driver_wait_seconds** | **rider_wait_seconds** | **trip_duration_seconds** | **time_to_cancel_seconds** | **final_status** |
-| ----------------- | ----------------------------- | ---------------------------- | ------------------------------- | -------------------------------- | ---------------------- |
-| 101               | 60.000                        | 240.000                      | 600.000                         | NULL                             | DROPOFF                |
-| 102               | 60.000                        | NULL                         | NULL                            | 120.000                          | CANCEL_DRIVER          |
-| 103               | NULL                          | NULL                         | NULL                            | 60.000                           | CANCEL_RIDER           |
-| 104               | 90.000                        | 390.000                      | 720.000                         | NULL                             | DROPOFF                |
-| 105               | NULL                          | NULL                         | NULL                            | NULL                             | REQUEST                |
+| trip_id | driver_wait_seconds | rider_wait_seconds | trip_duration_seconds | time_to_cancel_seconds | final_status  |
+| ------- | ------------------- | ------------------ | --------------------- | ---------------------- | ------------- |
+| 101     | 60                  | 240                | 600                   |                        | DROPOFF       |
+| 102     | 60                  |                    |                       | 120                    | CANCEL_DRIVER |
+| 103     |                     |                    |                       | 60                     | CANCEL_RIDER  |
+| 104     | 90                  | 390                | 720                   |                        | DROPOFF       |
+| 105     |                     |                    |                       |                        | REQUEST       |
 
 **Your Solution:**
 
-```
+```sql
 -- Write your solution here
-
 ```
