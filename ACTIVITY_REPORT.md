@@ -1,6 +1,6 @@
 # SQL Practice Activity Report
 
-Last updated: 2025-09-09
+Last updated: 2025-09-10
 
 ## Current Status
 
@@ -15,7 +15,6 @@ Last updated: 2025-09-09
 Days with practice in the last week:
 
 ```
-2025-09-02
 2025-09-04
 2025-09-05
 2025-09-06
