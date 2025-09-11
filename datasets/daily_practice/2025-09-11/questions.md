@@ -8,9 +8,9 @@ Lateness is defined as the difference in minutes between the actual `ORDER_DELIV
 
 The final report should show the `courier_id`, the `low_rated_order_id`, the `rating_received_timestamp`, the `avg_lateness_before_bad_rating`, and the `avg_lateness_after_bad_rating`.
 
-| **courier_id** | **low_rated_order_id** | **rating_received_timestamp** | **avg_lateness_before_bad_rating** | **avg_lateness_after_bad_rating** |
-| -------------------- | ---------------------------- | ----------------------------------- | ---------------------------------------- | --------------------------------------- |
-| 101                  | 2                            | 2023-10-10 15:00:00.000             | -5.00                                    | 10.00                                   |
+| courier_id | low_rated_order_id | rating_received_timestamp | avg_lateness_before_bad_rating | avg_lateness_after_bad_rating |
+| ---------- | ------------------ | ------------------------- | ------------------------------ | ----------------------------- |
+| 101        | 2                  | 2023-10-10 15:00:00       | -5.0000                        | 10.0000                       |
 
 **Your Solution:**
 
