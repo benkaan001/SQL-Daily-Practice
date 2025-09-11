@@ -14,14 +14,14 @@ A "large swing" is defined as:
 
 The final report should show the `zone_id`, the `sensor_type` that triggered the alert, and the `alert_timestamp` (the timestamp of the third volatile reading).
 
-| **zone_id** | **sensor_type** | **alert_timestamp** |
-| ----------------- | --------------------- | ------------------------- |
-| ConfRoom-A        | HUMIDITY              | 2023-12-10 09:02:00.000   |
-| ConfRoom-A        | TEMPERATURE           | 2023-12-10 09:03:00.000   |
+| zone_id    | sensor_type | alert_timestamp     |
+| ---------- | ----------- | ------------------- |
+| ConfRoom-A | TEMPERATURE | 2023-12-10 09:02:00 |
+| ConfRoom-A | TEMPERATURE | 2023-12-10 09:03:00 |
+| ConfRoom-A | HUMIDITY    | 2023-12-10 09:02:00 |
 
 **Your Solution:**
 
-```
+```sql
 -- Write your solution here
-
 ```
