@@ -1,0 +1,62 @@
+CREATE DATABASE IF NOT EXISTS daily_practice_20250911_schema;
+USE daily_practice_20250911_schema;
+
+-- This table logs every step of a food delivery order, from placement to rating.
+CREATE TABLE delivery_orders (
+    event_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    courier_id INT,
+    event_timestamp DATETIME(3),
+    event_type ENUM('ORDER_PLACED', 'COURIER_ASSIGNED', 'ORDER_PICKED_UP', 'ORDER_DELIVERED', 'RATING_RECEIVED'),
+    -- rating is only populated for the RATING_RECEIVED event type
+    rating INT,
+    -- estimated_delivery_time is only populated for the ORDER_PLACED event type
+    estimated_delivery_time DATETIME
+);
+
+INSERT INTO delivery_orders (order_id, courier_id, event_timestamp, event_type, rating, estimated_delivery_time) VALUES
+-- Courier 101: A good delivery, followed by a bad one that impacts them
+(1, 101, '2023-10-10 12:00:00.000', 'ORDER_PLACED', NULL, '2023-10-10 12:45:00'),
+(1, 101, '2023-10-10 12:05:00.000', 'COURIER_ASSIGNED', NULL, NULL),
+(1, 101, '2023-10-10 12:15:00.000', 'ORDER_PICKED_UP', NULL, NULL),
+(1, 101, '2023-10-10 12:40:00.000', 'ORDER_DELIVERED', NULL, NULL),
+(1, 101, '2023-10-10 13:00:00.000', 'RATING_RECEIVED', 5, NULL),
+
+(2, 101, '2023-10-10 14:00:00.000', 'ORDER_PLACED', NULL, '2023-10-10 14:30:00'),
+(2, 101, '2023-10-10 14:02:00.000', 'COURIER_ASSIGNED', NULL, NULL),
+(2, 101, '2023-10-10 14:10:00.000', 'ORDER_PICKED_UP', NULL, NULL),
+(2, 101, '2023-10-10 14:45:00.000', 'ORDER_DELIVERED', NULL, NULL), -- 15 mins late
+(2, 101, '2023-10-10 15:00:00.000', 'RATING_RECEIVED', 2, NULL), -- Low rating
+
+-- Courier 101's subsequent deliveries
+(3, 101, '2023-10-10 16:00:00.000', 'ORDER_PLACED', NULL, '2023-10-10 16:35:00'),
+(3, 101, '2023-10-10 16:03:00.000', 'COURIER_ASSIGNED', NULL, NULL),
+(3, 101, '2023-10-10 16:15:00.000', 'ORDER_PICKED_UP', NULL, NULL),
+(3, 101, '2023-10-10 16:40:00.000', 'ORDER_DELIVERED', NULL, NULL), -- 5 mins late
+(3, 101, '2023-10-10 17:00:00.000', 'RATING_RECEIVED', 4, NULL),
+
+(4, 101, '2023-10-10 18:00:00.000', 'ORDER_PLACED', NULL, '2023-10-10 18:40:00'),
+(4, 101, '2023-10-10 18:02:00.000', 'COURIER_ASSIGNED', NULL, NULL),
+(4, 101, '2023-10-10 18:10:00.000', 'ORDER_PICKED_UP', NULL, NULL),
+(4, 101, '2023-10-10 18:55:00.000', 'ORDER_DELIVERED', NULL, NULL), -- 15 mins late
+(4, 101, '2023-10-10 19:10:00.000', 'RATING_RECEIVED', 3, NULL),
+
+-- Courier 102: Consistently good performance
+(5, 102, '2023-10-10 13:00:00.000', 'ORDER_PLACED', NULL, '2023-10-10 13:30:00'),
+(5, 102, '2023-10-10 13:01:00.000', 'COURIER_ASSIGNED', NULL, NULL),
+(5, 102, '2023-10-10 13:10:00.000', 'ORDER_PICKED_UP', NULL, NULL),
+(5, 102, '2023-10-10 13:25:00.000', 'ORDER_DELIVERED', NULL, NULL), -- Early
+(5, 102, '2023-10-10 13:40:00.000', 'RATING_RECEIVED', 5, NULL),
+
+(6, 102, '2023-10-10 15:00:00.000', 'ORDER_PLACED', NULL, '2023-10-10 15:45:00'),
+(6, 102, '2023-10-10 15:05:00.000', 'COURIER_ASSIGNED', NULL, NULL),
+(6, 102, '2023-10-10 15:15:00.000', 'ORDER_PICKED_UP', NULL, NULL),
+(6, 102, '2023-10-10 15:45:00.000', 'ORDER_DELIVERED', NULL, NULL), -- On time
+(6, 102, '2023-10-10 16:00:00.000', 'RATING_RECEIVED', 5, NULL),
+
+-- Courier 103: A bad delivery with no subsequent orders
+(7, 103, '2023-10-11 19:00:00.000', 'ORDER_PLACED', NULL, '2023-10-11 19:30:00'),
+(7, 103, '2023-10-11 19:05:00.000', 'COURIER_ASSIGNED', NULL, NULL),
+(7, 103, '2023-10-11 19:15:00.000', 'ORDER_PICKED_UP', NULL, NULL),
+(7, 103, '2023-10-11 19:45:00.000', 'ORDER_DELIVERED', NULL, NULL),
+(7, 103, '2023-10-11 20:00:00.000', 'RATING_RECEIVED', 1, NULL);
