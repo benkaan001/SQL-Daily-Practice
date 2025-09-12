@@ -11,10 +11,10 @@
 
 The final report should detail each successfully resolved incident, showing the `guest_id` who was moved, the original `conflicting_room_id`, the `conflicting_booking_id` that was cancelled, the `new_room_id`, and the `new_booking_id` they were moved to.
 
-| **guest_id** | **conflicting_room_id** | **conflicting_booking_id** | **new_room_id** | **new_booking_id** |
-| ------------------ | ----------------------------- | -------------------------------- | --------------------- | ------------------------ |
-| 502                | 101                           | 102                              | 102                   | 103                      |
-| 506                | 301                           | 107                              | 302                   | 108                      |
+| guest_id | conflicting_room_id | conflicting_booking_id | new_room_id | new_booking_id |
+| -------- | ------------------- | ---------------------- | ----------- | -------------- |
+| 502      | 101                 | 102                    | 102         | 103            |
+| 506      | 301                 | 107                    | 302         | 108            |
 
 **Your Solution:**
 
