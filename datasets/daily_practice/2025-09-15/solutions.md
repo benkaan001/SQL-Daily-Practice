@@ -16,5 +16,67 @@ The final report should show the `user_id`, their `longest_streak_days`, the `st
 **Your Solution:**
 
 ```sql
--- Write your solution here
+-- Step 1: Get a clean list of the distinct dates each user was active.
+WITH DistinctUserActivity AS (
+    SELECT DISTINCT
+        user_id,
+        DATE(event_timestamp) AS activity_date
+    FROM
+        feature_usage
+),
+
+-- Step 2: Use the "gaps and islands" technique on the clean, distinct dates.
+StreakGroups AS (
+    SELECT
+        user_id,
+        activity_date,
+        -- This calculation is the key to identifying the streaks.
+        DATE_SUB(activity_date, INTERVAL ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY activity_date) DAY) AS streak_group
+    FROM
+        DistinctUserActivity
+),
+
+-- Step 3: Calculate the duration and start/end dates for each streak.
+Streaks AS (
+    SELECT
+        user_id,
+        MIN(activity_date) AS streak_start_date,
+        MAX(activity_date) AS streak_end_date,
+        COUNT(*) AS streak_days
+    FROM
+        StreakGroups
+    GROUP BY
+        user_id,
+        streak_group
+),
+
+-- Step 4: Rank each user's streaks to find their longest and most recent one.
+RankedStreaks AS (
+    SELECT
+        user_id,
+        streak_days AS longest_streak_days,
+        streak_start_date,
+        streak_end_date,
+        -- Rank the streaks for each user. The best one is the longest,
+        -- and if there's a tie, the most recent one wins.
+        ROW_NUMBER() OVER (
+            PARTITION BY user_id
+            ORDER BY streak_days DESC, streak_start_date DESC
+        ) AS rn
+    FROM
+        Streaks
+)
+
+-- Final Step: Select only the #1 ranked streak for each user.
+SELECT
+    user_id,
+    longest_streak_days,
+    streak_start_date,
+    streak_end_date
+FROM
+    RankedStreaks
+WHERE
+    rn = 1
+ORDER BY
+    user_id;
 ```
