@@ -10,11 +10,12 @@
 
 The final report should be a summary that shows the `attributed_source` (either a `campaign_id` or 'Organic'), the total number of `attributed_purchases`, and the `total_attributed_value` for that source.
 
-| **attributed_source** | **attributed_purchases** | **total_attributed_value** |
-| --------------------------- | ------------------------------ | -------------------------------- |
-| black_friday_23             | 3                              | 375.00                           |
-| cyber_monday_23             | 2                              | 1100.00                          |
-| Organic                     | 3                              | 425.00                           |
+| attributed_source | attributed_purchases | total_attributed_value |
+| ----------------- | -------------------- | ---------------------- |
+| black_friday_23   | 3                    | 325.00                 |
+| cyber_monday_23   | 2                    | 1100.00                |
+| Organic           | 4                    | 575.00                 |
+
 
 **Your Solution:**
 
