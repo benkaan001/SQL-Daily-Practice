@@ -11,8 +11,8 @@ The final report should be ordered by `first_feature_adopted` alphabetically.
 | **first_feature_adopted** | **unique_users** | **avg_session_length_minutes** |
 | ------------------------------- | ---------------------- | ------------------------------------ |
 | dashboard                       | 2                      | 37.50                                |
-| reporting                       | 1                      | 22.50                                |
-| settings                        | 1                      | 15.00                                |
+| reporting                       | 1                      | 30.00                                |
+| settings                        | 1                      | 10.00
 
 ### Tips for Approaching the Problem
 
@@ -26,5 +26,37 @@ The final report should be ordered by `first_feature_adopted` alphabetically.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH filtered_sessions AS (
+	SELECT
+		session_id,
+		user_id,
+		feature_name,
+		event_timestamp,
+		ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY event_timestamp) AS rn
+	FROM
+		feature_sessions
+	WHERE
+		feature_name NOT IN ('login', 'logout')
+),
+session_durations AS (
+	SELECT
+		session_id,
+		TIMESTAMPDIFF(MINUTE, MIN(event_timestamp), MAX(event_timestamp)) AS session_length
+	FROM
+		feature_sessions
+	GROUP BY
+		session_id
+)
+SELECT
+	fs.feature_name AS first_feature_adpoted,
+	COUNT(DISTINCT fs.user_id) AS unique_users,
+	AVG(sd.session_length) AS avg_session_length_minutes
+FROM
+	filtered_sessions fs
+JOIN
+	session_durations sd ON fs.session_id = sd.session_id
+WHERE
+	fs.rn = 1
+GROUP BY
+	fs.feature_name;
 ```

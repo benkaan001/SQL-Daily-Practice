@@ -11,8 +11,8 @@ The final report should be ordered by `first_feature_adopted` alphabetically.
 | **first_feature_adopted** | **unique_users** | **avg_session_length_minutes** |
 | ------------------------------- | ---------------------- | ------------------------------------ |
 | dashboard                       | 2                      | 37.50                                |
-| reporting                       | 1                      | 22.50                                |
-| settings                        | 1                      | 15.00                                |
+| reporting                       | 1                      | 30.00                                |
+| settings                        | 1                      | 10.00                                |
 
 ### Tips for Approaching the Problem
 
