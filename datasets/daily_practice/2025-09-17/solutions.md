@@ -45,5 +45,54 @@ For each `initial_flag_type`, calculate:
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH auto_flag_events AS (
+	SELECT
+		content_id AS auto_content_id,
+		event_timestamp AS auto_event_timestamp,
+		event_type AS auto_event_type,
+		decision AS auto_decision
+	FROM
+		moderation_events
+	WHERE
+		event_type = 'AUTO_FLAG'
+),
+manual_review_events AS (
+	SELECT
+		content_id AS manual_content_id,
+		event_timestamp AS manual_event_timestamp,
+		event_type AS manual_event_type,
+		decision AS manual_decision
+	FROM
+		moderation_events
+	WHERE
+		event_type = 'MANUAL_REVIEW'
+),
+joint_events AS (
+	SELECT
+		auto_content_id,
+		manual_content_id,
+		auto_decision,
+		CASE
+			WHEN auto_decision = 'FLAG_FOR_REVIEW_REJECT' AND manual_decision = 'REJECT' THEN 1
+			WHEN auto_decision = 'FLAG_FOR_REVIEW_APPROVE' AND manual_decision = 'APPROVE' THEN 1
+			ELSE 0
+		END AS agreement_flag,
+		TIMESTAMPDIFF(SECOND, auto_event_timestamp, manual_event_timestamp) AS time_to_review
+	FROM
+		auto_flag_events
+	LEFT JOIN
+		manual_review_events ON auto_content_id = manual_content_id
+)
+SELECT
+	auto_decision AS initial_flag_type,
+	COUNT(auto_content_id ) AS total_auto_flags,
+	COUNT(manual_content_id) AS total_human_raviews,
+	SUM(agreement_flag) * 100.0 / COUNT(manual_content_id) AS human_aggrement_rate_pct,
+	AVG(time_to_review) AS avg_time_to_review_seconds
+FROM
+	joint_events
+GROUP BY
+	auto_decision
+ORDER BY
+	avg_time_to_review_seconds;
 ```
