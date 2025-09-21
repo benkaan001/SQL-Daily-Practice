@@ -13,10 +13,11 @@ The final report should list the `user_id` and their total calculated `reputatio
 
 | **user_id** | **reputation_score** |
 | ----------------- | -------------------------- |
-| 101               | 237                        |
-| 102               | 160                        |
+| 101               | 294                        |
+| 102               | 115                        |
 | 104               | 50                         |
-| 103               | 28                         |
+| 103               | 25                         |
+
 
 ### Tips for Approaching the Problem
 

@@ -13,10 +13,10 @@ The final report should list the `user_id` and their total calculated `reputatio
 
 | **user_id** | **reputation_score** |
 | ----------------- | -------------------------- |
-| 101               | 237                        |
-| 102               | 160                        |
+| 101               | 294                        |
+| 102               | 115                        |
 | 104               | 50                         |
-| 103               | 28                         |
+| 103               | 25                         |
 
 ### Tips for Approaching the Problem
 
@@ -30,5 +30,63 @@ The final report should list the `user_id` and their total calculated `reputatio
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH acceptance_scores AS (
+	SELECT
+		answers.user_id,
+		15 AS reputation_score
+	FROM
+		forum_posts questions
+	JOIN
+		forum_posts answers ON questions.accepted_answer_id = answers.post_id
+	WHERE
+		answers.post_type  = 'ANSWER'
+		AND questions.post_type = 'QUESTION'
+),
+upvote_scores AS (
+	SELECT
+		user_id,
+		SUM(CASE WHEN score > 0 THEN score * 10 ELSE score * 2 END) AS repuation_score
+	FROM
+		forum_posts
+	WHERE
+		post_type = 'ANSWER'
+	GROUP BY
+		user_id
+),
+answer_scores AS (
+	SELECT
+		user_id,
+		5 AS reputation_score
+	FROM
+		forum_posts
+	WHERE
+		post_type = 'QUESTION'
+		AND accepted_answer_id IS NOT NULL
+
+),
+all_scores AS (
+	SELECT
+		*
+	FROM
+		acceptance_scores
+	UNION ALL
+	SELECT
+		*
+	FROM
+		upvote_scores
+	UNION ALL
+	SELECT
+		*
+	FROM
+		answer_scores
+)
+SELECT
+	user_id,
+	SUM(reputation_score) AS reputation_score
+FROM
+	all_scores
+GROUP BY
+	user_id
+ORDER BY
+	reputation_score DESC;
 ```
