@@ -25,5 +25,42 @@ The final report should show the `api_key`, the `shift_month` (the month in whic
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH key_counts AS (
+	SELECT
+		api_key,
+		DATE_FORMAT(request_timestamp, '%Y-%m') AS month_year,
+		endpoint_path,
+		COUNT(*) AS monthly_key_count,
+		COUNT(*) OVER (PARTITION BY api_key, DATE_FORMAT(request_timestamp, '%Y-%m')) AS total_key_count
+	FROM
+		api_usage_logs
+	GROUP BY
+		api_key,
+		month_year,
+		endpoint_path
+),
+monthly_endpoints AS (
+	SELECT
+		api_key,
+		month_year,
+		endpoint_path,
+		(monthly_key_count * 100.0 / total_key_count) AS percentange,
+		ROW_NUMBER() OVER (PARTITION BY api_key ORDER BY month_year) AS rn,
+		LAG(endpoint_path, 1) OVER (PARTITION BY api_key ORDER BY month_year) AS prev_month_endpoint_path,
+		LAG(month_year, 1) OVER (PARTITION BY api_key ORDER BY month_year) AS shift_month
+	FROM
+		key_counts
+	WHERE
+		(monthly_key_count * 100.0 / total_key_count) > 50
+)
+SELECT
+	api_key,
+	shift_month,
+	prev_month_endpoint_path AS previous_month_primary_endpoint,
+	endpoint_path AS new_primary_endpoint
+FROM
+	monthly_endpoints
+WHERE
+	endpoint_path != prev_month_endpoint_path
+	AND prev_month_endpoint_path IS NOT NULL;
 ```
