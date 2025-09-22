@@ -61,7 +61,22 @@ The report should show the `request_id`, the `dependency_service_name` (`user-se
 **Your Solution:**
 
 ```sql
--- Write your solution here
+    failures.request_id,
+    dependencies.service_name AS dependency_service_name,
+    dependencies.request_timestamp AS dependency_failure_time,
+    failures.service_name AS failing_service_name,
+    failures.request_timestamp AS service_failure_time
+FROM
+    api_gateway_logs AS failures
+JOIN
+    api_gateway_logs AS dependencies
+    ON failures.request_id = dependencies.request_id
+WHERE
+    failures.service_name = 'order-service'
+    AND failures.status_code >= 500
+    AND dependencies.service_name = 'user-service'
+    AND dependencies.status_code >= 500
+    AND TIMESTAMPDIFF(MICROSECOND, dependencies.request_timestamp, failures.request_timestamp) BETWEEN 1 AND 1000000;
 ```
 
 ## Puzzle 3: The Latency Anomaly
@@ -81,9 +96,48 @@ The final report should show the `service_name`, the `anomaly_date`, the `p95_la
 | **service_name** | **anomaly_date** | **p95_latency** | **previous_day_p95_latency** |
 | ---------------------- | ---------------------- | --------------------- | ---------------------------------- |
 | payment-service        | 2023-09-23             | 890.00                | 290.00                             |
+| user-service           | 2023-09-21             | 1500.00               |  30.00                             |
 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH RankedLatencies AS (
+    SELECT
+        service_name,
+        DATE(request_timestamp) AS request_date,
+        response_time_ms,
+        ROW_NUMBER() OVER (PARTITION BY service_name, DATE(request_timestamp) ORDER BY response_time_ms) AS rn,
+   		COUNT(*) OVER (PARTITION BY service_name, DATE(request_timestamp)) AS total_rows
+    FROM
+        api_gateway_logs
+),
+DailyP95 AS (
+    SELECT
+        service_name,
+        request_date,
+        response_time_ms AS p95_latency
+    FROM
+        RankedLatencies
+    WHERE
+        rn = CEIL(0.95 * total_rows)
+),
+DailyComparison AS (
+    SELECT
+        service_name,
+        request_date,
+        p95_latency,
+        LAG(p95_latency, 1) OVER (PARTITION BY service_name ORDER BY request_date) AS previous_day_p95_latency
+    FROM
+        DailyP95
+)
+SELECT
+    service_name,
+    request_date AS anomaly_date,
+    p95_latency,
+    previous_day_p95_latency
+FROM
+    DailyComparison
+WHERE
+    previous_day_p95_latency IS NOT NULL
+    AND p95_latency > (previous_day_p95_latency * 2);
 ```

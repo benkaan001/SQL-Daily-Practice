@@ -56,6 +56,8 @@ The final report should show the `service_name`, the `anomaly_date`, the `p95_la
 | **service_name** | **anomaly_date** | **p95_latency** | **previous_day_p95_latency** |
 | ---------------------- | ---------------------- | --------------------- | ---------------------------------- |
 | payment-service        | 2023-09-23             | 890.00                | 290.00                             |
+| user-service           | 2023-09-21             | 1500.00               |  30.00                             |
+
 
 **Your Solution:**
 
