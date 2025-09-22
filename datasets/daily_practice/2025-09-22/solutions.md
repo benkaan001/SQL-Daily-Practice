@@ -24,5 +24,29 @@ The final report should show the `card_number`, details of the `previous_transac
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH transaction_history AS (
+  SELECT
+    transaction_id,
+    card_number,
+    transaction_timestamp,
+    merchant_country,
+    LAG(transaction_id, 1) OVER (PARTITION BY card_number ORDER BY transaction_timestamp) AS previous_transaction_id,
+    LAG(merchant_country, 1) OVER (PARTITION BY card_number ORDER BY transaction_timestamp) AS previous_country,
+    LAG(transaction_timestamp, 1) OVER (PARTITION BY card_number ORDER BY transaction_timestamp) AS previous_timestamp
+  FROM
+    credit_card_transactions
+)
+SELECT
+  card_number,
+  previous_transaction_id,
+  previous_country,
+  previous_timestamp,
+  transaction_id AS impossible_transaction_id,
+  merchant_country AS impossible_country,
+  transaction_timestamp AS impossible_timestamp
+FROM
+  transaction_history
+WHERE
+  merchant_country != previous_country
+  AND TIMESTAMPDIFF(HOUR, previous_timestamp, transaction_timestamp) < 2;
 ```
