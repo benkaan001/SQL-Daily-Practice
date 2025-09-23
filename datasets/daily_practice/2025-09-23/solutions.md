@@ -29,5 +29,31 @@ The final report should compare the two variations side-by-side.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH button_experiments AS (
+	SELECT
+		*
+	FROM
+		experiment_events
+	WHERE
+		experiment_id = 'button_color_exp'
+),
+experiment_counts AS (
+	SELECT
+		variation_name,
+		COUNT(DISTINCT user_id) AS total_users,
+		COUNT(CASE WHEN event_name = 'purchase' THEN user_id END) AS purchasing_users,
+		AVG(CASE WHEN event_name = 'purchase' THEN value END) AS avg_purhcase_value
+	FROM
+		button_experiments
+	GROUP BY
+		variation_name
+)
+SELECT
+	variation_name,
+	total_users,
+	purchasing_users,
+	purchasing_users * 100.0 / total_users AS conversion_rate_pct,
+	avg_purhcase_value
+FROM
+	experiment_counts;
 ```
