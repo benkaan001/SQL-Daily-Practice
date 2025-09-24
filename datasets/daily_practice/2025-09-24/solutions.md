@@ -28,5 +28,30 @@ The final report should show the `snapshot_date`, `product_sku`, `warehouse_id`,
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH grouped_events AS (
+	SELECT
+		DATE(event_timestamp) AS snapshot_date,
+		product_sku,
+		warehouse_id,
+		SUM(CASE
+				WHEN event_type = 'RECEIVED' THEN quantity
+				WHEN event_type IN ('SHIPPED', 'LOST') THEN -quantity
+		END
+		 )	AS daily_change
+	FROM
+		warehouse_events
+	GROUP BY
+		snapshot_date,
+		product_sku,
+		warehouse_id
+)
+SELECT
+	snapshot_date,
+	product_sku,
+	warehouse_id,
+	SUM(daily_change) OVER (PARTITION BY product_sku, warehouse_id ORDER BY snapshot_date) AS end_of_day_stock
+FROM
+	grouped_events
+ORDER BY
+	snapshot_date; 
 ```
