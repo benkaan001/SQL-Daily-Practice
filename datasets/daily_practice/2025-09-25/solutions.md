@@ -36,5 +36,21 @@ The `end_time` for a stage is the `start_time` of the next stage. The final stag
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ordered_applications AS (
+	SELECT
+		application_id,
+		event_timestamp,
+		event_type,
+		LEAD(event_timestamp, 1) OVER (PARTITION BY application_id ORDER BY event_timestamp) AS next_event_timestamp
+	FROM
+		loan_applications
+)
+SELECT
+	application_id,
+	event_type,
+	event_timestamp AS start_time,
+	next_event_timestamp AS end_time,
+	ROUND(TIMESTAMPDIFF(MINUTE, event_timestamp, next_event_timestamp) / 60.0, 2) AS duration_in_hours
+FROM
+	ordered_applications;
 ```
