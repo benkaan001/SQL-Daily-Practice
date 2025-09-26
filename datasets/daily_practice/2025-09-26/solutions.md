@@ -33,5 +33,42 @@ If a user completes a step in the correct sequence, the timestamp of that event 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ordered_sessions AS (
+    SELECT
+        user_id,
+        session_id,
+        MIN(CASE WHEN event_type = 'PAGE_VIEW' AND event_details = '/dashboard' THEN event_timestamp END) AS time_step_1,
+        MIN(CASE WHEN event_type = 'FEATURE_CLICK' AND event_details = 'Create Project' THEN event_timestamp END) AS time_step_2,
+        MIN(CASE WHEN event_type = 'FEATURE_CLICK' AND event_details = 'Save Project' THEN event_timestamp END) AS time_step_3
+    FROM
+        saas_events
+    GROUP BY
+        user_id,
+        session_id
+)
+SELECT
+    user_id,
+    session_id,
+    CASE
+        WHEN time_step_1 IS NOT NULL AND (time_step_2 IS NULL OR time_step_1 < time_step_2) THEN time_step_1
+        ELSE NULL
+    END AS step_1_time,
+    CASE
+        WHEN time_step_1 IS NOT NULL AND (time_step_2 IS NULL OR time_step_1 < time_step_2)
+        AND time_step_2 > time_step_1 THEN time_step_2
+        ELSE NULL
+    END AS step_2_time,
+    CASE
+        WHEN time_step_1 IS NOT NULL AND (time_step_2 IS NULL OR time_step_1 < time_step_2) AND time_step_2 > time_step_1 AND time_step_3 > time_step_2 THEN time_step_3
+        ELSE NULL
+    END AS step_3_time
+FROM
+    ordered_sessions
+WHERE
+    time_step_1 IS NOT NULL
+    OR time_step_2 IS NOT NULL
+    OR time_step_3 IS NOT NULL
+ORDER BY
+    user_id,
+	session_id;
 ```
