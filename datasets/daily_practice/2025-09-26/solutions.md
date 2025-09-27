@@ -12,13 +12,14 @@
 
 If a user completes a step in the correct sequence, the timestamp of that event should be shown. If a step is skipped or done out of order, the value for that step and all subsequent steps should be `NULL`.
 
-| **user_id** | **session_id** | **step_1_time**   | **step_2_time**   | **step_3_time**   |
-| ----------------- | -------------------- | ----------------------- | ----------------------- | ----------------------- |
-| 101               | sess_A               | 2023-11-15 09:00:00.000 | 2023-11-15 09:01:30.000 | 2023-11-15 09:04:00.000 |
-| 101               | sess_C               | 2023-11-16 11:00:00.000 | 2023-11-16 11:01:00.000 | NULL                    |
-| 102               | sess_B               | NULL                    | NULL                    | NULL                    |
-| 103               | sess_D               | 2023-11-16 14:00:00.000 | NULL                    | NULL                    |
-| 104               | sess_E               | 2023-11-17 08:30:00.000 | 2023-11-17 08:32:00.000 | 2023-11-17 08:33:00.000 |
+| user_id | session_id | step_1_time         | step_2_time         | step_3_time         |
+| ------- | ---------- | ------------------- | ------------------- | ------------------- |
+| 101     | sess_A     | 2023-11-15 09:00:00 | 2023-11-15 09:01:30 | 2023-11-15 09:04:00 |
+| 101     | sess_C     | 2023-11-16 11:00:00 | 2023-11-16 11:01:00 |                     |
+| 102     | sess_B     |                     |                     |                     |
+| 103     | sess_D     | 2023-11-16 14:00:00 |                     |                     |
+| 104     | sess_E     | 2023-11-17 08:30:00 | 2023-11-17 08:32:00 | 2023-11-17 08:33:00 |
+
 
 ### Tips for Approaching the Problem
 
