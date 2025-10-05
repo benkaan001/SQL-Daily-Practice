@@ -1,6 +1,6 @@
 # SQL Practice Activity Report
 
-Last updated: 2025-10-04
+Last updated: 2025-10-05
 
 ## Current Status
 
@@ -8,14 +8,13 @@ Last updated: 2025-10-04
 
 ## Practice Streak
 
-**Current streak:** 20 days
+**Current streak:** 19 days
 
 ## Recent Activity
 
 Days with practice in the last week:
 
 ```
-2025-09-27
 2025-09-28
 ```
 
