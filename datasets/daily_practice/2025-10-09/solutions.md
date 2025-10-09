@@ -25,6 +25,44 @@ The final report should show the `package_id`, its `last_known_status`, the `las
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH packages AS (
+	SELECT
+		package_id,
+		event_timestamp,
+		event_type,
+		ROW_NUMBER() OVER (PARTITION BY package_id ORDER BY event_timestamp DESC) AS rn
+	FROM
+		warehouse_package_log
+),
+latest_status AS (
+	SELECT
+		package_id,
+		event_timestamp,
+		event_type
+	FROM
+		packages
+	WHERE
+		rn =1
+),
+unshipped_packages AS (
+	SELECT
+		package_id,
+		event_timestamp,
+		event_type,
+		TIMESTAMPDIFF(MINUTE, event_timestamp, '2023-12-14 12:00:00') / 60.0 AS hours_since_last_seen
+	FROM
+		latest_status
+	WHERE
+		event_type != 'LOADED_ON_TRUCK'
+)
+SELECT
+	package_id,
+	event_type AS last_known_status,
+	event_timestamp AS last_seen_timestamp,
+	hours_since_last_seen
+FROM
+	unshipped_packages
+WHERE
+	hours_since_last_seen > 40;
 ```
 
