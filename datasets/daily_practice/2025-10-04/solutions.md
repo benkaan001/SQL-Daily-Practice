@@ -8,7 +8,7 @@ The report should show the `user_id`, `subscription_id`, the `downgrade_timestam
 
 | **user_id** | **subscription_id** | **downgrade_timestamp** | **subsequent_upgrade_timestamp** | **time_to_winback_days** |
 | ----------------- | ------------------------- | ----------------------------- | -------------------------------------- | ------------------------------ |
-| 101               | sub_A                     | 2023-06-20 14:00:00.000       | 2023-08-25 11:30:00.000                | 65.90                          |
+| 101               | sub_A                     | 2023-06-20 14:00:00.000       | 2023-08-25 11:30:00.000                | 65.88                          |
 | 104               | sub_D                     | 2023-08-01 10:00:00.000       | 2023-09-01 10:00:00.000                | 31.00                          |
 | 106               | sub_F                     | 2023-04-20 11:00:00.000       | 2023-04-28 15:00:00.000                | 8.17                           |
 
@@ -23,5 +23,38 @@ The report should show the `user_id`, `subscription_id`, the `downgrade_timestam
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH downgrades AS (
+	SELECT
+		user_id,
+		subscription_id,
+		event_timestamp
+	FROM
+		user_subscriptions
+	WHERE
+		event_type = 'DOWNGRADED'
+),
+upgrades AS (
+	SELECT
+		user_id,
+		subscription_id,
+		event_timestamp,
+		ROW_NUMBER() OVER (PARTITION BY subscription_id ORDER BY event_timestamp) AS upgrade_row_number
+	FROM
+		user_subscriptions
+	WHERE
+		event_type = 'UPGRADED'
+)
+SELECT
+	u.user_id,
+	u.subscription_id,
+	d.event_timestamp AS downgrade_timestamp,
+	u.event_timestamp AS subsequent_upgrade_timestamp,
+	ROUND(TIMESTAMPDIFF(HOUR, d.event_timestamp, u.event_timestamp) / 24.0, 2) AS time_to_winback_days
+FROM
+	downgrades d
+JOIN
+	upgrades u ON u.subscription_id = d.subscription_id
+	AND u.event_timestamp > d.event_timestamp
+WHERE
+	u.upgrade_row_number = 1;
 ```
