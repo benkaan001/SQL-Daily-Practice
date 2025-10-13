@@ -27,6 +27,50 @@ The final report should consolidate these incidents, showing the `api_key`, the 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+ WITH excess_requests AS (
+	 SELECT
+	 	log_id,
+	 	api_key,
+	 	event_timestamp,
+	 	event_type,
+	 	LAG(event_timestamp, 1) OVER (PARTITION BY api_key ORDER BY event_timestamp) AS prev_event_timestamp
+	 FROM
+	 	api_rate_limit_logs
+	 WHERE
+	 	event_type = 'RATE_LIMIT_EXCEEDED'
+),
+new_events AS (
+	SELECT
+		log_id,
+		api_key,
+		event_timestamp,
+		event_type,
+		prev_event_timestamp,
+		CASE WHEN TIMESTAMPDIFF(SECOND, prev_event_timestamp, event_timestamp) > 60 THEN 1 ELSE 0 END AS is_new_event
+
+	FROM
+		excess_requests
+), sessions AS (
+	SELECT
+		api_key,
+		event_timestamp,
+		prev_event_timestamp,
+		SUM(is_new_event) OVER (PARTITION BY api_key) AS session_id
+	FROM
+		new_events
+)
+SELECT
+	api_key,
+	MIN(prev_event_timestamp) AS incident_start_time,
+	MAX(event_timestamp) AS incident_end_time,
+	COUNT(session_id) AS error_count
+FROM
+	sessions
+GROUP BY
+	api_key,
+	session_id
+HAVING
+	COUNT(session_id) > 4;
+
 ```
 
