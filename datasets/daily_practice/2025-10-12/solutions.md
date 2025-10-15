@@ -28,6 +28,59 @@ The final report should show the `user_id`, `session_id`, `content_id`, the `pre
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH preview_events AS (
+	SELECT
+		user_id,
+		session_id,
+		event_timestamp,
+		event_type,
+		content_id,
+		preview_duration_seconds
+	FROM
+		video_engagement_logs
+	WHERE
+		event_type = 'PREVIEW_WATCH'
+),
+full_events AS (
+	SELECT
+		user_id,
+		session_id,
+		event_timestamp,
+		event_type,
+		content_id,
+		preview_duration_seconds
+	FROM
+		video_engagement_logs
+	WHERE
+		event_type = 'FULL_WATCH'
+),
+joint_events AS (
+	SELECT
+		fe.user_id,
+		fe.session_id,
+		fe.content_id,
+		pe.event_timestamp AS preview_start_time,
+		fe.event_timestamp AS full_watch_start_time,
+		ROW_NUMBER() OVER (PARTITION BY fe.user_id, fe.content_id, fe.event_timestamp ORDER BY pe.event_timestamp DESC) AS rn
+	FROM
+		preview_events pe
+	JOIN
+		full_events fe ON pe.user_id  = fe.user_id
+		AND pe.content_id = fe.content_id
+	WHERE
+		pe.event_timestamp < fe.event_timestamp
+)
+SELECT
+	user_id,
+	session_id,
+	content_id,
+	preview_start_time,
+	full_watch_start_time,
+	TIMESTAMPDIFF(SECOND, preview_start_time, full_watch_start_time) / 60.0 AS time_to_convert_minutes
+FROM
+	joint_events
+WHERE
+	rn = 1
+	AND TIMESTAMPDIFF(MINUTE, preview_start_time, full_watch_start_time) <= 60;
 ```
 
