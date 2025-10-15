@@ -24,6 +24,44 @@ The final report should show the `scooter_id`, the timestamp of when it was `unl
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ordered_events AS (
+	SELECT
+		event_id,
+		scooter_id,
+		event_timestamp,
+		event_type,
+		latitude,
+		longitude,
+		battery_level,
+		ROW_NUMBER() OVER (PARTITION BY scooter_id ORDER BY event_timestamp DESC) AS rn
+	FROM
+		scooter_telemetry
+),
+unlock_events AS (
+	SELECT
+		scooter_id,
+		MAX(event_timestamp) AS unlocked_at
+	FROM
+		ordered_events
+	WHERE
+		event_type = 'UNLOCK'
+	GROUP BY
+		scooter_id
+
+)
+SELECT
+	oe.scooter_id,
+	ue.unlocked_at,
+	oe.latitude AS last_known_latitude,
+	oe.longitude AS last_known_longitude,
+	ROUND(TIMESTAMPDIFF(MINUTE, oe.event_timestamp, '2023-12-18 15:00:00') / 60.0, 2) AS hours_since_last_event
+FROM
+	ordered_events oe
+JOIN
+	unlock_events ue ON ue.scooter_id = oe.scooter_id
+WHERE
+	oe.rn = 1
+	AND oe.event_type != 'LOCK'
+	AND TIMESTAMPDIFF(HOUR, oe.event_timestamp, '2023-12-18 15:00:00') > 2;
 ```
 
