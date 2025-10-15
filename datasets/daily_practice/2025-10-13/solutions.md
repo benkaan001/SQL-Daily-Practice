@@ -26,5 +26,37 @@ The final report should show the `week_start_date` (the Monday of the week), the
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH weekly_sessions AS (
+    SELECT
+        TIMESTAMPDIFF(MINUTE, session_start, session_end) AS duration_minutes,
+        user_id,
+        STR_TO_DATE(CONCAT(YEARWEEK(session_start, 1), ' Monday'), '%x%v %W') AS week_start_date
+    FROM
+        user_sessions
+),
+weekly_summary AS (
+    SELECT
+        week_start_date,
+        user_id,
+        COUNT(*) AS session_count,
+        AVG(duration_minutes) AS avg_duration_minutes
+    FROM
+        weekly_sessions
+    GROUP BY
+        week_start_date,
+        user_id
+)
+SELECT
+    week_start_date,
+    user_id,
+    session_count,
+    ROUND(avg_duration_minutes, 2) AS avg_duration_minutes
+FROM
+    weekly_summary
+WHERE
+    session_count > 5
+    AND avg_duration_minutes > 30
+ORDER BY
+    week_start_date,
+    user_id;
 ```
