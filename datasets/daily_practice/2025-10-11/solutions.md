@@ -32,6 +32,51 @@ Finally, aggregate this data to count how many shipments were delayed for each r
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH delays AS (
+	SELECT
+		shipment_id,
+		event_timestamp,
+		location,
+		JSON_UNQUOTE(JSON_EXTRACT(details, '$.reason')) AS delay_reason
+	FROM
+		shipment_logs
+	WHERE
+		event_type = 'DELAYED'
+),
+intransits AS (
+	SELECT
+		shipment_id,
+		event_timestamp,
+		location
+	FROM
+		shipment_logs
+	WHERE
+		event_type = 'IN_TRANSIT'
+),
+ordered_events AS (
+	SELECT
+		d.location AS bottleneck_location,
+		d.delay_reason,
+		ROW_NUMBER() OVER (PARTITION BY d.shipment_id, d.event_timestamp ORDER BY i.event_timestamp DESC) AS rn
+	FROM
+		delays d
+	JOIN
+		intransits i ON i.shipment_id = d.shipment_id
+	WHERE
+		i.event_timestamp < d.event_timestamp
+)
+SELECT
+	bottleneck_location,
+	delay_reason,
+	COUNT(*) AS total_delayed_shipments
+FROM
+	ordered_events
+WHERE
+	rn = 1
+GROUP BY
+	bottleneck_location,
+	delay_reason
+ORDER BY
+	total_delayed_shipments DESC;
 ```
 
