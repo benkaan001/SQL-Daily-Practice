@@ -26,6 +26,29 @@ The final report should show the `employee_id`, the `system_name` they still hav
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH joint_logs AS (
+SELECT
+	eal.employee_id,
+	eal.event_timestamp,
+	eal.access_event,
+	eal.system_name AS emp_log_system,
+	ear.system_name AS emp_right_system,
+	ear.access_end_date,
+	LEAD(eal.access_event, 1) OVER (PARTITION BY eal.employee_id, eal.system_name ORDER BY eal.event_timestamp) AS next_access_event
+FROM
+	employee_access_logs eal
+JOIN
+	employee_access_rights ear ON eal.employee_id = ear.employee_id AND eal.system_name = ear.system_name
+)
+SELECT
+	employee_id,
+	emp_right_system AS system_name,
+	event_timestamp AS session_start_time,
+	access_end_date AS access_termination_time
+FROM
+	joint_logs
+WHERE
+	access_event = 'LOGIN'
+	AND (next_access_event != 'LOGOUT' OR next_access_event IS NULL);
 ```
 
