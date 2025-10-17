@@ -26,5 +26,22 @@ The final report should show the `device_id`, the timestamp of its `last_seen_on
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH seen_times AS (
+	SELECT
+		device_id,
+		event_timestamp,
+		status,
+		LEAD(event_timestamp, 1) OVER (PARTITION BY device_id ORDER BY event_timestamp) AS next_event_timestamp
+	FROM
+		device_heartbeats
+)
+SELECT
+	device_id,
+	event_timestamp,
+	ROUND(TIMESTAMPDIFF(MINUTE, event_timestamp, next_event_timestamp), 2) AS offline_duration_minutes
+FROM
+	seen_times
+WHERE
+	TIMESTAMPDIFF(MINUTE, event_timestamp, next_event_timestamp) > 10
+	AND status = 'ONLINE';
 ```
