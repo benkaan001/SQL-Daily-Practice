@@ -28,5 +28,60 @@ The report should show the `feature_name`, the `conflicting_segment` (e.g., 'cou
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ranked_status AS (
+    SELECT
+        feature_name,
+        status,
+        country,
+        device_type,
+        ROW_NUMBER() OVER (PARTITION BY feature_name, country, device_type ORDER BY log_timestamp DESC) AS rn
+    FROM
+        feature_flags
+),
+enabled_rules AS (
+    SELECT
+    	feature_name,
+    	country,
+    	device_type
+    FROM
+    	ranked_status
+    WHERE
+    	rn = 1
+    	AND status = 'ENABLED'
+),
+disabled_rules AS (
+    SELECT
+    	feature_name,
+    	country,
+    	device_type
+    FROM
+    	ranked_status
+    WHERE
+    	rn = 1
+    	AND status = 'DISABLED'
+)
+SELECT
+    er.feature_name,
+    CASE
+        WHEN er.country IS NULL AND dr.country IS NOT NULL THEN 'country'
+        WHEN er.device_type IS NULL AND dr.device_type IS NOT NULL THEN 'device_type'
+    END AS conflicting_segment,
+    CASE
+        WHEN er.country IS NULL AND dr.country IS NOT NULL THEN dr.country
+        WHEN er.device_type IS NULL AND dr.device_type IS NOT NULL THEN dr.device_type
+    END AS conflicting_value
+FROM
+    enabled_rules er
+JOIN
+    disabled_rules dr ON er.feature_name = dr.feature_name
+WHERE
+    (
+        er.country IS NULL AND dr.country IS NOT NULL AND
+        (er.device_type = dr.device_type OR er.device_type IS NULL)
+    )
+    OR
+    (
+        er.device_type IS NULL AND dr.device_type IS NOT NULL AND
+        (er.country = dr.country OR er.country IS NULL)
+    );
 ```
