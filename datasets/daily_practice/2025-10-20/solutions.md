@@ -19,6 +19,62 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ranked_events AS (
+    SELECT
+        original_transaction_id,
+        card_id,
+        event_timestamp,
+        event_type,
+        ROW_NUMBER() OVER (PARTITION BY original_transaction_id, event_type ORDER BY event_timestamp) AS rn
+    FROM
+        card_transaction_events
+    WHERE
+        event_type IN ('CHARGEBACK_INITIATED', 'CHARGEBACK_DISPUTE_WON')
+),
+first_chargebacks AS (
+    SELECT
+        original_transaction_id,
+        card_id,
+        event_timestamp
+    FROM
+    	ranked_events
+    WHERE
+    	event_type = 'CHARGEBACK_INITIATED'
+    	AND rn = 1
+),
+disputes_won AS (
+    SELECT
+        original_transaction_id,
+        event_timestamp
+    FROM
+    	ranked_events
+    WHERE
+    	event_type = 'CHARGEBACK_DISPUTE_WON'
+    	AND rn = 1
+),
+second_chargebacks AS (
+    SELECT
+        original_transaction_id,
+        event_timestamp
+    FROM
+    	ranked_events
+    WHERE
+    	event_type = 'CHARGEBACK_INITIATED'
+    	AND rn = 2
+)
+SELECT
+    fc.card_id,
+    fc.original_transaction_id,
+    fc.event_timestamp AS first_chargeback_time,
+    dw.event_timestamp AS dispute_was_won_time,
+    sc.event_timestamp AS second_chargeback_time
+FROM
+    first_chargebacks fc
+JOIN
+    disputes_won dw ON fc.original_transaction_id = dw.original_transaction_id
+    AND dw.event_timestamp > fc.event_timestamp
+JOIN
+    second_chargebacks sc ON fc.original_transaction_id = sc.original_transaction_id
+    AND sc.event_timestamp > dw.event_timestamp;
 ```
 
