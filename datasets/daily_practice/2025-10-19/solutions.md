@@ -25,6 +25,30 @@ The final report should show the `match_id`, the `blue_team_avg_skill`, the `red
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITh avg_rankings AS (
+SELECT
+		match_id,
+		AVG(CASE WHEN player_team = 'blue' THEN player_skill_rating END) AS blue_team_avg_skill,
+		AVG(CASE WHEN player_team = 'red' THEN player_skill_rating END) AS red_team_avg_skill,
+		MIN(CASE WHEN match_outcome = 'DEFEAT' THEN player_team END) AS losing_team
+	FROM
+		game_matches
+	GROUP BY
+		match_id
+)
+SELECT
+	match_id,
+	blue_team_avg_skill,
+	red_team_avg_skill,
+	losing_team
+FROM
+	avg_rankings
+WHERE
+	ABS(blue_team_avg_skill - red_team_avg_skill) > 200
+	AND
+		CASE
+			WHEN losing_team = 'blue' THEN blue_team_avg_skill < red_team_avg_skill
+			WHEN losing_team = 'red' THEN red_team_avg_skill < blue_team_avg_skill
+		END;
 ```
 
