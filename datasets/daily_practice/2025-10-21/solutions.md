@@ -25,6 +25,27 @@ The final report should show the `player_id` and the exact `queue_entry_time` fo
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH events AS (
+    SELECT
+        player_id,
+        event_timestamp,
+        event_type,
+        LEAD(event_type, 1) OVER (PARTITION BY player_id ORDER BY event_timestamp) AS next_event_type,
+        LEAD(event_timestamp, 1) OVER (PARTITION BY player_id ORDER BY event_timestamp) AS next_event_timestamp
+    FROM
+        matchmaking_log
+)
+SELECT
+    player_id,
+    event_timestamp AS queue_entry_time
+FROM
+    events
+WHERE
+    event_type = 'ENTER_QUEUE'
+    AND (
+        next_event_type IS NULL
+        OR next_event_type != 'MATCH_FOUND'
+        OR TIMESTAMPDIFF(MINUTE, event_timestamp, next_event_timestamp) > 5
+);
 ```
 
