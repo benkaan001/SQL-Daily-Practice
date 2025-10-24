@@ -32,6 +32,47 @@ Order the results by `user_id`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH plan_history AS (
+	SELECT
+		user_id,
+		GROUP_CONCAT(DISTINCT previous_plan) AS previous_plans
+	FROM
+		subscription_plan_changes
+	GROUP BY
+		user_id
+),
+most_recent_plans AS (
+	SELECT
+		user_id,
+		new_plan,
+		ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY change_date DESC) AS rn
+	FROM
+		subscription_plan_changes
+
+),
+final_analysis AS (
+	SELECT
+		mrp.user_id,
+		mrp.new_plan AS current_plan,
+		CASE
+			WHEN mrp.new_plan = 'Cancelled' THEN 'Churned'
+			WHEN ph.previous_plans LIKE '%Cancelled%' AND mrp.new_plan != 'Cancelled' THEN 'Win-Back'
+		END AS status
+	FROM
+		most_recent_plans mrp
+	LEFT JOIN
+		plan_history ph ON ph.user_id = mrp.user_id
+	WHERE
+		mrp.rn = 1
+		AND ph.previous_plans IS NOT NULL
+)
+SELECT
+	user_id,
+	current_plan,
+	status
+FROM
+	final_analysis
+WHERE
+	status IS NOT NULL;
 ```
 
