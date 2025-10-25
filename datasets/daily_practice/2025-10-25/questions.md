@@ -32,6 +32,6 @@ Order the results by `sensor_id` and then `reading_timestamp`.
 
 **Your Solution:**
 
-```sqll
+```sql
 -- Write your solution here
 ```

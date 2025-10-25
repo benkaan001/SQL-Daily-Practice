@@ -32,7 +32,21 @@ Order the results by `sensor_id` and then `reading_timestamp`.
 
 **Your Solution:**
 
-```sqll
--- Write your solution here
+```sql
+SELECT
+	sensor_id,
+	sensor_type,
+	reading_timestamp,
+	reading_value,
+	CONCAT(CAST(expected_min AS CHAR), ' - ', CAST(expected_max AS CHAR)) AS expected_range,
+	LEAST(ABS(expected_min - reading_value), ABS(expected_max - reading_value)) AS deviation
+FROM
+	iot_sensor_readings
+WHERE
+	reading_value < expected_min
+	OR reading_value > expected_max
+ORDER BY
+	sensor_id,
+	reading_timestamp;
 ```
 
