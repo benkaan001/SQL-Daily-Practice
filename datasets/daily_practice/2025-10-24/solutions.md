@@ -41,6 +41,58 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH promotions AS (
+    SELECT
+    	log_id, user_id, event_timestamp, event_type, promo_code, purchase_value
+    FROM
+    	user_transactions_and_promos
+    WHERE
+    	event_type = 'APPLY_PROMO'
+),
+purchases AS (
+    SELECT
+    	log_id, user_id, event_timestamp, event_type, promo_code, purchase_value
+    FROM
+    	user_transactions_and_promos
+    WHERE
+    	event_type = 'PURCHASE'
+),
+promo_purchase_links AS (
+    SELECT
+        p.log_id AS purchase_log_id,
+        p.user_id,
+        p.event_timestamp AS purchase_timestamp,
+        p.purchase_value,
+        pr.log_id AS promo_log_id,
+        pr.promo_code,
+        pr.event_timestamp AS promo_timestamp,
+        ROW_NUMBER() OVER (PARTITION BY p.log_id ORDER BY pr.event_timestamp DESC) as rn
+    FROM
+    	purchases p
+    JOIN
+    	promotions pr ON p.user_id = pr.user_id
+     AND p.event_timestamp > pr.event_timestamp
+     AND p.event_timestamp <= TIMESTAMPADD(HOUR, 1, pr.event_timestamp)
+),
+final_purchases AS (
+    SELECT
+    	purchase_log_id, user_id, purchase_timestamp, purchase_value, promo_log_id, promo_code, promo_timestamp, rn
+    FROM
+    	promo_purchase_links
+    WHERE
+    	rn = 1
+)
+SELECT
+    pr.promo_code,
+    COUNT(pr.log_id) AS total_applications,
+    COUNT(fp.purchase_log_id) AS total_conversions,
+    (COUNT(fp.purchase_log_id) * 100.0 / COUNT(pr.log_id)) AS conversion_rate_pct,
+    AVG(fp.purchase_value) AS avg_purchase_value
+FROM
+    promotions pr
+LEFT JOIN
+    final_purchases fp ON pr.log_id = fp.promo_log_id
+GROUP BY
+    pr.promo_code;
 ```
 
