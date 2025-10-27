@@ -12,7 +12,7 @@
 | **level_id** | **total_first_attempts** | **successful_first_attempts** | **first_pass_success_rate_pct** |
 | ------------------ | ------------------------------ | ----------------------------------- | ------------------------------------- |
 | 1                  | 4                              | 3                                   | 75.00                                 |
-| 2                  | 3                              | 1                                   | 33.33                                 |
+| 2                  | 3                              | 2                                   | 66.67                                 |
 | 3                  | 1                              | 0                                   | 0.00                                  |
 
 ### Tips for Approaching the Problem

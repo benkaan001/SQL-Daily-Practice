@@ -12,7 +12,7 @@
 | **level_id** | **total_first_attempts** | **successful_first_attempts** | **first_pass_success_rate_pct** |
 | ------------------ | ------------------------------ | ----------------------------------- | ------------------------------------- |
 | 1                  | 4                              | 3                                   | 75.00                                 |
-| 2                  | 3                              | 1                                   | 33.33                                 |
+| 2                  | 3                              | 2                                   | 66.67                                 |
 | 3                  | 1                              | 0                                   | 0.00                                  |
 
 ### Tips for Approaching the Problem
@@ -28,6 +28,34 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH first_attempts AS (
+	SELECT
+		attempt_id,
+		player_id,
+		level_id,
+		attempt_start_timestamp,
+		attempt_end_timestamp,
+		outcome,
+		score,
+		ROW_NUMBER() OVER (PARTITION BY player_id, level_id ORDER BY attempt_start_timestamp) AS rn
+	FROM
+		game_level_attempts
+
+)
+SELECT
+	level_id,
+	COUNT(*) AS total_first_attemps,
+	SUM(CASE WHEN outcome = 'COMPLETED' THEN 1 ELSE 0 END) AS successful_first_attempts,
+	ROUND(
+		IFNULL(
+			SUM(CASE WHEN outcome = 'COMPLETED' THEN 1 ELSE 0 END) / COUNT(*)
+		, 0.00) * 100.0
+	, 2) AS first_pass_success_rate_pct
+FROM
+	first_attempts
+WHERE
+	rn = 1
+GROUP BY
+	level_id;
 ```
 
