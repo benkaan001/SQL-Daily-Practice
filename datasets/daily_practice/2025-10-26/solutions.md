@@ -27,6 +27,47 @@ The final report should aggregate the results to show, for each `initial_page_ur
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH sessions AS (
+	SELECT
+		*,
+		ROW_NUMBER() OVER (PARTITION BY session_id ORDER BY event_timestamp) AS rn
+	FROM
+		website_analytics
+	WHERE
+		event_type = 'PAGE_VIEW'
+),
+urls AS (
+	SELECT
+		session_id,
+		page_url AS initial_page_url
+	FROM
+		sessions
+	WHERE
+	    rn = 1
+),
+submissions AS (
+	SELECT
+		session_id AS lead_submission_session_id,
+		form_id
+	FROM
+		website_analytics
+	WHERE
+		event_type = 'FORM_SUBMIT'
+)
+SELECT
+	u.initial_page_url,
+	COUNT(*) AS total_sessions_started,
+	SUM(CASE WHEN u.session_id = s.lead_submission_session_id THEN 1 ELSE 0 END) AS lead_submission,
+	ROUND(IFNULL(
+		SUM(CASE WHEN u.session_id = s.lead_submission_session_id THEN 1 ELSE 0 END) / COUNT(*)
+		, 0) * 100.0, 2) AS conversion_rate_pct
+FROM
+	submissions s
+RIGHT JOIN
+	urls u ON u.session_id = s.lead_submission_session_id
+GROUP BY
+	u.initial_page_url
+ORDER BY
+	u.initial_page_url;
 ```
 
