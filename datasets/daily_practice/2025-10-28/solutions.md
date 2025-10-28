@@ -23,5 +23,35 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH joined_applications AS (
+	SELECT
+		junior.candidate_id,
+		junior.department,
+		junior.job_title AS first_junior_job_title,
+		junior.application_date AS first_junior_app_date,
+		senior.job_title AS subsequent_senior_lead_job_title,
+		senior.application_date AS subsequent_senior_lead_app_date,
+		ROW_NUMBER() OVER (PARTITION BY junior.candidate_id ORDER BY senior.application_date) AS rn
+	FROM
+		job_applications junior
+	JOIN
+		job_applications senior ON senior.candidate_id = junior.candidate_id
+		AND junior.department = senior.department
+		AND YEAR(junior.application_date) = YEAR(senior.application_date)
+		AND junior.application_date < senior.application_date
+	WHERE
+		junior.job_level = 'Junior'
+		AND senior.job_level != 'Junior'
+)
+SELECT
+	candidate_id,
+	department,
+	first_junior_job_title,
+	first_junior_app_date,
+	subsequent_senior_lead_job_title,
+	subsequent_senior_lead_app_date
+FROM
+	joined_applications
+WHERE
+	rn = 1;
 ```
