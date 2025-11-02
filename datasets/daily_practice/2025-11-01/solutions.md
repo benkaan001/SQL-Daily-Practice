@@ -32,5 +32,52 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH buy_trades AS(
+	SELECT
+		trade_id, trader_id, trade_timestamp, currency_pair, trade_type, amount, rate
+	FROM
+		forex_trades
+	WHERE
+		trade_type = 'BUY'
+),
+sell_trades AS (
+	SELECT
+		trade_id, trader_id, trade_timestamp, currency_pair, trade_type, amount, rate
+	FROM
+		forex_trades
+	WHERE
+		trade_type = 'SELL'
+),
+potential_flips AS (
+	SELECT
+		s.trader_id,
+		s.currency_pair,
+		b.trade_timestamp AS buy_timestamp,
+		b.rate AS buy_rate,
+		s.trade_timestamp AS sell_timestamp,
+		s.rate AS sell_rate,
+		s.amount,
+		ROW_NUMBER() OVER (PARTITION BY b.trade_id ORDER BY s.trade_timestamp) AS rn
+	FROM
+		buy_trades b
+	JOIN
+		sell_trades s ON s.trader_id = b.trader_id
+		AND s.currency_pair = b.currency_pair
+		AND s.amount = b.amount
+		AND s.rate > b.rate
+		AND s.trade_timestamp > b.trade_timestamp
+		AND s.trade_timestamp <= TIMESTAMPADD(MINUTE, 60, b.trade_timestamp)
+)
+SELECT
+	trader_id,
+	currency_pair,
+	buy_timestamp,
+	buy_rate,
+	sell_timestamp,
+	sell_rate,
+	ROUND((sell_rate - buy_rate) * amount, 2) AS profit
+FROM
+	potential_flips
+WHERE
+	rn = 1;
 ```
