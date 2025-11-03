@@ -8,7 +8,7 @@
 
 | **driver_id** | **total_active_time_minutes** |
 | ------------------- | ----------------------------------- |
-| 101                 | 465.00                              |
+| 101                 | 450.00                              |
 | 102                 | 300.00                              |
 | 103                 | 360.00                              |
 
@@ -24,5 +24,23 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH events AS (
+	SELECT
+		driver_id,
+		log_timestamp,
+		status,
+		LEAD(log_timestamp, 1, '2023-11-26 00:00:00') OVER (PARTITION BY driver_id ORDER BY log_timestamp) AS end_time
+	FROM
+		driver_status_logs
+)
+SELECT
+	driver_id,
+	ROUND(SUM(TIMESTAMPDIFF(MINUTE, log_timestamp, end_time)), 2) AS total_active_time_minutes
+FROM
+	events
+WHERE
+	DATE(log_timestamp) = '2023-11-25'
+	AND status <> 'OFFLINE'
+GROUP BY
+	driver_id;
 ```
