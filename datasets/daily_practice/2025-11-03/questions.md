@@ -6,7 +6,6 @@
 
 | **cancelled_booking_id** | **room_id** | **original_check_in_date** |
 | ------------------------------ | ----------------- | -------------------------------- |
-| 103                            | 20                | 2023-12-15                       |
 | 105                            | 40                | 2024-01-10                       |
 
 ### Tips for Approaching the Problem

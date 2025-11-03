@@ -6,7 +6,6 @@
 
 | **cancelled_booking_id** | **room_id** | **original_check_in_date** |
 | ------------------------------ | ----------------- | -------------------------------- |
-| 103                            | 20                | 2023-12-15                       |
 | 105                            | 40                | 2024-01-10                       |
 
 ### Tips for Approaching the Problem
@@ -25,5 +24,46 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH original_bookings AS (
+    SELECT
+        booking_id,
+        room_id,
+        check_in_date
+    FROM
+        booking_updates
+    WHERE
+        event_type = 'CREATED'
+),
+cancelled_bookings AS (
+    SELECT
+        booking_id
+    FROM
+        booking_updates
+    WHERE
+        event_type = 'CANCELLED'
+),
+lost_bookings AS (
+    SELECT
+        ob.booking_id,
+        ob.room_id,
+        ob.check_in_date AS original_check_in_date
+    FROM
+        original_bookings ob
+    JOIN
+        cancelled_bookings cb ON ob.booking_id = cb.booking_id
+)
+SELECT
+    lost.booking_id AS cancelled_booking_id,
+    lost.room_id,
+    lost.original_check_in_date
+FROM
+    lost_bookings AS lost
+LEFT JOIN
+    original_bookings AS re_bookings
+    ON lost.room_id = re_bookings.room_id
+    AND lost.booking_id != re_bookings.booking_id
+    AND re_bookings.check_in_date >= lost.original_check_in_date
+    AND re_bookings.check_in_date <= TIMESTAMPADD(HOUR, 24, lost.original_check_in_date)
+WHERE
+    re_bookings.booking_id IS NULL;
 ```
