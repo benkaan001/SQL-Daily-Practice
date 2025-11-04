@@ -8,7 +8,7 @@ The final report should show the `song_id`, `artist_id`, the `streak_start_date`
 
 | **song_id** | **artist_id** | **streak_start_date** | **streak_end_date** | **streak_length_days** |
 | ----------------- | ------------------- | --------------------------- | ------------------------- | ---------------------------- |
-| 1001              | 50                  | 2023-10-10                  | 2023-10-13                | 4                            |
+| 1001              | 50                  | 2023-10-10                  | 2023-10-12                | 3                            |
 
 ### Tips for Approaching the Problem
 

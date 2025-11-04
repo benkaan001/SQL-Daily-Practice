@@ -8,7 +8,7 @@ The final report should show the `song_id`, `artist_id`, the `streak_start_date`
 
 | **song_id** | **artist_id** | **streak_start_date** | **streak_end_date** | **streak_length_days** |
 | ----------------- | ------------------- | --------------------------- | ------------------------- | ---------------------------- |
-| 1001              | 50                  | 2023-10-10                  | 2023-10-13                | 4                            |
+| 1001              | 50                  | 2023-10-10                  | 2023-10-12                | 3                            |
 
 ### Tips for Approaching the Problem
 
@@ -25,5 +25,68 @@ The final report should show the `song_id`, `artist_id`, the `streak_start_date`
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH song_counts AS (
+	SELECT
+		song_id,
+		artist_id,
+		DATE(play_timestamp) AS play_date,
+		COUNT(*) AS play_count
+	FROM
+		song_plays
+	GROUP BY
+	 	song_id,
+	 	artist_id,
+	 	DATE(play_timestamp)
+),
+previous_day_counts AS (
+	SELECT
+		song_id,
+		artist_id,
+		play_date,
+		play_count,
+		LAG(play_count, 1) OVER (PARTITION BY song_id, artist_id ORDER BY play_date) AS prev_day_play_count
+	FROM
+		song_counts
+),
+growth_days AS (
+	SELECT
+		song_id,
+		artist_id,
+		play_date,
+		play_count,
+		prev_day_play_count,
+		CASE
+			WHEN play_count >= prev_day_play_count * 2  OR prev_day_play_count IS NULL THEN 1
+			ELSE 0
+		END AS growth_flag
+	FROM
+		previous_day_counts
+),
+consecutive_streaks AS (
+	SELECT
+		song_id,
+		artist_id,
+		play_date,
+		growth_flag,
+		(
+			ROW_NUMBER() OVER (PARTITION BY song_id, artist_id ORDER BY play_date)
+		  - ROW_NUMBER() OVER (PARTITION BY song_id, artist_id, growth_flag ORDER BY play_date)
+		) AS streak_group
+	FROM
+		growth_days
+)
+SELECT
+	song_id,
+    artist_id,
+    MIN(play_date) AS streak_start_date,
+    MAX(play_date) AS streak_end_date,
+    COUNT(*) AS streak_length_days
+FROM
+	consecutive_streaks
+WHERE
+    growth_flag = 1
+GROUP BY
+    song_id, artist_id, growth_flag, streak_group
+HAVING
+    COUNT(*) >= 3;
 ```
