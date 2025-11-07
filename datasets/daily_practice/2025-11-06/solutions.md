@@ -27,5 +27,17 @@ The final report should show the `user_id`, the number of `unique_categories_ret
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	user_id,
+	COUNT(DISTINCT product_category) AS unique_categories_returned,
+	SUM(return_value) AS total_return_value
+FROM
+	product_returns
+WHERE
+	return_timestamp BETWEEN '2023-09-01 00:00:00' AND '2023-11-30 23:59:59'
+GROUP BY
+	user_id
+HAVING
+	unique_categories_returned >= 3
+	AND total_return_value > 500;
 ```
