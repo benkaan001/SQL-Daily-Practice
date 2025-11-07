@@ -4,13 +4,11 @@
 
 **Your Task:** Write a query to find every `PAGE_VIEW` event that resulted in "dropped interest." The report should show the `session_id`, `user_id`, the `page_url` of the page, and the `page_view_timestamp`.
 
-| session_id | user_id | page_url | page_view_timestamp |
-
-| sess_A | 101 | /landing-page-A | 2023-11-29 09:00:00.000 |
-
-| sess_C | 103 | /features | 2023-11-29 09:10:00.000 |
-
-| sess_E | 105 | /product/456 | 2023-11-29 09:20:00.000 |
+| session_id | user_id | page_url        | page_view_timestamp |
+| ---------- | ------- | --------------- | ------------------- |
+| sess_A     | 101     | /landing-page-A | 2023-11-29 09:00:00 |
+| sess_C     | 103     | /features       | 2023-11-29 09:10:00 |
+| sess_E     | 105     | /product/456    | 2023-11-29 09:20:00 |
 
 ### Tips for Approaching the Problem
 
@@ -24,5 +22,25 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH click_events AS (
+	SELECT
+		*,
+        LAG(event_timestamp, 1) OVER (PARTITION BY session_id ORDER BY event_timestamp) AS prev_event_timestamp,
+		LEAD(event_timestamp, 1) OVER (PARTITION BY session_id ORDER BY event_timestamp) AS next_event_timestamp
+	FROM
+		web_session_events
+)
+SELECT
+	session_id,
+	user_id,
+	page_url,
+	event_timestamp AS page_view_timestamp
+FROM
+	click_events
+WHERE
+	event_type = 'PAGE_VIEW'
+	AND (
+		TIMESTAMPDIFF(SECOND, event_timestamp, next_event_timestamp) > 120
+		OR (next_event_timestamp IS NULL AND prev_event_timestamp IS NULL)
+    );
 ```
