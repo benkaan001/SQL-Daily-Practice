@@ -22,5 +22,29 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH failed_renewals AS (
+	SELECT
+		cycle_id, user_id, subscription_id, billing_cycle_start, billing_cycle_end, status, amount
+	FROM
+		subscription_billing_cycles
+	WHERE
+		status = 'FAILED'
+)
+SELECT
+	fr.user_id,
+    fr.subscription_id,
+    fr.billing_cycle_start AS last_failed_cycle_start
+FROM
+	failed_renewals fr
+WHERE NOT EXISTS
+	(
+		SELECT
+			1
+		FROM
+			subscription_billing_cycles sbc
+		WHERE
+			sbc.status = 'PAID'
+			AND sbc.subscription_id = fr.subscription_id
+			AND sbc.cycle_id > fr.cycle_id
+	);
 ```
