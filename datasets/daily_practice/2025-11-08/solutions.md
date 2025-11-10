@@ -33,5 +33,27 @@ An "unhealthy" metric is defined as:
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH degraded_servers AS (
+	SELECT
+		log_id, server_id, log_timestamp, cpu_usage_percent, memory_usage_gb, total_memory_gb, status
+	FROM
+		server_health_logs
+	WHERE
+		cpu_usage_percent > 90
+		OR memory_usage_gb / total_memory_gb > 0.9
+)
+SELECT
+	first_minute.server_id,
+	MIN(first_minute.log_timestamp) AS first_alert_timestamp
+FROM
+	degraded_servers AS first_minute
+JOIN
+	degraded_servers AS second_minute ON first_minute.server_id = second_minute.server_id
+	AND DATE_ADD(first_minute.log_timestamp, INTERVAL 1 MINUTE) = second_minute.log_timestamp
+JOIN
+	degraded_servers AS third_minute ON first_minute.server_id = third_minute.server_id
+	AND DATE_ADD(first_minute.log_timestamp, INTERVAL 2 MINUTE) = third_minute.log_timestamp
+	AND DATE_ADD(first_minute.log_timestamp, INTERVAL 1 MINUTE) = second_minute.log_timestamp
+GROUP BY
+	first_minute.server_id;
 ```
