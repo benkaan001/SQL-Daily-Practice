@@ -28,5 +28,31 @@ The final report should show the `session_id`, `user_id`, and the `checkout_time
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH event_times AS (
+	SELECT
+		session_id,
+		user_id,
+		MIN(CASE WHEN page_url = '/home' THEN event_timestamp END) AS home_time,
+		MIN(CASE WHEN page_url = '/products' THEN event_timestamp END) AS products_time,
+		MIN(CASE WHEN page_url = '/checkout' THEN event_timestamp END) AS checkout_time,
+		MIN(CASE WHEN page_url = '/purchase_complete' THEN event_timestamp END) AS purchase_time
+	FROM
+		web_page_visits
+	GROUP BY
+		session_id,
+		user_id
+)
+SELECT
+	session_id,
+	user_id,
+	checkout_time
+FROM
+	event_times
+WHERE
+	purchase_time IS NULL
+	AND home_time IS NOT NULL
+	AND products_time IS NOT NULL
+	AND checkout_time IS NOT NULL
+	AND checkout_time > products_time
+	AND products_time > home_time;
 ```
