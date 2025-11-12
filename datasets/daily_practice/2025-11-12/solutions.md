@@ -46,5 +46,11 @@ The final report should be ordered by `server_id` and then `start_time`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	server_id,
+	state,
+	log_timestamp AS start_time,
+	LEAD(log_timestamp, 1) OVER (PARTITION BY server_id) AS end_time
+FROM
+	server_state_logs;
 ```
