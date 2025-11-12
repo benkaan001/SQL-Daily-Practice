@@ -21,5 +21,40 @@ The report should show the `user_id` of the earner and their `first_post_timesta
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH first_posts AS (
+    SELECT
+        user_id,
+        MIN(event_timestamp) AS first_post_timestamp
+    FROM
+        user_engagement_events
+    WHERE
+        event_type = 'POST_CREATED'
+    GROUP BY
+        user_id
+),
+likes_received AS (
+    SELECT
+        event_timestamp AS like_timestamp,
+        details->>'$.liked_user_id' AS liked_user_id
+    FROM
+        user_engagement_events
+    WHERE
+        event_type = 'LIKE_GIVEN'
+        AND details->>'$.liked_user_id' IS NOT NULL
+)
+SELECT
+    fp.user_id,
+    fp.first_post_timestamp
+FROM
+    first_posts fp
+JOIN
+    likes_received lr ON fp.user_id = lr.liked_user_id
+WHERE -- 7-day window filter
+    lr.like_timestamp > fp.first_post_timestamp
+    AND lr.like_timestamp <= TIMESTAMPADD(DAY, 7, fp.first_post_timestamp)
+GROUP BY
+    fp.user_id,
+    fp.first_post_timestamp
+HAVING
+    COUNT(*) >= 10;
 ```
