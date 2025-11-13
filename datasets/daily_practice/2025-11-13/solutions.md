@@ -5,12 +5,10 @@
 **Your Task:** Write a query to find all workout streaks of 3 or more days. A "workout day" is any calendar day where a user has at least one `COMPLETED_WORKOUT` event. The report should show the `user_id`, the `streak_start_date` (the first day of the streak), the `streak_end_date` (the last day of the streak), and the `consecutive_days` in the streak.
 
 | user_id | streak_start_date | streak_end_date | consecutive_days |
-
-| 101 | 2023-11-01 | 2023-11-03 | 3 |
-
-| 101 | 2023-11-10 | 2023-11-12 | 3 |
-
-| 102 | 2023-11-05 | 2023-11-08 | 4 |
+| ------- | ----------------- | --------------- | ---------------- |
+| 101     | 2023-11-01        | 2023-11-03      | 3                |
+| 101     | 2023-11-10        | 2023-11-12      | 3                |
+| 102     | 2023-11-05        | 2023-11-08      | 4                |
 
 ### Tips for Approaching the Problem
 
@@ -29,5 +27,34 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH workout_days AS (
+	SELECT DISTINCT
+		user_id,
+		DATE(event_timestamp) AS event_date,
+		ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY DATE(event_timestamp)) AS rn
+	FROM
+		fitness_activity_logs
+	WHERE
+		event_type = 'COMPLETED_WORKOUT'
+),
+streak_groups AS (
+	SELECT
+		user_id,
+		event_date,
+		DATE_SUB(event_date, INTERVAL rn DAY) AS streak_group_id
+	FROM
+		workout_days
+)
+SELECT
+	user_id,
+	MIN(event_date) AS streak_start_date,
+	MAX(event_date) AS streak_end_date,
+	COUNT(*) AS consecutive_days
+FROM
+	streak_groups
+GROUP BY
+	user_id,
+	streak_group_id
+HAVING
+	COUNT(streak_group_id) >= 3;
 ```

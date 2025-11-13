@@ -5,12 +5,10 @@
 **Your Task:** Write a query to find all workout streaks of 3 or more days. A "workout day" is any calendar day where a user has at least one `COMPLETED_WORKOUT` event. The report should show the `user_id`, the `streak_start_date` (the first day of the streak), the `streak_end_date` (the last day of the streak), and the `consecutive_days` in the streak.
 
 | user_id | streak_start_date | streak_end_date | consecutive_days |
-
-| 101 | 2023-11-01 | 2023-11-03 | 3 |
-
-| 101 | 2023-11-10 | 2023-11-12 | 3 |
-
-| 102 | 2023-11-05 | 2023-11-08 | 4 |
+| ------- | ----------------- | --------------- | ---------------- |
+| 101     | 2023-11-01        | 2023-11-03      | 3                |
+| 101     | 2023-11-10        | 2023-11-12      | 3                |
+| 102     | 2023-11-05        | 2023-11-08      | 4                |
 
 ### Tips for Approaching the Problem
 
