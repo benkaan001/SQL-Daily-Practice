@@ -34,5 +34,16 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	player_id,
+	MIN(CASE WHEN achievement_name = 'Troll Slayer' THEN achievement_timestamp END) AS troll_slayer_at,
+	MIN(CASE WHEN achievement_name = 'Dragon Whelpling' THEN achievement_timestamp END) AS dragon_whelpling_at,
+	MIN(CASE WHEN achievement_name = 'Lich Bane' THEN achievement_timestamp END) AS lich_bane_at
+FROM
+	player_achievements
+GROUP BY
+	player_id
+HAVING
+	troll_slayer_at < dragon_whelpling_at
+	AND dragon_whelpling_at < lich_bane_at;
 ```
