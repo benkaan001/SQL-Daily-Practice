@@ -23,7 +23,6 @@ The final report should show the `session_id`, `user_id`, the `funnel_name` ('St
 | sess_A               | 101               | Standard Signup       | 2023-11-17 10:02:00.000   |
 | sess_B               | 102               | Enterprise Signup     | 2023-11-17 11:02:00.000   |
 | sess_F               | 106               | Standard Signup       | 2023-11-17 15:03:00.000   |
-| sess_G               | 102               | Enterprise Signup     | 2023-11-17 16:03:00.000   |
 
 ### Tips for Approaching the Problem
 
@@ -41,5 +40,34 @@ The final report should show the `session_id`, `user_id`, the `funnel_name` ('St
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH session_events AS (
+    SELECT
+        session_id,
+        user_id,
+        MIN(CASE WHEN event_name = 'VIEW_PAGE' AND page_url = '/home' THEN event_timestamp END) AS home_time,
+        MIN(CASE WHEN event_name = 'VIEW_PAGE' AND page_url = '/pricing' THEN event_timestamp END) AS pricing_time,
+        MIN(CASE WHEN event_name = 'CLICK_BUTTON' AND details = 'signup_standard' THEN event_timestamp END) AS standard_signup_time,
+        MIN(CASE WHEN event_name = 'VIEW_PAGE' AND page_url = '/enterprise' THEN event_timestamp END) AS enterprise_time,
+        MIN(CASE WHEN event_name = 'FORM_SUBMIT' AND details = 'contact_sales' THEN event_timestamp END) AS contact_sales_time
+    FROM
+        user_page_events
+    GROUP BY
+        session_id, user_id
+)
+SELECT
+    session_id,
+    user_id,
+    CASE
+        WHEN home_time < pricing_time AND pricing_time < standard_signup_time THEN 'Standard Signup'
+        WHEN home_time < enterprise_time AND enterprise_time < contact_sales_time THEN 'Enterprise Signup'
+    END AS funnel_name,
+    CASE
+        WHEN home_time < pricing_time AND pricing_time < standard_signup_time THEN standard_signup_time
+        WHEN home_time < enterprise_time AND enterprise_time < contact_sales_time THEN contact_sales_time
+    END AS completion_time
+FROM
+    session_events
+WHERE
+    (home_time < pricing_time AND pricing_time < standard_signup_time)
+    OR (home_time < enterprise_time AND enterprise_time < contact_sales_time);
 ```

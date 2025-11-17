@@ -23,7 +23,6 @@ The final report should show the `session_id`, `user_id`, the `funnel_name` ('St
 | sess_A               | 101               | Standard Signup       | 2023-11-17 10:02:00.000   |
 | sess_B               | 102               | Enterprise Signup     | 2023-11-17 11:02:00.000   |
 | sess_F               | 106               | Standard Signup       | 2023-11-17 15:03:00.000   |
-| sess_G               | 102               | Enterprise Signup     | 2023-11-17 16:03:00.000   |
 
 ### Tips for Approaching the Problem
 
