@@ -29,5 +29,42 @@ A `HIGH_SCORE_BEATEN` event is associated with a `LEVEL_COMPLETE` event if it oc
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH high_scores AS (
+	SELECT
+		user_id,
+      level_id,
+      event_timestamp,
+      score
+	FROM
+		game_logs
+	WHERE
+		event_type = 'HIGH_SCORE_BEATEN'
+),
+completions AS (
+	SELECT
+		user_id,
+      level_id,
+      event_timestamp,
+      event_type,
+      score,
+		ROW_NUMBER() OVER (PARTITION BY user_id, level_id ORDER BY event_timestamp) AS rn
+	FROM
+		game_logs
+	WHERE
+		event_type = 'LEVEL_COMPLETE'
+)
+SELECT
+	c.user_id,
+	c.level_id,
+	c.event_timestamp AS first_completion_time,
+	hs.score AS initial_high_score
+FROM
+	high_scores hs
+RIGHT JOIN
+ 	completions c ON c.user_id = hs.user_id
+ 	AND c.level_id = hs.level_id
+	AND hs.event_timestamp >= c.event_timestamp
+	AND hs.event_timestamp < TIMESTAMPADD(SECOND, 10, c.event_timestamp)
+WHERE
+	c.rn = 1;
 ```
