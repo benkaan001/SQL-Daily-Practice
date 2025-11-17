@@ -26,5 +26,22 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH running_totals AS (
+	SELECT
+		product_id,
+		event_timestamp,
+		quantity,
+		SUM(quantity) OVER (PARTITION BY product_id ORDER BY event_timestamp) AS resulting_stock
+	FROM
+		inventory_ledger
+)
+SELECT
+	product_id,
+	event_timestamp,
+	ABS(quantity) AS quantity_sold,
+	resulting_stock
+FROM
+	running_totals
+WHERE
+	resulting_stock < 0;
 ```
