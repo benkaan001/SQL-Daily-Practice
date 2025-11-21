@@ -9,6 +9,7 @@ The final report should show the `user_id` and the `session_start_time` (the tim
 | **user_id** | **session_start_time** |
 | ----------------- | ---------------------------- |
 | 102               | 2023-11-20 11:00:00.000      |
+| 102               | 2023-11-20 11:15:00.000      |
 | 105               | 2023-11-20 16:00:00.000      |
 
 ### Tips for Approaching the Problem

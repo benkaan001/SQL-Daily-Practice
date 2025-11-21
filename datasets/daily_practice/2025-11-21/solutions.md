@@ -9,6 +9,7 @@ The final report should show the `user_id` and the `session_start_time` (the tim
 | **user_id** | **session_start_time** |
 | ----------------- | ---------------------------- |
 | 102               | 2023-11-20 11:00:00.000      |
+| 102               | 2023-11-20 11:15:00.000      |
 | 105               | 2023-11-20 16:00:00.000      |
 
 ### Tips for Approaching the Problem
@@ -23,5 +24,27 @@ The final report should show the `user_id` and the `session_start_time` (the tim
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ordered_events AS (
+	SELECT
+		log_id,
+		user_id,
+		event_timestamp AS session_start_time,
+		event_type,
+		ip_address,
+		details,
+		LEAD(event_type, 1) OVER (PARTITION BY user_id ORDER BY event_timestamp) AS next_event_type
+	FROM
+		user_access_logs
+)
+SELECT
+	user_id,
+	session_start_time
+FROM
+	ordered_events
+WHERE
+	event_type = 'LOGIN'
+	AND (next_event_type <> 'LOGOUT' OR next_event_type IS NULL)
+ORDER BY
+	user_id,
+   session_start_time;
 ```
