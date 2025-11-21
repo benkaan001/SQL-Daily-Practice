@@ -28,5 +28,38 @@ The final report should show the `campaign_id`, the `channel` that experienced t
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH campaigns AS (
+	SELECT DISTINCT
+		DATE(change_timestamp) AS change_date,
+		campaign_id,
+		channel,
+		ROW_NUMBER() OVER (PARTITION BY campaign_id ORDER BY change_timestamp) AS rn
+	FROM
+		marketing_budget_allocation
+	WHERE
+		budget_change > 0
+),
+campaign_groups AS (
+	SELECT
+		campaign_id,
+		change_date,
+		channel,
+		DATE_SUB(change_date, INTERVAL rn DAY) AS streak_group
+	FROM
+		campaigns
+
+)
+SELECT
+	campaign_id,
+	channel,
+	MIN(change_date) AS streak_start_date,
+	MAX(change_date) AS streak_end_date
+FROM
+	campaign_groups
+GROUP BY
+	campaign_id,
+	channel,
+	streak_group
+HAVING
+	COUNT(*) >= 3;
 ```
