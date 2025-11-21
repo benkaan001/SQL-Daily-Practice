@@ -20,7 +20,7 @@ The final report should show the `session_id`, `user_id`, the calculated `avg_dw
 | **session_id** | **user_id** | **avg_dwell_time** | **products_viewed_count** | **engagement_segment** |
 | -------------------- | ----------------- | ------------------------ | ------------------------------- | ---------------------------- |
 | sess_A               | 101               | 10.00                    | 1                               | Rapid Browser                |
-| sess_B               | 102               | 107.50                   | 1                               | High Dwell Low Depth         |
+| sess_B               | 102               | 111.25                   | 1                               | High Dwell Low Depth         |
 | sess_C               | 101               | 7.00                     | 3                               | Rapid Browser                |
 | sess_D               | 103               | 180.00                   | 0                               | High Dwell Low Depth         |
 | sess_E               | 104               | 1.00                     | 4                               | Rapid Browser                |
@@ -38,5 +38,29 @@ The final report should show the `session_id`, `user_id`, the calculated `avg_dw
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH sessions AS (
+	SELECT
+		session_id,
+		user_id,
+		AVG(duration_seconds) AS avg_dwell_time,
+		SUM(CASE WHEN page_url LIKE '%/products%' THEN 1 ELSE 0 END) AS products_viewed_count
+	FROM
+		page_visits
+	GROUP BY
+		session_id,
+		user_id
+)
+SELECT
+	session_id,
+	user_id,
+	ROUND(avg_dwell_time, 2) AS avg_dwell_time,
+	products_viewed_count,
+	CASE
+		WHEN products_viewed_count >= 3 AND avg_dwell_time >= 15 THEN 'Deep Viewer'
+		WHEN products_viewed_count < 3 AND avg_dwell_time >= 30 THEN 'High Dwell Low Depth'
+		ELSE 'Rapid Browser'
+	END AS engagement_segment
+
+FROM
+	sessions;
 ```
