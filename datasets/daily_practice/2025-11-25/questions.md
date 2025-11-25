@@ -11,11 +11,11 @@
 
 The report should only include channels where `avg_short_term_spend` is greater than zero and be ordered by the `value_multiplier` in descending order.
 
-| **acquisition_channel** | **total_users** | **avg_short_term_spend** | **avg_long_term_spend** | **value_multiplier** |
-| ----------------------------- | --------------------- | ------------------------------ | ----------------------------- | -------------------------- |
-| Referral                      | 1                     | 5.00                           | 0.00                          | 0.00                       |
-| Paid Ad                       | 1                     | 75.00                          | 0.00                          | 0.00                       |
-| Organic                       | 2                     | 87.50                          | 0.00                          | 0.00                       |
+| acquisition_channel | total_users | avg_short_term_spend | avg_long_term_spend | value_multiplier |
+| ------------------- | ----------- | -------------------- | ------------------- | ---------------- |
+| Organic             | 2           | 55.00                | 60.00               | 1.09             |
+| Paid Ad             | 1           | 85.00                | 0.00                | 0.00             |
+| Referral            | 1           | 5.00                 | 0.00                | 0.00             |
 
 ### Tips for Approaching the Problem
 

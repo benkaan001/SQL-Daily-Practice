@@ -11,11 +11,11 @@
 
 The report should only include channels where `avg_short_term_spend` is greater than zero and be ordered by the `value_multiplier` in descending order.
 
-| **acquisition_channel** | **total_users** | **avg_short_term_spend** | **avg_long_term_spend** | **value_multiplier** |
-| ----------------------------- | --------------------- | ------------------------------ | ----------------------------- | -------------------------- |
-| Referral                      | 1                     | 5.00                           | 0.00                          | 0.00                       |
-| Paid Ad                       | 1                     | 75.00                          | 0.00                          | 0.00                       |
-| Organic                       | 2                     | 87.50                          | 0.00                          | 0.00                       |
+| acquisition_channel | total_users | avg_short_term_spend | avg_long_term_spend | value_multiplier |
+| ------------------- | ----------- | -------------------- | ------------------- | ---------------- |
+| Organic             | 2           | 55.00                | 60.00               | 1.09             |
+| Paid Ad             | 1           | 85.00                | 0.00                | 0.00             |
+| Referral            | 1           | 5.00                 | 0.00                | 0.00             |
 
 ### Tips for Approaching the Problem
 
@@ -30,5 +30,51 @@ The report should only include channels where `avg_short_term_spend` is greater 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+
+WITH spending AS (
+	SELECT
+		ur.user_id,
+		ur.registration_date,
+		ur.acquisition_channel,
+		ut.transaction_date,
+		ut.transaction_amount,
+		CASE WHEN DATEDIFF(ut.transaction_date, ur.registration_date) <= 30 THEN transaction_amount END AS short_term_spend,
+		CASE WHEN DATEDIFF(ut.transaction_date, ur.registration_date) BETWEEN 91 AND 180 THEN transaction_amount END AS long_term_spend
+	FROM
+		user_registration ur
+	JOIN
+		user_transactions ut ON ut.user_id = ur.user_id
+),
+aggregated_spend AS (
+	SELECT
+		user_id,
+		acquisition_channel,
+		SUM(short_term_spend) AS short_term_spend,
+		SUM(long_term_spend) AS long_term_spend
+	FROM
+		spending
+	GROUP BY
+		user_id,
+      acquisition_channel
+),
+average_spending AS (
+	SELECT
+		acquisition_channel,
+		COUNT(DISTINCT user_id) AS total_users,
+		ROUND(IFNULL(AVG(short_term_spend), 0), 2)AS avg_short_term_spend,
+		ROUND(IFNULL(AVG(long_term_spend), 0), 2)AS avg_long_term_spend,
+		ROUND(IFNULL(AVG(long_term_spend) / AVG(short_term_spend), 0),2) AS value_multiplier
+	FROM
+		aggregated_spend
+	GROUP BY
+		acquisition_channel
+)
+SELECT
+	acquisition_channel, total_users, avg_short_term_spend, avg_long_term_spend, value_multiplier
+FROM
+	average_spending
+WHERE
+	avg_short_term_spend > 0
+ORDER BY
+	value_multiplier DESC;
 ```
