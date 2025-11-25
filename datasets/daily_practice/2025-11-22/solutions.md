@@ -31,5 +31,33 @@ The final report should show the `session_id`, `user_id`, the `purchase_timestam
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH user_paths AS (
+    SELECT
+ 		event_id, user_id, session_id, event_timestamp, event_type, page_url, conversion_goal,
+        LEAD(event_id, 1) OVER (PARTITION BY session_id ORDER BY event_timestamp) AS next_event_id
+    FROM
+        user_conversion_paths
+)
+SELECT
+    path1.session_id,
+    path1.user_id,
+    path4.event_timestamp AS purchase_timestamp,
+    TIMESTAMPDIFF(SECOND, path1.event_timestamp, path4.event_timestamp) AS time_to_conversion_seconds
+FROM
+    user_paths path1
+JOIN
+    user_paths path2
+    ON path2.session_id = path1.session_id AND path2.event_id = path1.next_event_id
+JOIN
+    user_paths path3
+    ON path3.session_id = path2.session_id AND path3.event_id = path2.next_event_id
+JOIN
+    user_paths path4
+    ON path4.session_id = path3.session_id AND path4.event_id = path3.next_event_id
+WHERE
+    path1.event_type = 'VIEW_PAGE' AND path1.page_url = '/home'
+    AND path2.event_type = 'CLICK_CTA' AND path2.page_url = '/home'
+    AND path3.event_type = 'VIEW_PAGE' AND path3.page_url = '/checkout'
+    AND path4.event_type = 'PURCHASE' AND path4.page_url = '/checkout'
+    AND path4.conversion_goal = 'Goal_A';
 ```
