@@ -13,7 +13,7 @@ The final report should show the `employee_id`, the non-compliant `cert_name`, t
 | **employee_id** | **cert_name** | **latest_status** | **compliance_status** |
 | --------------------- | ------------------- | ----------------------- | --------------------------- |
 | 101                   | First Aid (CPR)     | Active                  | EXPIRED                     |
-| 102                   | Data Security       | Expired                 | EXPIRED                     |
+| 102                   | Data Security       | Active                  | EXPIRED                     |
 | 103                   | IT Security Lvl 1   | Revoked                 | INVALID                     |
 | 105                   | First Aid (CPR)     | Pending                 | INVALID                     |
 | 105                   | Safety Protocol     | Pending                 | INVALID                     |
@@ -30,5 +30,37 @@ The final report should show the `employee_id`, the non-compliant `cert_name`, t
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH certifications AS (
+	SELECT
+		log_id, employee_id, cert_name, issue_date, expiry_date, status,
+		ROW_NUMBER() OVER (PARTITION BY employee_id, cert_name ORDER BY expiry_date DESC) AS rn
+	FROM
+		employee_certifications
+),
+certification_status AS (
+	SELECT
+		employee_id,
+		cert_name,
+		CASE WHEN rn = 1 THEN status END AS latest_status,
+		CASE
+			WHEN rn = 1 AND status <> 'Active' THEN 'INVALID'
+			ELSE 'EXPIRED'
+		END AS compliance_status
+
+	FROM
+		certifications
+
+	WHERE
+		expiry_date  <= '2024-01-01'
+	    OR status <> 'Active'
+)
+SELECT
+	employee_id,
+	cert_name,
+	latest_status,
+	compliance_status
+FROM
+	certification_status
+WHERE
+	latest_status IS NOT NULL;
 ```

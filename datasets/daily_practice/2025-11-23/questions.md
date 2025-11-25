@@ -13,10 +13,11 @@ The final report should show the `employee_id`, the non-compliant `cert_name`, t
 | **employee_id** | **cert_name** | **latest_status** | **compliance_status** |
 | --------------------- | ------------------- | ----------------------- | --------------------------- |
 | 101                   | First Aid (CPR)     | Active                  | EXPIRED                     |
-| 102                   | Data Security       | Expired                 | EXPIRED                     |
+| 102                   | Data Security       | Active                  | EXPIRED                     |
 | 103                   | IT Security Lvl 1   | Revoked                 | INVALID                     |
 | 105                   | First Aid (CPR)     | Pending                 | INVALID                     |
 | 105                   | Safety Protocol     | Pending                 | INVALID                     |
+
 
 ### Tips for Approaching the Problem
 
