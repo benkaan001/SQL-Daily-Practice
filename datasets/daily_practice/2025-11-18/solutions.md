@@ -27,5 +27,30 @@ The final report should show the `user_id`, `session_id`, `element_id`, the `tim
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH interactions AS (
+	SELECT
+		interaction_id,
+		user_id,
+		session_id,
+		interaction_timestamp,
+		interaction_type,
+		element_id,
+		LEAD(interaction_type, 1) OVER (PARTITION BY user_id, session_id, element_id ORDER BY interaction_timestamp) AS next_interaction,
+		LEAD(interaction_timestamp, 1) OVER (PARTITION BY user_id, session_id, element_id ORDER BY interaction_timestamp) AS next_interaction_timestamp
+	FROM
+		ui_interaction_logs
+)
+SELECT
+	user_id,
+	session_id,
+	element_id,
+	interaction_timestamp AS timestamp_of_first_click,
+	next_interaction_timestamp AS timestamp_of_double_click,
+	TIMESTAMPDIFF(MICROSECOND, interaction_timestamp, next_interaction_timestamp) / 1000 AS time_diff_ms
+FROM
+	interactions
+WHERE
+	interaction_type = 'CLICK'
+	AND next_interaction = 'CLICK'
+	AND TIMESTAMPDIFF(MICROSECOND, interaction_timestamp, next_interaction_timestamp) / 1000 < 500;
 ```
