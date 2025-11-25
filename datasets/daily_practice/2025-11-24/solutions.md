@@ -13,12 +13,12 @@
 
 The final report should show the `stage_name` and the `avg_duration_seconds` for that stage, ordered by duration (descending).
 
-| **stage_name**         | **avg_duration_seconds** |
-| ---------------------------- | ------------------------------ |
-| Payment Entry Friction       | 143.50                         |
-| Shipping Entry Friction      | 43.75                          |
-| Checkout Initiation Friction | 30.00                          |
-| Purchase Finalization Time   | 38.75                          |
+| stage_name                   | avg_duration_seconds |
+| ---------------------------- | -------------------- |
+| Shipping Entry Friction      | 74.00                |
+| Payment Entry Friction       | 62.50                |
+| Checkout Initiation Friction | 39.00                |
+| Purchase Finalization Time   | 23.33                |
 
 ### Tips for Approaching the Problem
 
@@ -31,5 +31,30 @@ The final report should show the `stage_name` and the `avg_duration_seconds` for
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH funnels AS (
+	SELECT
+		session_id,
+		event_type,
+		event_timestamp,
+		LEAD(event_type, 1) OVER (PARTITION BY session_id ORDER BY event_timestamp) AS next_event,
+		LEAD(event_timestamp, 1) OVER (PARTITION BY session_id ORDER BY event_timestamp) AS next_event_timestamp
+	FROM
+		checkout_funnel_events
+)
+SELECT
+	CASE
+		WHEN event_type = 'VIEW_CART' AND next_event = 'START_CHECKOUT' THEN 'Checkout Initiation Friction'
+		WHEN event_type = 'START_CHECKOUT' AND next_event = 'ENTER_SHIPPING' THEN 'Shipping Entry Friction'
+		WHEN event_type = 'ENTER_SHIPPING' AND next_event = 'ENTER_PAYMENT' THEN 'Payment Entry Friction'
+		WHEN event_type = 'ENTER_PAYMENT' AND next_event = 'PURCHASE_COMPLETE' THEN 'Purchase Finalization Time'
+	END AS stage_name,
+	ROUND(AVG(TIMESTAMPDIFF(SECOND, event_timestamp, next_event_timestamp)), 2) AS avg_duration_seconds
+FROM
+	funnels
+WHERE
+	next_event IS NOT NULL AND next_event_timestamp IS NOT NULL
+GROUP BY
+	stage_name
+ORDER BY
+	avg_duration_seconds DESC;
 ```

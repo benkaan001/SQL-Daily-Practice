@@ -13,12 +13,12 @@
 
 The final report should show the `stage_name` and the `avg_duration_seconds` for that stage, ordered by duration (descending).
 
-| **stage_name**         | **avg_duration_seconds** |
-| ---------------------------- | ------------------------------ |
-| Payment Entry Friction       | 143.50                         |
-| Shipping Entry Friction      | 43.75                          |
-| Checkout Initiation Friction | 30.00                          |
-| Purchase Finalization Time   | 38.75                          |
+| stage_name                   | avg_duration_seconds |
+| ---------------------------- | -------------------- |
+| Shipping Entry Friction      | 74.00                |
+| Payment Entry Friction       | 62.50                |
+| Checkout Initiation Friction | 39.00                |
+| Purchase Finalization Time   | 23.33                |
 
 ### Tips for Approaching the Problem
 
