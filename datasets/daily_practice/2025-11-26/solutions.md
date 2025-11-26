@@ -12,7 +12,7 @@ The final report should show the `log_id` of the violating event, the `user_id`,
 
 | **log_id** | **user_id** | **event_timestamp** | **current_score** | **violation_type** |
 | ---------------- | ----------------- | ------------------------- | ----------------------- | ------------------------ |
-| 8                | 102               | 2023-12-01 10:59:00.000   | 20                      | TIME_REVERSAL            |
+| 7                | 102               | 2023-12-01 10:59:00.000   | 20                      | TIME_REVERSAL            |
 | 11               | 103               | 2023-12-02 12:02:00.000   | 200                     | IMPOSSIBLE_SCORE         |
 | 15               | 104               | 2023-12-02 14:02:00.000   | 60                      | SCORE_REVERSAL           |
 
@@ -31,5 +31,36 @@ The final report should show the `log_id` of the violating event, the `user_id`,
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ordered_events AS (
+	SELECT
+		*,
+		LAG(event_timestamp, 1) OVER (PARTITION BY user_id ORDER BY log_id, event_timestamp) AS previous_event_timestamp,
+		LAG(current_score, 1) OVER (PARTITION BY user_id ORDER BY log_id, event_timestamp) AS previous_score
+	FROM
+		user_action_log
+),
+violations AS (
+	SELECT
+		log_id,
+		user_id,
+		event_timestamp,
+		current_score,
+		CASE
+			WHEN previous_event_timestamp > event_timestamp THEN 'TIME_REVERSAL'
+			WHEN current_score > (previous_score + 100) THEN 'IMPOSSIBLE_SCORE'
+			WHEN current_score < previous_score THEN 'SCORE_REVERSAL'
+		END AS violation_type
+	FROM
+		ordered_events
+)
+SELECT
+	log_id,
+	user_id,
+	event_timestamp,
+	current_score,
+	violation_type
+FROM
+	violations
+WHERE
+	violation_type IS NOT NULL;
 ```

@@ -12,7 +12,7 @@ The final report should show the `log_id` of the violating event, the `user_id`,
 
 | **log_id** | **user_id** | **event_timestamp** | **current_score** | **violation_type** |
 | ---------------- | ----------------- | ------------------------- | ----------------------- | ------------------------ |
-| 8                | 102               | 2023-12-01 10:59:00.000   | 20                      | TIME_REVERSAL            |
+| 7                | 102               | 2023-12-01 10:59:00.000   | 20                      | TIME_REVERSAL            |
 | 11               | 103               | 2023-12-02 12:02:00.000   | 200                     | IMPOSSIBLE_SCORE         |
 | 15               | 104               | 2023-12-02 14:02:00.000   | 60                      | SCORE_REVERSAL           |
 
