@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS daily_practice_20251128_schema;
 USE daily_practice_20251128_schema;
 
 -- This table logs background processing jobs executed on various servers.
--- Each server is single-threaded and should strictly run only one job at a time.
+-- Each server is single-threaded and should strictly run only one job at a time
 CREATE TABLE server_job_log (
     job_id INT PRIMARY KEY AUTO_INCREMENT,
     server_id VARCHAR(50),
