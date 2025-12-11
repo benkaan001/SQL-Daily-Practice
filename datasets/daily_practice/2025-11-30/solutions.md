@@ -26,5 +26,54 @@ The final report should show the `server_name`, the `peak_concurrent_connections
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH events AS (
+    -- Unpivot the data: Create a "+1" event for every connect
+    -- and a "-1" event for every disconnect.
+    SELECT 
+        server_name, 
+        connect_time AS event_time, 
+        1 AS change_value 
+    FROM db_connections
+    
+    UNION ALL
+    
+    SELECT 
+        server_name, 
+        disconnect_time AS event_time, 
+        -1 AS change_value 
+    FROM db_connections
+),
+running_concurrency AS (
+    -- Calculate the running total of active connections over time
+    SELECT
+        server_name,
+        event_time,
+        SUM(change_value) OVER (
+            PARTITION BY server_name 
+            ORDER BY event_time, change_value DESC -- Process starts (+1) before ends (-1) if times match
+        ) AS current_connections
+    FROM 
+        events
+),
+ranked_peaks AS (
+    -- Rank the moments to find the highest connection count for each server
+    SELECT
+        server_name,
+        event_time AS peak_start_time,
+        current_connections AS peak_concurrent_connections,
+        ROW_NUMBER() OVER (
+            PARTITION BY server_name 
+            ORDER BY current_connections DESC, event_time ASC
+        ) AS rn
+    FROM
+        running_concurrency
+)
+SELECT
+    server_name,
+    peak_concurrent_connections,
+    peak_start_time
+FROM
+    ranked_peaks
+WHERE
+    rn = 1;
 ```
