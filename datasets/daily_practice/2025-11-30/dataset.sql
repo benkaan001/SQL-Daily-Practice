@@ -9,7 +9,8 @@ CREATE TABLE db_connections (
     disconnect_time DATETIME(3)
 );
 
-INSERT INTO db_connections (server_name, connect_time, disconnect_time) VALUES
+-- Corrected INSERT statement: Added 'connection_id' to the column list to match the 4 values provided.
+INSERT INTO db_connections (connection_id, server_name, connect_time, disconnect_time) VALUES
 -- Server 'DB-01': Peak concurrency test
 -- 10:00:00: C1 starts (Count: 1)
 -- 10:05:00: C2 starts (Count: 2)
