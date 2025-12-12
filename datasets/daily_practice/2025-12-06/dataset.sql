@@ -1,23 +1,23 @@
 CREATE DATABASE IF NOT EXISTS daily_practice_20251206_schema;
 USE daily_practice_20251206_schema;
 
-CREATE TABLE user_logins (
+-- Raw clickstream data. We need to reconstruct user sessions from this stream.
+CREATE TABLE clickstream (
+    click_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
-    login_time DATETIME
+    timestamp DATETIME,
+    url VARCHAR(255)
 );
 
-CREATE TABLE subscriptions (
-    user_id INT,
-    status ENUM('ACTIVE', 'CANCELLED'),
-    monthly_fee DECIMAL(10, 2)
-);
+INSERT INTO clickstream (user_id, timestamp, url) VALUES
+-- User 101: One continuous session
+(101, '2023-12-06 08:00:00', '/home'),
+(101, '2023-12-06 08:15:00', '/products'),
+(101, '2023-12-06 08:29:00', '/checkout'), -- < 30 mins gap
 
-INSERT INTO subscriptions (user_id, status, monthly_fee) VALUES
-(101, 'ACTIVE', 10.00),
-(102, 'ACTIVE', 20.00),
-(103, 'CANCELLED', 10.00);
-
-INSERT INTO user_logins (user_id, login_time) VALUES
-(101, '2023-12-01 10:00:00'), -- Active recently
-(102, '2023-09-01 10:00:00'), -- Active sub, but hasn't logged in for > 90 days
-(103, '2023-11-20 10:00:00');
+-- User 102: Two distinct sessions (gap > 30 mins)
+(102, '2023-12-06 09:00:00', '/home'),
+(102, '2023-12-06 09:05:00', '/blog'),
+-- 55 minute gap here --
+(102, '2023-12-06 10:00:00', '/home'), -- New session starts
+(102, '2023-12-06 10:05:00', '/about');
