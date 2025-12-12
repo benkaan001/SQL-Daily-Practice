@@ -21,5 +21,31 @@ The report should show the `product_id`, the `attack_start_time` (the timestamp 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH review_squences AS (
+	SELECT 
+		product_id,
+		review_timestamp,
+		LEAD(review_timestamp, 4) OVER (PARTITION BY product_id ORDER BY review_timestamp) AS next_review_timestamp
+	FROM
+		product_reviews
+	WHERE
+		rating = 1
+),
+review_times AS (
+	SELECT
+		product_id,
+		review_timestamp,
+		next_review_timestamp, 
+		TIMESTAMPDIFF(MINUTE, review_timestamp, next_review_timestamp) AS time_since
+	FROM
+		review_squences 
+)
+SELECT 
+	product_id, 
+	review_timestamp AS attack_start_time,
+	next_review_timestamp AS attack_end_time
+FROM
+	review_times 
+WHERE
+	time_since <= 60;
 ```
