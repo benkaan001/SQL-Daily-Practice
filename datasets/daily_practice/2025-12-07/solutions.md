@@ -1,19 +1,20 @@
-## Puzzle: The Stuck Red Light
+## Puzzle: The Double-Booking Audit
 
-**The Scenario:** Smart city sensors log the state of traffic lights every few minutes. A light is considered "stuck" if it reports the same color consecutively for more than 10 minutes spanning multiple logs.
+**The Scenario:** The scheduling system crashed, and manual entries resulted in some employees being scheduled for two different roles at the same time. This creates "ghost shifts" where no one shows up.
 
-**Your Task:** Identify sensors that have reported 'RED' for a continuous span of more than 10 minutes.
+**Your Task:** Write a query to identify any employee who has overlapping shifts. An overlap occurs if the start of one shift is strictly before the end of another shift, and the end of that shift is strictly after the start of the other.
 
-Use the difference between the `MIN(log_time)` and `MAX(log_time)` of consecutive 'RED' blocks.
+The report should show the `employee_id`, `shift1_start`, `shift1_end`, `shift2_start`, and `shift2_end` for the conflicting pair.
 
-| **sensor_id** | **stuck_color** | **duration_minutes** |
-| ------------------- | --------------------- | -------------------------- |
-| 2                   | RED                   | 10                         |
+| **employee_id** | **shift1_start** | **shift1_end** | **shift2_start** | **shift2_end** |
+| --------------------- | ---------------------- | -------------------- | ---------------------- | -------------------- |
+| 102                   | 2023-12-07 09:00:00    | 2023-12-07 14:00:00  | 2023-12-07 13:00:00    | 2023-12-07 17:00:00  |
 
-### Tips
+### Tips for Approaching the Problem
 
-1. **Gaps and Islands:** This is a grouping problem. You need to group consecutive rows that have the same color.
-2. **Aggregation:** `GROUP BY` the streak and calculate `TIMESTAMPDIFF`.
+1. **Self-Join:** Join the table to itself (`s1` and `s2`) on `employee_id`.
+2. **Avoid Duplicates:** Ensure `s1.assignment_id < s2.assignment_id` to avoid comparing a shift to itself or listing the same pair twice.
+3. **Overlap Logic:** The condition for overlap is `s1.shift_start < s2.shift_end AND s1.shift_end > s2.shift_start`.
 
 **Your Solution:**
 
