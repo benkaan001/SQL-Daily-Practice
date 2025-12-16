@@ -29,5 +29,20 @@ The report should show:
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT 
+    oi1.product_name AS product_a,
+    oi2.product_name AS product_b,
+    COUNT(DISTINCT oi1.order_id) AS co_occurrence_count
+FROM 
+    order_items oi1
+JOIN 
+    order_items oi2 ON oi1.order_id = oi2.order_id
+    AND oi1.product_name < oi2.product_name 
+GROUP BY 
+    oi1.product_name, 
+    oi2.product_name
+HAVING 
+    COUNT(DISTINCT oi1.order_id) >= 3 
+ORDER BY 
+    co_occurrence_count DESC;
 ```
