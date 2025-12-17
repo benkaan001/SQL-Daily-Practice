@@ -23,5 +23,22 @@ The report should show the `employee_id`, the `shift_1_end` time, the `shift_2_s
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH second_shifts AS (
+	SELECT
+		employee_id,
+		shift_end AS shift_1_end,
+		LEAD(shift_start, 1) OVER (PARTITION BY employee_id ORDER BY shift_start) AS shift_2_start
+	FROM
+		employee_shifts
+)
+SELECT
+	employee_id,
+	shift_1_end,
+	shift_2_start,
+	ROUND(TIMESTAMPDIFF(MINUTE, shift_1_end, shift_2_start) / 60, 2) AS rest_duration_hours
+FROM
+	second_shifts
+WHERE
+	TIMESTAMPDIFF(MINUTE, shift_1_end, shift_2_start) / 60 > 0
+	AND TIMESTAMPDIFF(MINUTE, shift_1_end, shift_2_start) / 60 < 9;
 ```
