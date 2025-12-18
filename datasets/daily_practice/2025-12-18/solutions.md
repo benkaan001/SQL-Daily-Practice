@@ -19,5 +19,15 @@ The report should show the `user_id`, the `total_emails_sent` to them, and their
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	user_id,
+	SUM(CASE WHEN event_type = 'SENT' THEN 1 END) AS total_emails_sent,
+	MAX(event_timestamp) AS last_sent_timestamp
+FROM
+	email_engagement
+GROUP BY 
+	user_id
+HAVING 
+	total_emails_sent >= 3
+	AND SUM(CASE WHEN event_type != 'SENT' THEN 1 ELSE 0 END) = 0;
 ```
