@@ -22,6 +22,24 @@ The report should show the `rep_id`, their `quota_amount`, and the `attainment_d
 **Your Solution:**
 
 ```sql
--- Write your solution here
-
+WITH cumulative_sales AS (
+	SELECT 
+		*, 
+		SUM(sale_amount) OVER (PARTITION BY rep_id ORDER BY sale_date) AS total_sales
+	FROM
+		sales_transactions
+)
+SELECT 
+	cs.rep_id, 
+	sq.quota_amount,
+	MIN(cs.sale_date) AS attainment_date 
+FROM
+	cumulative_sales cs  
+JOIN 
+	sales_quotas sq ON cs.rep_id  = sq.rep_id 
+WHERE 
+	cs.total_sales >= sq.quota_amount 
+GROUP BY 
+	cs.rep_id,
+	sq.quota_amount; 
 ```
