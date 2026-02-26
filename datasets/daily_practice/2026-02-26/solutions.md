@@ -34,5 +34,54 @@ This is a classic "Gaps and Islands" problem that requires finding the boundarie
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH running_boundaries AS (
+    SELECT 
+        product_id,
+        start_date,
+        end_date,
+        MAX(end_date) OVER (
+            PARTITION BY product_id 
+            ORDER BY start_date 
+            ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+        ) AS max_prev_end_date
+    FROM 
+        product_promotions
+),
+new_block_flags AS (
+    SELECT 
+        product_id,
+        start_date,
+        end_date,
+        CASE 
+            WHEN max_prev_end_date IS NULL THEN 1
+            WHEN start_date > DATE_ADD(max_prev_end_date, INTERVAL 1 DAY) THEN 1
+            ELSE 0 
+        END AS is_new_block
+    FROM 
+        running_boundaries
+),
+block_identifiers AS (
+    SELECT 
+        product_id,
+        start_date,
+        end_date,
+        SUM(is_new_block) OVER (
+            PARTITION BY product_id 
+            ORDER BY start_date
+        ) AS block_id
+    FROM 
+        new_block_flags
+)
+SELECT 
+    product_id,
+    MIN(start_date) AS promo_block_start,
+    MAX(end_date) AS promo_block_end
+FROM 
+    block_identifiers
+GROUP BY 
+    product_id, 
+    block_id
+ORDER BY 
+    product_id, 
+    promo_block_start;
 ```
