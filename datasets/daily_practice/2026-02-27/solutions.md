@@ -35,4 +35,86 @@ The report should show the `user_id`, the `jan_mrr` (if any, else 0), the `feb_m
 
 ```sql
 -- Write your solution here
+WITH jan_subscriptions AS (
+	SELECT 
+		user_id,
+		mrr_amount AS jan_mrr
+	FROM
+		user_subscriptions
+	WHERE
+		MONTH(billing_month) = 01
+		AND YEAR(billing_month) = 2026
+),
+feb_subscriptions AS (
+		SELECT 
+		user_id,
+		mrr_amount AS feb_mrr
+	FROM
+		user_subscriptions
+	WHERE
+		MONTH(billing_month) = 02
+		AND YEAR(billing_month) = 2026
+),
+all_users AS (
+	SELECT DISTINCT 
+		user_id 
+	FROM 
+		user_subscriptions
+)
+SELECT 
+	au.user_id,
+	COALESCE(js.jan_mrr, 0.00) AS jan_mrr,
+	COALESCE(fs.feb_mrr, 0.00) AS feb_mrr,
+	IFNULL(FS.feb_mrr, 0.00) - IFNULL(js.jan_mrr, 0.00) AS mrr_delta,
+	CASE
+		WHEN js.jan_mrr IS NULL AND fs.feb_mrr IS NOT NULL THEN 'NEW'
+		WHEN js.jan_mrr IS NOT NULL AND fs.feb_mrr IS NULL THEN 'CHURN'
+		WHEN js.jan_mrr < fs.feb_mrr THEN 'UPGRADE'
+		WHEN js.jan_mrr > fs.feb_mrr THEN 'DOWNGRADE'
+		WHEN js.jan_mrr = fs.feb_mrr THEN 'RETAINED'
+	END AS movement_category
+	
+FROM
+	all_users au 
+LEFT JOIN 
+	jan_subscriptions js ON au.user_id = js.user_id 
+LEFT JOIN 
+	feb_subscriptions fs ON au.user_id = fs.user_id 
+WHERE 
+	js.jan_mrr IS NOT NULL OR fs.feb_mrr IS NOT NULL
+ORDER BY 
+	au.user_id;
+```
+## More efficient alternative for larger datasets since the first solution scans the original table
+   three times.
+
+```sql
+WITH monthly_mrr AS (
+    SELECT 
+        user_id,
+        SUM(CASE WHEN billing_month = '2026-01-01' THEN mrr_amount ELSE 0 END) AS jan_mrr,
+        SUM(CASE WHEN billing_month = '2026-02-01' THEN mrr_amount ELSE 0 END) AS feb_mrr
+    FROM 
+        user_subscriptions
+    WHERE 
+        billing_month IN ('2026-01-01', '2026-02-01')
+    GROUP BY 
+        user_id
+)
+SELECT 
+    user_id,
+    jan_mrr,
+    feb_mrr,
+    (feb_mrr - jan_mrr) AS mrr_delta,
+    CASE
+        WHEN jan_mrr = 0 AND feb_mrr > 0 THEN 'NEW'
+        WHEN jan_mrr > 0 AND feb_mrr = 0 THEN 'CHURN'
+        WHEN jan_mrr < feb_mrr THEN 'UPGRADE'
+        WHEN jan_mrr > feb_mrr THEN 'DOWNGRADE'
+        WHEN jan_mrr = feb_mrr THEN 'RETAINED'
+    END AS movement_category
+FROM 
+    monthly_mrr
+ORDER BY 
+    user_id;
 ```
