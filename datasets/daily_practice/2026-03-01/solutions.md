@@ -33,5 +33,44 @@ The report should show the `signup_cohort`, the total `cohort_size` (number of u
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH cohort_sizes AS (
+    SELECT 
+        DATE_FORMAT(signup_date, '%Y-%m') AS signup_cohort, 
+        COUNT(DISTINCT user_id) AS cohort_size
+    FROM 
+        app_users 
+    GROUP BY 
+        DATE_FORMAT(signup_date, '%Y-%m')
+),
+user_activity AS (
+    SELECT 
+        u.user_id,
+        DATE_FORMAT(u.signup_date, '%Y-%m') AS signup_cohort,
+        TIMESTAMPDIFF(MONTH, DATE_FORMAT(u.signup_date, '%Y-%m-01'), DATE_FORMAT(l.login_date, '%Y-%m-01')) AS months_since_signup
+    FROM 
+        app_users u
+    JOIN 
+        app_logins l ON u.user_id = l.user_id
+),
+retention_counts AS (
+    SELECT
+        signup_cohort,
+        COUNT(DISTINCT CASE WHEN months_since_signup = 1 THEN user_id END) AS month_1_retained,
+        COUNT(DISTINCT CASE WHEN months_since_signup = 2 THEN user_id END) AS month_2_retained
+    FROM
+        user_activity
+    GROUP BY
+        signup_cohort
+)
+SELECT 
+    c.signup_cohort,
+    c.cohort_size,
+    ROUND((IFNULL(r.month_1_retained, 0) / c.cohort_size) * 100, 2) AS month_1_retention_pct,
+    ROUND((IFNULL(r.month_2_retained, 0) / c.cohort_size) * 100, 2) AS month_2_retention_pct
+FROM 
+    cohort_sizes c
+LEFT JOIN 
+    retention_counts r ON c.signup_cohort = r.signup_cohort
+ORDER BY 
+    c.signup_cohort;
 ```
