@@ -36,5 +36,56 @@ This is a classic use case for combining Window Functions with conditional math.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH combined_billing_data AS (
+    SELECT 
+        lsp.customer_id,
+        lsp.payment_date,
+        lsp.payment_amount,
+        ui.invoice_id,
+        ui.invoice_date, 
+        ui.invoice_amount,
+        SUM(ui.invoice_amount) OVER (PARTITION BY lsp.customer_id ORDER BY ui.invoice_date) AS running_total
+    FROM    
+        lump_sum_payments lsp 
+    JOIN
+        unpaid_invoices ui ON lsp.customer_id = ui.customer_id
+), 
+processed_payments AS (
+    SELECT
+        customer_id, payment_date, payment_amount, invoice_id, invoice_date, invoice_amount,
+        running_total - invoice_amount AS remaining_debt,
+        payment_amount - running_total AS remaining_funds
+    FROM
+        combined_billing_data
+),
+allocated_payments AS (
+    SELECT 
+        customer_id, 
+        invoice_id, 
+        invoice_date,
+        invoice_amount,
+        CASE 
+            WHEN remaining_funds >= 0 THEN invoice_amount
+            WHEN remaining_funds < 0 AND remaining_debt < payment_amount THEN invoice_amount + remaining_funds
+            ELSE 0.00
+        END AS applied_amount
+    FROM
+        processed_payments 
+)
+SELECT
+    customer_id,
+    invoice_id,
+    invoice_amount,
+    applied_amount,
+    (invoice_amount - applied_amount) AS remaining_balance,
+    CASE 
+        WHEN applied_amount = invoice_amount THEN 'FULLY PAID'
+        WHEN applied_amount > 0 THEN 'PARTIALLY PAID'
+        ELSE 'UNPAID'
+    END AS payment_status
+FROM
+    allocated_payments
+ORDER BY 
+    customer_id, 
+    invoice_date;
 ```
