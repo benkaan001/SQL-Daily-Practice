@@ -37,5 +37,51 @@ The final report should show the `room_name`, the `gap_start`, the `gap_end`, an
 **Your Solution:**
 
 ```sql
--- Write your solution here
+	(SELECT DISTINCT 
+		room_name, 
+		TIMESTAMP('2026-03-04 08:00:00') AS start_time, 
+		TIMESTAMP('2026-03-04 08:00:00') AS end_time
+	FROM 
+		room_bookings
+	)
+	UNION ALL 
+	(
+	SELECT DISTINCT 
+		room_name, 
+		TIMESTAMP('2026-03-04 18:00:00') AS start_time, 
+		TIMESTAMP('2026-03-04 18:00:00') AS end_time
+	FROM 
+		room_bookings
+	)
+	UNION ALL 
+	(
+	SELECT 
+		room_name, 
+		start_time,
+		end_time
+	FROM
+		room_bookings
+	)
+	ORDER BY 
+		room_name,
+		start_time
+), 
+consecutive_times AS (
+	SELECT
+		room_name, 
+		start_time,
+		end_time, 
+		lEAD(start_time, 1) OVER (PARTITION BY room_name ORDER BY start_time) AS next_start_time
+	FROM
+		default_times
+)
+SELECT
+	room_name, 
+	start_time AS gap_start,
+	end_time AS gap_end, 
+	TIMESTAMPDIFF(MINUTE, end_time, next_start_time) AS gap_duration_minutes
+FROM	
+ 	consecutive_times
+ WHERE 
+ 	TIMESTAMPDIFF(MINUTE, end_time, next_start_time) >= 60;
 ```
