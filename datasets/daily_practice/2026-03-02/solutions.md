@@ -35,5 +35,44 @@ Order the results first by `management_level` (ascending), and then by `employee
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH RECURSIVE hierarchy AS (
+    (
+    SELECT 
+        employee_id, 
+        employee_name, 
+        job_title,
+        manager_id,
+        1 AS management_level
+    FROM 
+        employees 
+    WHERE  
+        manager_id IS NULL
+    )
+    UNION ALL 
+    (
+    SELECT 
+        e.employee_id, 
+        e.employee_name, 
+        e.job_title, 
+        e.manager_id, 
+        h.management_level + 1 AS management_level
+    FROM
+        employees e  
+    JOIN 
+        hierarchy h ON e.manager_id = h.employee_id 
+    )
+)
+SELECT
+    h.employee_id,
+    h.employee_name,
+    h.job_title,
+    m.employee_name AS manager_name,
+    h.management_level
+FROM    
+    hierarchy h
+LEFT JOIN
+    employees m ON h.manager_id = m.employee_id
+ORDER BY
+    h.management_level ASC,
+    h.employee_id ASC;
 ```
