@@ -42,5 +42,30 @@
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH RECURSIVE dates AS (
+	
+	SELECT 
+		DATE('2026-03-01') AS calendar_date
+
+	UNION ALL 
+	
+	SELECT 
+		calendar_date + INTERVAL 1 DAY AS calendar_date
+	FROM
+		dates
+	WHERE
+		calendar_date < DATE('2026-03-31')
+)
+SELECT 
+	d.calendar_date, 
+	COUNT(el.emp_id) AS active_headcount
+FROM
+	dates d 
+LEFT JOIN 
+	employee_lifecycle el ON d.calendar_date >= el.hire_date 
+   AND (el.termination_date IS NULL OR d.calendar_date < el.termination_date)
+GROUP BY 
+	d.calendar_date 
+ORDER BY 
+	d.calendar_date;
 ```
