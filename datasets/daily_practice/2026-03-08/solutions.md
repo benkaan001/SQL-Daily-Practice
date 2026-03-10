@@ -28,5 +28,18 @@ This is a classic variation of the "Gaps and Islands" problem, focused purely on
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH next_invoices AS (
+    SELECT 
+        invoice_number,
+        LEAD(invoice_number) OVER (ORDER BY invoice_number) AS next_invoice_number
+    FROM 
+        issued_invoices
+)
+SELECT 
+    (invoice_number + 1) AS missing_range_start,
+    (next_invoice_number - 1) AS missing_range_end
+FROM 
+    next_invoices
+WHERE 
+    next_invoice_number > invoice_number + 1;
 ```
