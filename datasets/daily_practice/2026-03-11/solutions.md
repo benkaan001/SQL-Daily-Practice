@@ -31,5 +31,25 @@ There are two primary ways to solve this: the `EXISTS`/`NOT EXISTS` approach, an
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH purhcase_counts AS (
+	SELECT 
+		customer_id,
+		SUM(CASE WHEN product_name = 'Tortilla Chips' THEN 1 ELSE 0 END) AS tortilla_purchase_count,
+		SUM(CASE WHEN product_name = 'Salsa' THEN 1 ELSE 0 END) AS salsa_purchase_count,
+		SUM(CASE WHEN product_name = 'Guacamole' THEN 1 ELSE 0 END) AS guac_purchase_count,
+		MAX(CASE WHEN product_name IN ('Tortilla Chips', 'Salsa') THEN purchase_date END) AS last_trigger_purchase_date
+	FROM 
+		customer_purchases
+	GROUP BY 
+		customer_id
+)
+SELECT 
+	customer_id,
+	last_trigger_purchase_date 
+FROM
+	purhcase_counts
+WHERE
+	tortilla_purchase_count > 0
+	AND salsa_purchase_count > 0
+	AND guac_purchase_count = 0;
 ```
