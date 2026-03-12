@@ -35,5 +35,27 @@ Order the final report chronologically by `purchase_date`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH first_purchase_dates AS (
+	SELECT 
+		customer_id,
+		MIN(purchase_date) AS purchase_date
+	FROM
+		customer_purchases
+	GROUP BY 
+		customer_id 
+)
+SELECT
+	cp.purchase_date, 
+	COUNT(DISTINCT cp.customer_id) AS total_active_customers,
+	COUNT(DISTINCT CASE WHEN cp.purchase_date = fpd.purchase_date THEN cp.customer_id END) AS new_customers, 
+	COUNT(DISTINCT CASE WHEN cp.purchase_date > fpd.purchase_date THEN cp.customer_id  END) AS returning_customers,
+	SUM(purchase_amount) AS total_revenue
+FROM
+	first_purchase_dates fpd 
+LEFT JOIN 
+	customer_purchases cp ON cp.customer_id = fpd.customer_id 
+GROUP BY 
+	cp.purchase_date
+ORDER BY 
+	cp.purchase_date;
 ```
