@@ -35,5 +35,89 @@ This problem requires mixing relational concepts (managers to employees) with an
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH salaries AS (
+	SELECT 
+		e.employee_id, 
+		e.employee_name,
+		e.department_name AS employee_department,
+		m.manager_id, 
+		e.salary AS employee_salary,
+		m.salary AS manager_salary
+	FROM
+		employees e 
+	JOIN 
+		employees m ON e.manager_id = m.employee_id 
+),
+average_salaries AS (
+	SELECT 
+		department_name,
+		AVG(salary) AS department_avg_salary
+	FROM
+		employees
+	GROUP BY 
+		department_name 
+),  
+combined_salary_table AS (
+	SELECT 
+		avgs.department_name, 
+		avgs.department_avg_salary, 
+		s.employee_id, 
+		s.employee_name,
+		s.employee_department, 
+		s.manager_id, 
+		s.employee_salary, 
+		s.manager_salary
+	FROM
+		average_salaries avgs 
+	RIGHT JOIN 
+		salaries s ON s.employee_department = avgs.department_name
+)
+SELECT 
+	employee_name, 
+	employee_department AS department_name, 
+	ROUND(employee_salary, 2) AS salary, 
+	ROUND(manager_salary, 2) AS manager_salary, 
+	ROUND(department_avg_salary, 2) AS department_avg_salary 
+FROM
+	combined_salary_table 
+WHERE
+	employee_salary > department_avg_salary 
+	AND employee_salary > manager_salary 
+ORDER BY 
+	employee_department, 
+	employee_name;
+```
+
+```sql
+-- ---------------------------------------------------------
+-- Alternative Optimized Approach (Using Window Functions):
+-- ---------------------------------------------------------
+
+WITH emp_with_dept_avg AS (
+    SELECT 
+        employee_id,
+        employee_name,
+        department_name,
+        salary,
+        manager_id,
+        AVG(salary) OVER (PARTITION BY department_name) AS department_avg_salary
+    FROM 
+        employees
+)
+SELECT 
+    e.employee_name,
+    e.department_name,
+    e.salary,
+    m.salary AS manager_salary,
+    ROUND(e.department_avg_salary, 2) AS department_avg_salary
+FROM 
+    emp_with_dept_avg e
+JOIN 
+    employees m ON e.manager_id = m.employee_id
+WHERE 
+    e.salary > m.salary
+    AND e.salary > e.department_avg_salary
+ORDER BY 
+    e.department_name, 
+    e.employee_name;
 ```
