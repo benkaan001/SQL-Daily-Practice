@@ -33,5 +33,21 @@ This is a classic non-equi join (or theta join) problem. Standard `GROUP BY` won
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH target_dates AS (
+	SELECT DISTINCT
+		activity_date AS target_date
+	FROM
+		app_activity
+	WHERE
+		activity_date >= '2026-03-07'
+)
+SELECT 
+	td.target_date,
+	COUNT(DISTINCT aa.user_id) AS rolling_7_day_active_users
+FROM
+	target_dates td
+LEFT JOIN 
+	app_activity aa ON aa.activity_date BETWEEN DATE_SUB(td.target_date, INTERVAL 6 DAY) AND td.target_date 
+GROUP BY 
+	td.target_date;
 ```
