@@ -39,7 +39,41 @@ The report should show the `product_name`, the individual `revenue`, the `runnin
 **Your Solution:**
 
 ```sql
-
--- Write your solution here
-
+WITH running_totals AS (
+	SELECT 
+		product_name,
+		revenue,
+		SUM(revenue) OVER (ORDER BY revenue DESC) AS running_revenue,
+		SUM(revenue) OVER () AS total_revenue
+	FROM
+		product_revenue
+),
+percentages AS (
+	SELECT 
+		product_name, 
+		revenue, 
+		running_revenue, 
+		running_revenue / total_revenue * 100.0 AS running_percentage
+	FROM
+		running_totals
+), 
+previous_percentages AS (
+	SELECT
+		product_name, 
+		revenue, 
+		running_revenue, 
+		running_percentage,
+		COALESCE(LAG(running_percentage, 1) OVER (ORDER BY running_percentage), 0) AS previous_percentage
+	FROM
+		percentages
+)
+SELECT
+	product_name, 
+	revenue, 
+	running_revenue, 
+	running_percentage
+FROM	
+	previous_percentages 
+WHERE
+	previous_percentage < 80;
 ```
