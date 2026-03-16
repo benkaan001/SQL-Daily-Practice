@@ -34,5 +34,42 @@ The final report should show the `recommended_friend_id` and the `mutual_friend_
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH group_friends AS (
+    -- Group every user's friends into a comma-separated list
+    SELECT 
+        user_id,
+        GROUP_CONCAT(friend_id) AS friends 
+    FROM
+        friendships 
+    WHERE
+        user_id <> 101
+    GROUP BY 
+        user_id 
+), 
+all_friends AS (
+    -- Join back to get individual rows for each friend of the potential recommendation
+    SELECT 
+        gp.user_id, 
+        f.friend_id,
+        gp.friends
+    FROM
+        group_friends gp 
+    LEFT JOIN 
+        friendships f ON f.user_id = gp.user_id 
+)
+SELECT
+    user_id AS recommended_friend_id, 
+    COUNT(friend_id) AS mutual_friend_count
+FROM
+    all_friends
+WHERE
+    -- Safely check the string to ensure the user is NOT a direct friend of 101
+    FIND_IN_SET('101', friends) = 0
+    -- Ensure the friend we are counting is ALSO a friend of 101 (making them mutual)
+    AND friend_id IN (SELECT friend_id FROM friendships WHERE user_id = 101)
+GROUP BY 
+    user_id 
+ORDER BY 
+    mutual_friend_count DESC, 
+    recommended_friend_id;
 ```
