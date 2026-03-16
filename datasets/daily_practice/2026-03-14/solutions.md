@@ -33,5 +33,33 @@ The final report should show the `campaign_name` and the `total_attributed_reven
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH combined_table AS (
+	SELECT 
+		ac.click_id, ac.click_time, ac.campaign_name, up.purchase_id, up.user_id, up.purchase_time, up.purchase_amount,
+		COUNT(ac.click_id) OVER (PARTITION BY purchase_id) AS click_count
+	FROM
+		ad_clicks ac 
+	RIGHT JOIN 
+		user_purchases up ON up.user_id = ac.user_id 
+		AND ac.click_time BETWEEN DATE_SUB(up.purchase_time, INTERVAL 7 DAY) AND up.purchase_time 
+), 
+revenues AS (
+	SELECT 
+		click_id, click_time, campaign_name, purchase_id, user_id, purchase_time, purchase_amount, click_count,
+		CASE 
+			WHEN click_count > 0 THEN purchase_amount / click_count ELSE purchase_amount 
+		END AS revenue_share
+		
+	FROM
+		combined_table
+)
+SELECT 
+	COALESCE(campaign_name, 'Organic') AS campaign_name,
+	ROUND(SUM(revenue_share), 2) AS total_attributed_revenue
+FROM
+	revenues
+GROUP BY
+	COALESCE(campaign_name, 'Organic') 
+ORDER BY
+    COALESCE(campaign_name, 'Organic');
 ```
