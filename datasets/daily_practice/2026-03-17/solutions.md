@@ -37,5 +37,24 @@ This is a classic technical interview question designed to test your mastery of 
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH ordered_salaries AS (
+	SELECT
+		department, 
+		salary,
+		ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary) AS salary_row,
+		COUNT(emp_id) OVER (PARTITION BY department) AS head_count
+	FROM
+		department_salaries
+)
+SELECT
+	department,
+	ROUND(AVG(salary), 2) AS median_salary	
+FROM
+	ordered_salaries 
+WHERE
+	salary_row IN (FLOOR((head_count + 1) / 2.0), CEILING((head_count + 1) / 2.0 ))
+GROUP BY 
+	department
+ORDER BY 
+	department;
 ```
