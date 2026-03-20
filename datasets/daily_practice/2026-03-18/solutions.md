@@ -34,5 +34,37 @@ There are two main ways to solve this: the `LEFT JOIN` aggregation method, and t
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH combined_transactions AS (
+	SELECT
+		t.sender_id AS user_id,
+		COALESCE(t.amount * -1, 0.00)AS amount
+	FROM
+		users u
+	LEFT JOIN
+		transfers t ON
+		t.sender_id = u.user_id
+		
+	UNION ALL 
+	
+	SELECT 
+		t.receiver_id AS user_id,
+		COALESCE(t.amount, 0.00) AS amount
+	FROM
+		users u
+	LEFT JOIN
+		transfers t ON
+		t.receiver_id = u.user_id
+)
+SELECT
+	u.user_name,
+	COALESCE(SUM(ct.amount), 0.00) AS net_balance
+FROM	
+	combined_transactions ct
+RIGHT JOIN
+	users u ON ct.user_id = u.user_id 
+GROUP BY 
+	u.user_name
+ORDER BY
+	net_balance DESC,
+	u.user_name;
 ```
