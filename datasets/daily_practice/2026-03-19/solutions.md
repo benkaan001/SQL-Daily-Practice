@@ -27,5 +27,25 @@ Count how many times each specific 3-step path occurs across the entire platform
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH three_pages AS(
+	SELECT 
+		session_id,
+		page_name AS first_page_name, 
+		LEAD(page_name, 1) OVER (PARTITION BY session_id ORDER BY view_timestamp) second_page_name,
+		LEAD(page_name, 2) OVER (PARTITION BY session_id ORDER BY view_timestamp) third_page_name
+	FROM
+		user_navigation
+)
+SELECT
+	CONCAT(first_page_name, ' > ', second_page_name, ' > ', third_page_name) AS journey_path,
+	COUNT(*) AS path_count
+FROM
+	three_pages 
+WHERE 
+	CONCAT(first_page_name, ' > ', second_page_name, ' > ', third_page_name) IS NOT NULL
+GROUP BY 
+	journey_path
+ORDER BY 
+	path_count DESC
+LIMIT 3;
 ```
