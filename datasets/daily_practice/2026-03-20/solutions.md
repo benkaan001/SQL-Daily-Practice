@@ -27,5 +27,37 @@ The report should show the `flight_id`, the flight's `max_weight_kg`, the `last_
 **Your Solution:**
 
 ```sql
--- Write your solution here
-```
+WITH cumulative_cargo AS (
+    SELECT 
+        cm.manifest_id, 
+        cm.flight_id, 
+        cm.boarding_priority, 
+        cm.item_name, 
+        cm.weight_kg, 
+        f.max_weight_kg,
+        SUM(cm.weight_kg) OVER (PARTITION BY cm.flight_id ORDER BY cm.boarding_priority) AS cumulative_weight
+    FROM
+        cargo_manifest cm 
+    JOIN 
+        flights f ON cm.flight_id = f.flight_id 
+), 
+weight_sequences AS (
+    SELECT 
+        manifest_id, flight_id, boarding_priority, item_name, weight_kg, max_weight_kg, cumulative_weight,
+        LEAD(cumulative_weight, 1) OVER (PARTITION BY flight_id ORDER BY boarding_priority) AS next_cumulative_weight
+    FROM    
+        cumulative_cargo 
+)
+SELECT 
+    flight_id, 
+    max_weight_kg,
+    item_name AS last_item_loaded,
+    cumulative_weight AS total_loaded_weight
+FROM
+    weight_sequences 
+WHERE
+    cumulative_weight <= max_weight_kg 
+    -- make sure next item breaks capacity OR there are no more items (NULL)
+    AND (next_cumulative_weight > max_weight_kg OR next_cumulative_weight IS NULL)
+ORDER BY
+    flight_id;
