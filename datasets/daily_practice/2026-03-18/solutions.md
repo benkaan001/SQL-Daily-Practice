@@ -68,3 +68,39 @@ ORDER BY
 	net_balance DESC,
 	u.user_name;
 ```
+
+```sql
+-- =========================================================================
+-- ALTERNATIVE SOLUTION: The Aggregated JOIN Approach
+-- =========================================================================
+WITH debit_transactions AS (
+    SELECT 
+		sender_id, 
+		SUM(amount) AS sent_amount
+    FROM 
+		transfers
+    GROUP BY 
+		sender_id
+),
+credit_transactions AS (
+    SELECT 
+		receiver_id, 
+		SUM(amount) AS deposit_amount
+    FROM 
+		transfers
+    GROUP BY 
+		receiver_id
+)
+SELECT 
+    u.user_name, 
+    COALESCE(ct.deposit_amount, 0.00) - COALESCE(dt.sent_amount, 0.00) AS net_balance
+FROM
+    users u 
+LEFT JOIN 
+    debit_transactions dt ON u.user_id = dt.sender_id 
+LEFT JOIN
+    credit_transactions ct ON u.user_id = ct.receiver_id
+ORDER BY 
+    net_balance DESC,
+    u.user_name;
+```
