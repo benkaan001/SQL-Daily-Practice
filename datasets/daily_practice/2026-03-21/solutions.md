@@ -45,7 +45,58 @@ The final report should show the `investor_id`, `ticker`, `current_shares`, `tar
 **Your Solution:**
 
 ```sql
-
--- Write your solution here
-
+WITH all_investor_tickers AS (
+    -- master list of all tickers an investor currently holds or wants to hold
+    SELECT investor_id, ticker FROM portfolio_holdings
+    UNION
+    SELECT investor_id, ticker FROM target_allocations
+),
+portfolio_values AS (
+    -- calculate the total dollar value of each investor's current portfolio
+    SELECT 
+        ait.investor_id,
+        ait.ticker,
+        COALESCE(ph.shares, 0) AS current_shares,
+        sp.price,
+        COALESCE(ph.shares, 0) * sp.price AS asset_value,
+        --  total net worth
+        SUM(COALESCE(ph.shares, 0) * sp.price) OVER (PARTITION BY ait.investor_id) AS total_portfolio_value
+    FROM 
+        all_investor_tickers ait
+    LEFT JOIN 
+        portfolio_holdings ph ON ait.investor_id = ph.investor_id AND ait.ticker = ph.ticker
+    JOIN 
+        stock_prices sp ON ait.ticker = sp.ticker
+),
+target_calculations AS (
+    -- how many shares they should have based on their target percentages
+    SELECT 
+        pv.investor_id,
+        pv.ticker,
+        pv.current_shares,
+        COALESCE(ta.target_pct, 0) AS target_pct,
+        (pv.total_portfolio_value * (COALESCE(ta.target_pct, 0) / 100.0)) / pv.price AS target_shares
+    FROM 
+        portfolio_values pv
+    LEFT JOIN 
+        target_allocations ta ON pv.investor_id = ta.investor_id AND pv.ticker = ta.ticker
+)
+SELECT 
+    investor_id,
+    ticker,
+    current_shares,
+    ROUND(target_shares) AS target_shares,
+    CASE 
+        WHEN target_shares > current_shares THEN 'BUY'
+        WHEN target_shares < current_shares THEN 'SELL'
+        ELSE 'HOLD'
+    END AS trade_action,
+    ABS(ROUND(target_shares) - current_shares) AS shares_to_trade
+FROM 
+    target_calculations
+WHERE 
+    ROUND(target_shares) != current_shares
+ORDER BY 
+    investor_id, 
+    ticker;
 ```
