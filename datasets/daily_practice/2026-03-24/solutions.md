@@ -34,6 +34,17 @@ This problem requires joining the table to itself multiple times to walk down th
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT 
+	first.user_id AS first_referer_user_id,
+	COUNT(DISTINCT second.user_id) AS direct_referals,
+	COUNT(third.user_id) AS indirect_referrals
+FROM
+	user_referrals first
+JOIN 
+	user_referrals second ON first.user_id = second.referred_by_id 
+LEFT JOIN 
+	user_referrals third ON second.user_id = third.referred_by_id  
+GROUP BY
+	first.user_id;
 ```
 
