@@ -32,5 +32,48 @@ Order the results alphabetically by `acquisition_channel`.
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH first_purchases AS (
+    SELECT
+        user_id,
+        MIN(purchase_date) AS purchase_date
+    FROM
+        user_purchases
+    GROUP BY
+        user_id 
+),
+combined_data AS (
+    SELECT 
+        au.user_id, 
+        au.signup_date, 
+        au.acquisition_channel, 
+        fp.purchase_date
+    FROM
+        app_users au 
+    LEFT JOIN 
+        first_purchases fp ON au.user_id = fp.user_id 
+),
+purhcase_counts AS (
+    SELECT 
+        acquisition_channel,
+        COUNT(*) AS total_users,
+        SUM(CASE WHEN purchase_date = signup_date THEN 1 ELSE 0 END) AS same_day_count,
+        SUM(CASE WHEN ABS(DATEDIFF(signup_date, purchase_date)) BETWEEN 1 AND 7 THEN 1 ELSE 0 END) AS within_7_days_count,
+        SUM(CASE WHEN ABS(DATEDIFF(purchase_date, signup_date)) > 7 THEN 1 ELSE 0 END) AS over_7_days_count,
+        SUM(CASE WHEN purchase_date IS NULL THEN 1 ELSE 0 END) AS never_purchased_count
+    FROM
+        combined_data
+    GROUP BY
+        acquisition_channel 
+)
+SELECT
+    acquisition_channel, 
+    total_users, 
+    ROUND((same_day_count / NULLIF(total_users, 0) * 100.0), 2) AS same_day_pct, 
+    ROUND((within_7_days_count / NULLIF(total_users, 0) * 100.0), 2) AS within_7_days_pct, 
+    ROUND((over_7_days_count / NULLIF(total_users, 0) * 100.0), 2) AS over_7_days_pct, 
+    ROUND((never_purchased_count / NULLIF(total_users, 0) * 100.0), 2) AS never_purchased_pct
+FROM
+    purhcase_counts 
+ORDER BY 
+    acquisition_channel;
 ```
