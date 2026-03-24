@@ -33,5 +33,38 @@ This problem requires identifying two specific, independent events for each user
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH touch_times AS (
+    SELECT 
+        user_id, 
+        MIN(touch_timestamp) AS first_touch_timestamp,
+        MIN(CASE WHEN is_purchase = TRUE THEN touch_timestamp END) AS last_touch_timestamp
+    FROM
+        marketing_touches
+    GROUP BY
+        user_id
+),
+joint_data AS (
+    SELECT
+        mt.user_id,
+        CASE WHEN tt.first_touch_timestamp = mt.touch_timestamp THEN mt.marketing_channel END AS first_touch_channel,
+        CASE WHEN tt.last_touch_timestamp = mt.touch_timestamp THEN mt.marketing_channel END AS last_touch_channel,
+        DATEDIFF(tt.last_touch_timestamp, tt.first_touch_timestamp) AS days_to_conversion
+    FROM
+        touch_times tt  
+    JOIN
+        marketing_touches mt ON tt.user_id = mt.user_id 
+    WHERE 
+        tt.last_touch_timestamp IS NOT NULL -- users who never converted
+)
+SELECT 
+    user_id, 
+    MIN(first_touch_channel) AS first_touch_channel, 
+    MIN(last_touch_channel) AS last_touch_channel, 
+    MIN(days_to_conversion) AS days_to_conversion
+FROM
+    joint_data 
+GROUP BY
+    user_id
+ORDER BY 
+    user_id;
 ```
