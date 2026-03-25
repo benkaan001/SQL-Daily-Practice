@@ -35,5 +35,35 @@ The final report should show the `category`, the `sales_month` (formatted as 'YY
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH category_monthly_revenues AS (
+	SELECT 
+		category, 
+		DATE_FORMAT(sale_date, '%Y-%m') AS sales_month,  
+		SUM(amount) AS current_revenue
+	FROM
+		category_sales
+	GROUP BY 
+		category, 
+		DATE_FORMAT(sale_date, '%Y-%m')
+),
+previous_month_revenues AS (
+	SELECT 
+		category, 
+		sales_month, 
+		current_revenue,
+		LAG(current_revenue, 1) OVER (PARTITION BY category ORDER BY sales_month) AS prev_month_revenue
+	FROM
+		category_monthly_revenues 
+)
+SELECT 
+	category, 
+	sales_month, 
+	current_revenue, 
+	prev_month_revenue,
+	ROUND(((current_revenue - prev_month_revenue) / prev_month_revenue ) * 100, 2) AS growth_pct
+FROM
+	previous_month_revenues 
+ORDER BY 
+	category, 
+	sales_month;
 ```
