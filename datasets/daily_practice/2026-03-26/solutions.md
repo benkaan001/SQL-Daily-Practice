@@ -28,5 +28,26 @@ While you could solve this using a `GROUP BY` and conditional aggregation, there
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH order_chronology AS (
+	SELECT
+		customer_id,
+	    order_date AS first_order_date,
+		LEAD(order_date, 1) OVER (PARTITION BY customer_id ORDER BY order_date) AS second_order_date,
+		LEAD(order_date, 2) OVER (PARTITION BY customer_id ORDER BY order_date) AS third_order_date,
+		ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) AS rn
+	FROM
+		customer_orders
+)
+SELECT
+	customer_id,
+	first_order_date,
+	third_order_date,
+	DATEDIFF(third_order_date, first_order_date) AS days_to_third_order
+FROM
+	order_chronology
+WHERE
+	third_order_date IS NOT NULL
+	AND rn = 1
+ORDER BY
+	days_to_third_order;
 ```
