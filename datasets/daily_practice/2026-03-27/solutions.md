@@ -33,5 +33,22 @@ The final report should show the `user_id`, `sub_id_1`, `sub_id_2`, the calculat
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT 
+    s1.user_id,
+    s1.sub_id AS sub_id_1,
+    s2.sub_id AS sub_id_2,
+    GREATEST(s1.start_date, s2.start_date) AS overlap_start,
+    LEAST(s1.end_date, s2.end_date) AS overlap_end,
+    DATEDIFF(LEAST(s1.end_date, s2.end_date), GREATEST(s1.start_date, s2.start_date)) + 1 AS overlap_duration_days
+FROM 
+    user_subscriptions s1
+JOIN 
+    user_subscriptions s2 
+    ON s1.user_id = s2.user_id 
+    AND s1.sub_id < s2.sub_id -- prevent duplicates
+WHERE 
+    s1.start_date <= s2.end_date 
+    AND s1.end_date >= s2.start_date
+ORDER BY 
+    s1.user_id;
 ```
