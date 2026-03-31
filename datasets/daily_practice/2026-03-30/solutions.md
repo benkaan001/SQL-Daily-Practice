@@ -33,5 +33,37 @@ This is a pristine example of the "Gaps and Islands" problem, and because the `s
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH available_seats AS (
+	SELECT
+		row_letter, 
+		seat_number, 
+		ROW_NUMBER() OVER (PARTITION BY row_letter ORDER BY seat_number) AS rn
+	FROM
+		cinema_seats
+	WHERE
+		status <> 'BOOKED'
+),
+sequential_groups AS (
+	SELECT
+		row_letter, 
+		seat_number, 
+		seat_number - rn AS group_id
+	FROM
+		available_seats 
+)
+SELECT
+	row_letter, 
+	MIN(seat_number) AS seat_start,
+	MAX(seat_number) AS seat_end, 
+	COUNT(seat_number) AS consecutive_seats
+FROM
+	sequential_groups 
+GROUP BY
+	row_letter,
+	group_id 
+HAVING
+	COUNT(seat_number) >= 3
+ORDER BY	
+	row_letter,
+	seat_start;
 ```
