@@ -40,5 +40,14 @@ The final report should show the `sales_date`, the daily `revenue`, and the `rol
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT 
+	sales_date, revenue,
+	AVG(revenue) OVER (
+        ORDER BY sales_date
+        RANGE BETWEEN INTERVAL '6' DAY PRECEDING AND CURRENT ROW
+    ) AS rolling_7_day_avg
+FROM
+	daily_store_sales
+ORDER BY
+	sales_date;
 ```
