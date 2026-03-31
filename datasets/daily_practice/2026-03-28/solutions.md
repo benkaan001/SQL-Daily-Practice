@@ -35,5 +35,28 @@ There are two common ways to perform this "As-Of" join: the `LEAD()` approach an
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH price_changes AS (
+    SELECT 
+        product_id, 
+        price, 
+        effective_date AS price_start_date,
+        COALESCE(LEAD(effective_date, 1) OVER (PARTITION BY product_id ORDER BY effective_date), '9999-12-31') AS price_end_date
+    FROM
+        price_history
+)
+SELECT
+    ps.sale_id, 
+    pc.product_id, 
+    ps.sale_date, 
+    pc.price AS historical_price,
+    ps.quantity,
+    ROUND(pc.price * ps.quantity, 2) AS total_revenue
+FROM
+    price_changes pc 
+JOIN 
+    product_sales ps ON pc.product_id = ps.product_id 
+    AND ps.sale_date >= pc.price_start_date  
+    AND ps.sale_date < pc.price_end_date 
+ORDER BY
+    ps.sale_id;
 ```
