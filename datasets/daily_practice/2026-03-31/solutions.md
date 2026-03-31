@@ -37,5 +37,48 @@ This puzzle requires you to forcefully generate the missing rows before doing th
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH all_months AS (
+    SELECT '2026-01' AS report_month
+    UNION ALL 
+    SELECT '2026-02' AS report_month
+    UNION ALL
+    SELECT '2026-03' AS report_month
+),
+all_accounts AS (
+    SELECT 
+    		am.report_month, 
+    		a.account_id, 
+    		a.account_name
+    FROM	
+    		all_months am 
+    CROSS JOIN 
+    		accounts a
+),
+net_changes AS (
+    SELECT
+        DATE_FORMAT(txn_date, '%Y-%m') AS transaction_month,
+        account_id,
+        SUM(amount) AS month_total
+    FROM
+        transactions
+    GROUP BY
+        transaction_month,
+        account_id
+)
+SELECT
+    aa.account_name,
+    aa.report_month,
+    SUM(COALESCE(nc.month_total, 0)) OVER (
+        PARTITION BY aa.account_id 
+        ORDER BY aa.report_month
+    ) AS eom_balance
+FROM
+    all_accounts aa
+LEFT JOIN
+    net_changes nc ON aa.account_id = nc.account_id
+    AND aa.report_month = nc.transaction_month 
+ORDER BY 
+    aa.account_name, 
+    aa.report_month;
+
 ```
