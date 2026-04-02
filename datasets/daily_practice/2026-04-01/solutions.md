@@ -28,6 +28,20 @@ The report should show the `order_id`, `product_name`, `standard_price`, `price_
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT 	
+	ao.order_id, 
+	cp.product_name,
+	cp.standard_price,
+	ao.order_timestamp,
+	ao.price_paid,
+	(cp.standard_price - ao.price_paid) AS lost_revenue
+FROM
+	april_orders ao 
+JOIN
+	catalog_prices cp ON ao.product_id = cp.product_id 
+WHERE
+	ao.price_paid = cp.standard_price * 0.01
+ORDER BY
+	lost_revenue DESC;
 ```
 
