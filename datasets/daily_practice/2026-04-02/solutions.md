@@ -34,6 +34,34 @@ The final report should show the `flight_id`, `tail_number`, the `previous_fligh
 **Your Solution:**
 
 ```sql
--- Write your solution here
+WITH previous_flights AS (
+	SELECT
+		flight_id, 
+		tail_number, 
+		scheduled_departure, 
+		actual_departure, 
+		scheduled_arrival, 
+		actual_arrival,
+		LAG(flight_id, 1) OVER (PARTITION BY tail_number ORDER BY scheduled_departure) AS previous_flight_id,
+		LAG(scheduled_arrival, 1) OVER (PARTITION BY tail_number ORDER BY scheduled_departure) AS prev_flight_scheduled_arrival,
+		LAG(actual_arrival, 1) OVER (PARTITION BY tail_number ORDER BY scheduled_departure) AS prev_flight_actual_arrival
+	FROM 
+		flight_operations
+)
+SELECT
+	flight_id,
+	tail_number, 
+	previous_flight_id,
+	TIMESTAMPDIFF(MINUTE, scheduled_departure, actual_departure ) AS departure_delay_minutes
+FROM
+	previous_flights 
+WHERE
+	TIMESTAMPDIFF(MINUTE, scheduled_departure, actual_departure) > 15
+	AND 
+	TIMESTAMPDIFF(MINUTE, prev_flight_scheduled_arrival, prev_flight_actual_arrival) > 15
+	AND
+	TIMESTAMPDIFF(MINUTE, prev_flight_actual_arrival, scheduled_departure) < 45
+ORDER BY 
+	flight_id;
 ```
 
