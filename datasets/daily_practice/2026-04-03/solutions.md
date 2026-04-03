@@ -50,3 +50,55 @@ GROUP BY
 ORDER BY
 	r.res_id;
 ```
+```sql
+-- Alternative solution using recursive approach 
+WITH RECURSIVE stay_dates AS (
+    (
+	SELECT 
+        res_id,
+        guest_name,
+        room_type,
+        check_in,
+        check_out,
+        check_in AS billable_date
+    FROM
+        reservations
+	)
+    UNION ALL 
+    (
+	-- must add 1 day to the billable date, continuing until the day before checkout
+	SELECT
+        res_id,
+        guest_name,
+        room_type,
+        check_in,
+        check_out,
+        DATE_ADD(billable_date, INTERVAL 1 DAY)
+    FROM
+        stay_dates  
+    WHERE
+        -- stop generating dates before the checkout date is reached
+        DATE_ADD(billable_date, INTERVAL 1 DAY) < check_out 
+	)
+)
+SELECT 
+    sd.res_id,
+    sd.guest_name,
+    sd.room_type,
+    sd.check_in,
+    sd.check_out,
+    SUM(rr.nightly_rate) AS total_cost
+FROM 
+    stay_dates sd
+JOIN 
+    room_rates rr ON sd.room_type = rr.room_type 
+	AND sd.billable_date = rr.rate_date
+GROUP BY 
+    sd.res_id,
+    sd.guest_name,
+    sd.room_type,
+    sd.check_in,
+    sd.check_out
+ORDER BY 
+    sd.res_id;
+```
