@@ -28,5 +28,25 @@ The final report should show the `res_id`, `guest_name`, `room_type`, `check_in`
 **Your Solution:**
 
 ```sql
--- Write your solution here
+SELECT
+	r.res_id, 
+	r.guest_name, 
+	r.room_type, 
+	r.check_in, 
+	r.check_out,
+	SUM(rr.nightly_rate) AS total_cost 
+FROM
+	reservations r 
+JOIN
+	room_rates rr ON r.room_type = rr.room_type 
+	AND rr.rate_date >= r.check_in 
+	AND rr.rate_date < r.check_out
+GROUP BY
+	r.res_id,
+	r.guest_name, 
+	r.room_type,
+	r.check_in,
+	r.check_out
+ORDER BY
+	r.res_id;
 ```
