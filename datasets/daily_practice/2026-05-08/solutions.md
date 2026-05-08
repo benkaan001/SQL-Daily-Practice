@@ -26,8 +26,6 @@ Order the results by `rank_jump` descending, then by `song_name` ascending.
 
 ### Tips for Approaching the Problem
 
-This puzzle requires layering two different types of window functions on top of each other.
-
 1. **Calculate the Score:** Create your first Common Table Expression (CTE). Calculate the raw total score for every row using the formula provided.
 2. **The First Window (Ranking):** In the same CTE (or a second one), use the `RANK()` window function. You need a separate ranking for each week, so you must `PARTITION BY week_date`. Order the window descending by your calculated score, and ascending by the song name to handle ties properly.
 3. **The Second Window (Time Travel):** Now that you have every song's official rank for every week, you need to compare weeks. In a new CTE, use the `LAG()` window function.
