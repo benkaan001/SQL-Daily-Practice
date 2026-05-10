@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS daily_practice_20260511_schema;
 USE daily_practice_20260511_schema;
-
+-- test
 -- This table logs delivery orders for a multi-vertical marketplace.
 CREATE TABLE orders (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
