@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS daily_practice_20260419_schema;
-USE daily_practice_20260419_schema;
+CREATE DATABASE IF NOT EXISTS daily_practice_20260519_schema;
+USE daily_practice_20260519_schema;
 
 -- Tracks the health status of various microservices.
 CREATE TABLE service_health_logs (
