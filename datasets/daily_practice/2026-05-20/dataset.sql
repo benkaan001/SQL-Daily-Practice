@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS daily_practice_20260420_schema;
-USE daily_practice_20260420_schema;
+CREATE DATABASE IF NOT EXISTS daily_practice_20260520_schema;
+USE daily_practice_20260520_schema;
 
 CREATE TABLE network_connections (
     connection_id INT PRIMARY KEY AUTO_INCREMENT,
