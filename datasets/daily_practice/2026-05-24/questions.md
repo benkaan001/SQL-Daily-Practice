@@ -22,10 +22,10 @@ Output columns:
 
 **Expected Output:**
 
-| user_id | tower_1      | tower_2       | overlap_start_time      | overlap_end_time        | overlap_duration_minutes |
-| ------- | ------------ | ------------- | ----------------------- | ----------------------- | ------------------------ |
-| 3001    | Airport_West | Downtown_01   | 2026-04-24 12:03:00.000 | 2026-04-24 12:05:00.000 | 2                        |
-| 5001    | Airport_West | Suburban_East | 2026-04-24 10:10:00.000 | 2026-04-24 10:15:00.000 | 5                        |
+| user_id | tower_1      | tower_2        | overlap_start_time     | overlap_end_time       | overlap_duration_minutes |
+| ------- | ------------ | -------------- | ---------------------- | ---------------------- | ------------------------ |
+| 3001    | Airport_West | Downtown_01    | 2026-05-24 12:03:00.000| 2026-05-24 12:05:00.000| 2                        |
+| 5001    | Airport_West | Suburban_East  | 2026-05-24 10:10:00.000| 2026-05-24 10:15:00.000| 5                        |
 
 **Your Solution:**
 
