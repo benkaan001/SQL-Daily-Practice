@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS daily_practice_20260530_schema;
-USE daily_practice_20260530_schema;
+CREATE DATABASE IF NOT EXISTS daily_practice_20260531_schema;
+USE daily_practice_20260531_schema;
 
 CREATE TABLE network_connections (
     connection_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -13,11 +13,11 @@ CREATE TABLE network_connections (
 );
 
 INSERT INTO network_connections (user_id, tower_id, tower_name, start_time, end_time, signal_strength_dbm, call_status) VALUES
-(1001, 1, 'Downtown_01', '2026-05-30 08:00:00.000', '2026-05-30 08:05:00.000', -74, 'COMPLETED'),
-(1002, 1, 'Downtown_01', '2026-05-30 08:01:30.000', '2026-05-30 08:03:00.000', -81, 'COMPLETED'),
-(5001, 2, 'Suburban_East', '2026-05-30 09:55:00.000', '2026-05-30 10:10:00.000', -67, 'COMPLETED'),
-(3001, 1, 'Downtown_01', '2026-05-30 12:00:00.000', '2026-05-30 12:06:00.000', -73, 'COMPLETED'),
-(3001, 3, 'Airport_West', '2026-05-30 12:04:00.000', '2026-05-30 12:08:00.000', -70, 'COMPLETED'),
-(5001, 3, 'Airport_West', '2026-05-30 10:00:00.000', '2026-05-30 10:05:00.000', -66, 'COMPLETED'),
-(5001, 2, 'Suburban_East', '2026-05-30 10:05:00.000', '2026-05-30 10:15:00.000', -65, 'COMPLETED'),
-(7001, 4, 'Industrial_Park', '2026-05-30 11:00:00.000', '2026-05-30 11:10:00.000', -85, 'DROPPED');
+(1001, 1, 'Downtown_01', '2026-05-31 08:00:00.000', '2026-05-31 08:05:00.000', -75, 'COMPLETED'),
+(1002, 1, 'Downtown_01', '2026-05-31 08:01:30.000', '2026-05-31 08:03:00.000', -80, 'COMPLETED'),
+(5001, 2, 'Suburban_East', '2026-05-31 10:05:00.000', '2026-05-31 10:15:00.000', -67, 'COMPLETED'),
+(3001, 1, 'Downtown_01', '2026-05-31 12:00:00.000', '2026-05-31 12:06:00.000', -72, 'COMPLETED'),
+(3001, 3, 'Airport_West', '2026-05-31 12:04:00.000', '2026-05-31 12:10:00.000', -71, 'COMPLETED'),
+(5001, 3, 'Airport_West', '2026-05-31 10:10:00.000', '2026-05-31 10:20:00.000', -66, 'COMPLETED'),
+(7001, 4, 'Industrial_Park', '2026-05-31 11:00:00.000', '2026-05-31 11:10:00.000', -85, 'DROPPED'),
+(7001, 5, 'Harbor_South', '2026-05-31 11:10:00.000', '2026-05-31 11:20:00.000', -80, 'COMPLETED');
